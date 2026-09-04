@@ -1,0 +1,6 @@
+{
+  "name": "CARVED & CO.",
+  "description": "Luxury handcrafted furniture catalog and digital showroom for bespoke sofas, tables, and artisanal living room pieces.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
