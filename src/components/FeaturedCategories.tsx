@@ -27,9 +27,9 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
       
       {/* OVERLAPPING COLOR VARIATIONS BACKGROUND */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-[#E5CEAA]/30 via-[#C7A46A]/15 to-transparent blur-[100px] rounded-full" />
-        <div className="absolute bottom-0 left-10 w-[600px] h-[500px] bg-gradient-to-tr from-[#9E6B43]/20 via-[#D9A374]/15 to-transparent blur-[120px] rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-[#F8F6F2]/40 via-[#ECE2D0]/60 to-[#F8F6F2]/40 blur-2xl opacity-60" />
+        <div className="absolute top-0 right-1/4 w-72 sm:w-[500px] h-72 sm:h-[500px] bg-gradient-to-br from-[#E5CEAA]/30 via-[#C7A46A]/15 to-transparent blur-[70px] sm:blur-[100px] rounded-full" />
+        <div className="absolute bottom-0 left-10 w-72 sm:w-[600px] h-72 sm:h-[500px] bg-gradient-to-tr from-[#9E6B43]/20 via-[#D9A374]/15 to-transparent blur-[80px] sm:blur-[120px] rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-[800px] h-60 sm:h-[400px] bg-gradient-to-r from-[#F8F6F2]/40 via-[#ECE2D0]/60 to-[#F8F6F2]/40 blur-2xl opacity-60" />
       </div>
 
       {/* Subtle organic section wave transition at top */}
@@ -39,7 +39,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-[#3A2A22]/10 pb-6">
@@ -66,7 +66,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
           <div 
             id="featured-card-sofas"
             onClick={() => onSelectCategory('sofas')}
-            className="group relative h-[520px] organic-corner-card overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-[#3A2A22]/15 hover:border-[#C7A46A]"
+            className="group relative h-[460px] sm:h-[520px] organic-corner-card overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-[#3A2A22]/15 hover:border-[#C7A46A]"
           >
             {/* 4-IMAGE CATALOG COLLAGE GRID */}
             <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1.5 p-1.5 bg-[#2A1E17]">
@@ -112,7 +112,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
             <div className="absolute inset-0 bg-gradient-to-t from-[#241B14] via-[#241B14]/65 to-transparent group-hover:from-[#1C1510]/95 transition-colors duration-500" />
             
             {/* CARD CONTENT */}
-            <div className="absolute inset-0 p-8 flex flex-col justify-between text-white z-10">
+            <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between text-white z-10">
               <div className="flex justify-between items-start">
                 <span className="bg-[#3A2A22]/95 border border-[#C7A46A]/50 text-[#C7A46A] text-[10px] font-serif uppercase tracking-[0.2em] px-3.5 py-1.5 organic-corner-badge backdrop-blur-sm">
                   Catalog Collage • 27 Designs
@@ -145,7 +145,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
           <div 
             id="featured-card-tables"
             onClick={() => onSelectCategory('tables')}
-            className="group relative h-[520px] organic-corner-card overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-[#3A2A22]/15 hover:border-[#C7A46A]"
+            className="group relative h-[460px] sm:h-[520px] organic-corner-card overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-[#3A2A22]/15 hover:border-[#C7A46A]"
           >
             {/* 4-IMAGE CATALOG COLLAGE GRID */}
             <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1.5 p-1.5 bg-[#2A1E17]">
@@ -191,7 +191,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
             <div className="absolute inset-0 bg-gradient-to-t from-[#241B14] via-[#241B14]/65 to-transparent group-hover:from-[#1C1510]/95 transition-colors duration-500" />
             
             {/* CARD CONTENT */}
-            <div className="absolute inset-0 p-8 flex flex-col justify-between text-white z-10">
+            <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between text-white z-10">
               <div className="flex justify-between items-start">
                 <span className="bg-[#3A2A22]/95 border border-[#C7A46A]/50 text-[#C7A46A] text-[10px] font-serif uppercase tracking-[0.2em] px-3.5 py-1.5 organic-corner-badge backdrop-blur-sm">
                   Catalog Collage • 28 Designs
@@ -224,7 +224,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
           <div 
             id="featured-card-custom"
             onClick={onOpenBespoke}
-            className="group relative h-[520px] organic-corner-card overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-[#3A2A22]/15 hover:border-[#C7A46A]"
+            className="group relative h-[460px] sm:h-[520px] organic-corner-card overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-[#3A2A22]/15 hover:border-[#C7A46A]"
           >
             {/* 4-IMAGE MIXED CATALOG COLLAGE */}
             <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1.5 p-1.5 bg-[#2A1E17]">
@@ -270,7 +270,7 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
             <div className="absolute inset-0 bg-gradient-to-t from-[#241B14] via-[#241B14]/65 to-transparent group-hover:from-[#1C1510]/95 transition-colors duration-500" />
             
             {/* CARD CONTENT */}
-            <div className="absolute inset-0 p-8 flex flex-col justify-between text-white z-10">
+            <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between text-white z-10">
               <div className="flex justify-between items-start">
                 <span className="bg-[#C7A46A] text-[#3A2A22] text-[10px] font-serif uppercase tracking-[0.2em] px-3.5 py-1.5 organic-corner-badge font-bold shadow-sm">
                   Tailored To Order

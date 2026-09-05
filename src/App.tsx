@@ -108,7 +108,7 @@ export default function App() {
   const featuredMasterpieces = PRODUCTS.filter((p) => p.isFeatured);
 
   return (
-    <div className="min-h-screen bg-[#F8F6F2] text-[#242424] font-sans selection:bg-[#C7A46A] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#F8F6F2] text-[#242424] font-sans selection:bg-[#C7A46A] selection:text-white flex flex-col justify-between">
       
       {/* DYNAMIC SEO HEAD */}
       <SeoHead

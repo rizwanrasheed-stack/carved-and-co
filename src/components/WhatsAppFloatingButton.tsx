@@ -16,11 +16,11 @@ export function WhatsAppFloatingButton() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end max-w-[calc(100vw-2rem)]">
       
       {/* QUICK POP-OVER DIALOG */}
       {isOpen && (
-        <div className="mb-4 w-80 bg-[#F8F6F2] text-[#242424] rounded-xl shadow-2xl border border-[#3A2A22]/20 overflow-hidden animate-in slide-in-from-bottom duration-300">
+        <div className="mb-3 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-[#F8F6F2] text-[#242424] rounded-xl shadow-2xl border border-[#3A2A22]/20 overflow-hidden animate-in slide-in-from-bottom duration-300">
           <div className="bg-[#25D366] text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <MessageCircle className="w-5 h-5 fill-current" />

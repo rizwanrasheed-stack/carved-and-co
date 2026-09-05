@@ -73,7 +73,7 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
         
         {/* BRAND COLUMN */}
         <div className="lg:col-span-2 space-y-4">
-          <BrandLogo variant="fullLength" size="lg" isLightBg={true} />
+          <BrandLogo variant="fullLength" size="lg" isLightBg={false} />
 
           <p className="font-serif text-sm italic text-[#C7A46A]">
             {COMPANY_INFO.tagline}

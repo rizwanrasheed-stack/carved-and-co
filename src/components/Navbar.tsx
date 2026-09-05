@@ -55,17 +55,17 @@ export function Navbar({
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300">
+    <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 w-full overflow-x-hidden">
       {/* TOP ANNOUNCEMENT BAR */}
-      <div className="bg-[#3A2A22] text-[#F8F6F2] py-2 px-4 text-center text-xs font-serif tracking-widest uppercase flex items-center justify-between border-b border-[#C7A46A]/30">
-        <div className="hidden sm:flex items-center gap-2 text-[#C7A46A]">
+      <div className="bg-[#3A2A22] text-[#F8F6F2] py-1.5 sm:py-2 px-3 sm:px-4 text-center text-[10px] sm:text-xs font-serif tracking-normal sm:tracking-widest uppercase flex items-center justify-between border-b border-[#C7A46A]/30">
+        <div className="hidden sm:flex items-center gap-2 text-[#C7A46A] shrink-0">
           <Sparkles className="w-3.5 h-3.5" />
           <span>Bespoke Handcrafted Furniture</span>
         </div>
-        <p className="mx-auto sm:mx-0 font-medium tracking-wider">
+        <p className="mx-auto sm:mx-0 font-medium tracking-normal sm:tracking-wider truncate max-w-[290px] xs:max-w-none">
           Crafted by Master Artisans in Pakistan &bull; Custom Orders Welcome
         </p>
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-3 shrink-0">
           <a
             href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
             target="_blank"
@@ -81,35 +81,31 @@ export function Navbar({
       {/* MAIN NAVIGATION BAR */}
       <nav className={`transition-all duration-300 ${
         isScrolled 
-          ? 'bg-[#F8F6F2]/95 backdrop-blur-md shadow-md py-3 text-[#3A2A22] border-b border-[#3A2A22]/10' 
-          : 'bg-[#3A2A22]/90 backdrop-blur-md py-4 text-white'
+          ? 'bg-[#3A2A22]/95 backdrop-blur-md shadow-lg py-2.5 sm:py-3 text-white border-b border-[#C7A46A]/20' 
+          : 'bg-[#3A2A22]/90 backdrop-blur-md py-3 sm:py-4 text-white'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
           
           {/* BRAND LOGO HEADER */}
           <button
             onClick={() => onNavigate('home')}
-            className="text-left group flex items-center cursor-pointer pr-2 sm:pr-4 shrink-0"
+            className="text-left group flex items-center cursor-pointer pr-1 sm:pr-4 shrink-0 min-w-0"
             title="CARVED & CO. Home"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center gap-2 sm:gap-3.5">
               <div className="relative flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <img
                   src={logoNoText}
                   alt="CARVED & CO. Logo"
                   referrerPolicy="no-referrer"
-                  className="h-14 w-14 sm:h-16 sm:w-16 md:h-18 md:w-18 lg:h-20 lg:w-20 object-contain mix-blend-multiply"
+                  className="h-10 w-10 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-18 lg:w-18 object-contain brightness-0 invert drop-shadow-sm"
                 />
               </div>
-              <div className="flex flex-col text-left">
-                <span className={`font-serif font-bold tracking-[0.18em] sm:tracking-[0.2em] block leading-none text-lg sm:text-xl lg:text-2xl ${
-                  isScrolled ? 'text-[#3A2A22]' : 'text-white'
-                }`}>
+              <div className="flex flex-col text-left min-w-0">
+                <span className="font-serif font-bold tracking-[0.12em] xs:tracking-[0.16em] sm:tracking-[0.2em] block leading-none text-base xs:text-lg sm:text-xl lg:text-2xl text-white">
                   CARVED & CO.
                 </span>
-                <span className={`text-[9px] sm:text-[10px] lg:text-[11.5px] tracking-[0.22em] sm:tracking-[0.26em] uppercase font-sans font-semibold block mt-1 leading-none ${
-                  isScrolled ? 'text-[#8A6A4A]' : 'text-[#C7A46A]'
-                }`}>
+                <span className="text-[8px] xs:text-[9px] sm:text-[10px] lg:text-[11.5px] tracking-[0.18em] sm:tracking-[0.26em] uppercase font-sans font-semibold block mt-1 leading-none text-[#C7A46A]">
                   Handcrafted Atelier
                 </span>
               </div>
@@ -219,23 +215,23 @@ export function Navbar({
           </div>
 
           {/* RIGHT ACTION BUTTONS */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-3 shrink-0">
             <button
               onClick={onOpenSearch}
-              className={`p-2 rounded-full hover:bg-black/10 transition-colors cursor-pointer ${isScrolled ? 'text-[#3A2A22]' : 'text-white'}`}
+              className="p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-white"
               title="Search Catalog"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             <button
               onClick={onOpenSaved}
-              className={`p-2 rounded-full hover:bg-black/10 transition-colors relative cursor-pointer ${isScrolled ? 'text-[#3A2A22]' : 'text-white'}`}
+              className="p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer text-white"
               title="Saved Items"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
               {savedCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#C7A46A] text-[#3A2A22] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-[#C7A46A] text-[#3A2A22] text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center">
                   {savedCount}
                 </span>
               )}
@@ -252,9 +248,10 @@ export function Navbar({
             {/* MOBILE MENU TOGGLE */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`p-2 rounded-lg md:hidden ${isScrolled ? 'text-[#3A2A22]' : 'text-white'}`}
+              className="p-1.5 sm:p-2 rounded-lg md:hidden text-white hover:bg-white/10 cursor-pointer"
+              aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
 
