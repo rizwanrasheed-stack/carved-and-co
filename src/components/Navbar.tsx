@@ -12,21 +12,21 @@ interface NavbarProps {
   savedCount: number;
 }
 
-const SOFA_SUBCATEGORIES = [
+const SOFA_MENU_ITEMS = [
   'Single Seaters',
-  '2 Seater Sofas',
-  '3 Seater Sofas',
-  'L-Shaped Sofas',
-  'Custom Sofas'
+  '2 Seaters',
+  '3 Seaters',
+  'L-Shaped',
+  'Sectionals',
+  'Leather'
 ];
 
-const TABLE_SUBCATEGORIES = [
+const TABLE_MENU_ITEMS = [
   'Center Tables',
-  'Side Tables',
   'Coffee Tables',
+  'Side Tables',
   'Dining Tables',
-  'Console Tables',
-  'Custom Tables'
+  'Dressing Tables'
 ];
 
 export function Navbar({
@@ -44,7 +44,7 @@ export function Navbar({
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
+      if (window.scrollY > 20) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
@@ -56,21 +56,24 @@ export function Navbar({
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 w-full overflow-x-hidden">
-      {/* TOP ANNOUNCEMENT BAR */}
-      <div className="bg-[#3A2A22] text-[#F8F6F2] py-1.5 sm:py-2 px-3 sm:px-4 text-center text-[10px] sm:text-xs font-serif tracking-normal sm:tracking-widest uppercase flex items-center justify-between border-b border-[#C7A46A]/30">
-        <div className="hidden sm:flex items-center gap-2 text-[#C7A46A] shrink-0">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Bespoke Handcrafted Furniture</span>
+      {/* REFINED TOP ANNOUNCEMENT BAR - ZERO ACCIDENTAL TRUNCATION */}
+      <div className="bg-[#24201E] text-[#F4EEE4] py-1.5 px-3 text-center text-[10px] sm:text-xs font-serif tracking-wider sm:tracking-[0.16em] uppercase flex items-center justify-between border-b border-[#B89458]/25 min-h-[30px]">
+        <div className="hidden sm:flex items-center gap-1.5 text-[#B89458] shrink-0">
+          <Sparkles className="w-3 h-3" />
+          <span>Atelier Showroom</span>
         </div>
-        <p className="mx-auto sm:mx-0 font-medium tracking-normal sm:tracking-wider truncate max-w-[290px] xs:max-w-none">
-          Crafted by Master Artisans in Pakistan &bull; Custom Orders Welcome
+        
+        {/* Concise, fully visible on 320px-414px mobile devices */}
+        <p className="mx-auto sm:mx-0 font-medium tracking-wide sm:tracking-widest text-center w-full sm:w-auto">
+          HANDCRAFTED IN PAKISTAN • MADE TO YOUR DIMENSIONS
         </p>
-        <div className="hidden sm:flex items-center gap-3 shrink-0">
+
+        <div className="hidden sm:flex items-center gap-2 shrink-0">
           <a
             href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[#C7A46A] hover:text-white transition-colors text-xs font-sans tracking-wide"
+            className="flex items-center gap-1.5 text-[#B89458] hover:text-white transition-colors text-xs font-sans tracking-wide"
           >
             <PhoneCall className="w-3.5 h-3.5" />
             <span>{COMPANY_INFO.phone}</span>
@@ -81,31 +84,31 @@ export function Navbar({
       {/* MAIN NAVIGATION BAR */}
       <nav className={`transition-all duration-300 ${
         isScrolled 
-          ? 'bg-[#3A2A22]/95 backdrop-blur-md shadow-lg py-2.5 sm:py-3 text-white border-b border-[#C7A46A]/20' 
-          : 'bg-[#3A2A22]/90 backdrop-blur-md py-3 sm:py-4 text-white'
+          ? 'bg-[#35171B]/95 backdrop-blur-md shadow-lg py-2 text-white border-b border-[#B89458]/25' 
+          : 'bg-[#35171B]/95 backdrop-blur-md py-3 text-white'
       }`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
           
-          {/* BRAND LOGO HEADER */}
+          {/* BRAND LOGO HEADER - MIN 44PX TOUCH TARGET */}
           <button
             onClick={() => onNavigate('home')}
-            className="text-left group flex items-center cursor-pointer pr-1 sm:pr-4 shrink-0 min-w-0"
+            className="text-left group flex items-center cursor-pointer pr-1 sm:pr-4 shrink-0 min-w-0 min-h-[44px]"
             title="CARVED & CO. Home"
           >
-            <div className="flex items-center gap-2 sm:gap-3.5">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="relative flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <img
                   src={logoNoText}
                   alt="CARVED & CO. Logo"
                   referrerPolicy="no-referrer"
-                  className="h-10 w-10 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-18 lg:w-18 object-contain brightness-0 invert drop-shadow-sm"
+                  className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 object-contain brightness-0 invert drop-shadow-sm"
                 />
               </div>
               <div className="flex flex-col text-left min-w-0">
-                <span className="font-serif font-bold tracking-[0.12em] xs:tracking-[0.16em] sm:tracking-[0.2em] block leading-none text-base xs:text-lg sm:text-xl lg:text-2xl text-white">
+                <span className="font-serif font-bold tracking-[0.14em] sm:tracking-[0.2em] block leading-none text-base xs:text-lg sm:text-xl text-white">
                   CARVED & CO.
                 </span>
-                <span className="text-[8px] xs:text-[9px] sm:text-[10px] lg:text-[11.5px] tracking-[0.18em] sm:tracking-[0.26em] uppercase font-sans font-semibold block mt-1 leading-none text-[#C7A46A]">
+                <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.28em] uppercase font-sans font-semibold block mt-1 leading-none text-[#B89458]">
                   Handcrafted Atelier
                 </span>
               </div>
@@ -113,10 +116,10 @@ export function Navbar({
           </button>
 
           {/* DESKTOP NAV LINKS */}
-          <div className="hidden md:flex items-center space-x-8 text-xs lg:text-sm font-serif tracking-widest uppercase font-medium">
+          <div className="hidden md:flex items-center space-x-7 lg:space-x-8 text-xs font-serif tracking-[0.18em] uppercase font-medium">
             <button
               onClick={() => onNavigate('home')}
-              className={`hover:text-[#C7A46A] transition-colors ${currentView === 'home' ? 'text-[#C7A46A] font-bold border-b-2 border-[#C7A46A] pb-1' : ''}`}
+              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'home' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
             >
               Home
             </button>
@@ -129,29 +132,29 @@ export function Navbar({
             >
               <button
                 onClick={() => onNavigate('sofas')}
-                className={`flex items-center gap-1 hover:text-[#C7A46A] transition-colors py-2 ${currentView === 'sofas' ? 'text-[#C7A46A] font-bold border-b-2 border-[#C7A46A] pb-1' : ''}`}
+                className={`flex items-center gap-1 hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'sofas' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
               >
-                <span>Sofa Catalog</span>
+                <span>Sofas</span>
                 <ChevronDown className="w-3.5 h-3.5" />
               </button>
 
               {sofasDropdownOpen && (
-                <div className="absolute top-full left-0 w-60 bg-[#F8F6F2] text-[#3A2A22] rounded-xl shadow-2xl py-3 border border-[#3A2A22]/10 z-50 animate-in fade-in duration-200">
-                  <div className="px-4 py-2 border-b border-[#3A2A22]/10 flex items-center gap-2 text-[#8A6A4A]">
-                    <Armchair className="w-4 h-4" />
-                    <span className="font-serif font-semibold text-xs tracking-wider uppercase">Sofa Categories</span>
+                <div className="absolute top-full left-0 w-64 bg-[#F4EEE4] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
+                  <div className="px-4 py-2 border-b border-[#35171B]/10 flex items-center gap-2 text-[#6A353A]">
+                    <Armchair className="w-4 h-4 text-[#B89458]" />
+                    <span className="font-serif font-semibold text-xs tracking-wider uppercase">Sofa Collections</span>
                   </div>
                   <button
                     onClick={() => { onNavigate('sofas', 'All Sofas'); setSofasDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#3A2A22]/5 hover:text-[#C7A46A] transition-colors font-semibold"
+                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors font-semibold"
                   >
                     View All Sofas
                   </button>
-                  {SOFA_SUBCATEGORIES.map((sub) => (
+                  {SOFA_MENU_ITEMS.map((sub) => (
                     <button
                       key={sub}
                       onClick={() => { onNavigate('sofas', sub); setSofasDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#3A2A22]/5 hover:text-[#C7A46A] transition-colors text-[#242424]/80"
+                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors text-[#24201E]/85"
                     >
                       {sub}
                     </button>
@@ -168,29 +171,29 @@ export function Navbar({
             >
               <button
                 onClick={() => onNavigate('tables')}
-                className={`flex items-center gap-1 hover:text-[#C7A46A] transition-colors py-2 ${currentView === 'tables' ? 'text-[#C7A46A] font-bold border-b-2 border-[#C7A46A] pb-1' : ''}`}
+                className={`flex items-center gap-1 hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'tables' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
               >
-                <span>Table Catalog</span>
+                <span>Tables</span>
                 <ChevronDown className="w-3.5 h-3.5" />
               </button>
 
               {tablesDropdownOpen && (
-                <div className="absolute top-full left-0 w-60 bg-[#F8F6F2] text-[#3A2A22] rounded-xl shadow-2xl py-3 border border-[#3A2A22]/10 z-50 animate-in fade-in duration-200">
-                  <div className="px-4 py-2 border-b border-[#3A2A22]/10 flex items-center gap-2 text-[#8A6A4A]">
-                    <TableIcon className="w-4 h-4" />
-                    <span className="font-serif font-semibold text-xs tracking-wider uppercase">Table Categories</span>
+                <div className="absolute top-full left-0 w-64 bg-[#F4EEE4] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
+                  <div className="px-4 py-2 border-b border-[#35171B]/10 flex items-center gap-2 text-[#6A353A]">
+                    <TableIcon className="w-4 h-4 text-[#B89458]" />
+                    <span className="font-serif font-semibold text-xs tracking-wider uppercase">Table Collections</span>
                   </div>
                   <button
                     onClick={() => { onNavigate('tables', 'All Tables'); setTablesDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#3A2A22]/5 hover:text-[#C7A46A] transition-colors font-semibold"
+                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors font-semibold"
                   >
                     View All Tables
                   </button>
-                  {TABLE_SUBCATEGORIES.map((sub) => (
+                  {TABLE_MENU_ITEMS.map((sub) => (
                     <button
                       key={sub}
                       onClick={() => { onNavigate('tables', sub); setTablesDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#3A2A22]/5 hover:text-[#C7A46A] transition-colors text-[#242424]/80"
+                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors text-[#24201E]/85"
                     >
                       {sub}
                     </button>
@@ -201,37 +204,39 @@ export function Navbar({
 
             <button
               onClick={() => onNavigate('about')}
-              className={`hover:text-[#C7A46A] transition-colors ${currentView === 'about' ? 'text-[#C7A46A] font-bold border-b-2 border-[#C7A46A] pb-1' : ''}`}
+              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'about' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
             >
-              Our Story
+              Craftsmanship
             </button>
 
             <button
               onClick={() => onNavigate('contact')}
-              className={`hover:text-[#C7A46A] transition-colors ${currentView === 'contact' ? 'text-[#C7A46A] font-bold border-b-2 border-[#C7A46A] pb-1' : ''}`}
+              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'contact' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
             >
               Contact
             </button>
           </div>
 
-          {/* RIGHT ACTION BUTTONS */}
-          <div className="flex items-center space-x-1 sm:space-x-3 shrink-0">
+          {/* RIGHT ACTION BUTTONS WITH MIN 44PX TOUCH TARGETS */}
+          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
             <button
               onClick={onOpenSearch}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-white"
+              className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors cursor-pointer text-white"
               title="Search Catalog"
+              aria-label="Search Catalog"
             >
-              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Search className="w-5 h-5 text-white/90" />
             </button>
 
             <button
               onClick={onOpenSaved}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors relative cursor-pointer text-white"
-              title="Saved Items"
+              className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors relative cursor-pointer text-white"
+              title="Saved Pieces"
+              aria-label="Saved Pieces"
             >
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Heart className="w-5 h-5 text-white/90" />
               {savedCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#C7A46A] text-[#3A2A22] text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center">
+                <span className="absolute top-1.5 right-1.5 bg-[#B89458] text-[#35171B] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {savedCount}
                 </span>
               )}
@@ -239,93 +244,113 @@ export function Navbar({
 
             <button
               onClick={onOpenBespoke}
-              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-[#C7A46A] hover:bg-[#B59155] text-[#3A2A22] font-serif text-xs font-bold uppercase tracking-wider transition-transform active:scale-95 shadow-md cursor-pointer"
+              className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#B89458] hover:bg-[#a58248] text-[#35171B] font-serif text-xs font-bold uppercase tracking-wider transition-transform active:scale-95 shadow-md cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Bespoke Studio</span>
             </button>
 
-            {/* MOBILE MENU TOGGLE */}
+            {/* MOBILE MENU TOGGLE (MIN 44PX) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 sm:p-2 rounded-lg md:hidden text-white hover:bg-white/10 cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center rounded-lg md:hidden text-white hover:bg-white/10 cursor-pointer"
               aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
         </div>
 
-        {/* MOBILE MENU */}
+        {/* MOBILE DRAWER MENU - REFINED EDITORIAL LAYOUT */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#F8F6F2] text-[#3A2A22] px-6 pt-4 pb-8 border-b border-[#3A2A22]/10 space-y-4 animate-in slide-in-from-top duration-300">
+          <div className="md:hidden bg-[#F4EEE4] text-[#35171B] px-5 pt-4 pb-8 border-b border-[#B89458]/30 space-y-4 animate-in slide-in-from-top duration-300 max-h-[85vh] overflow-y-auto">
             <button
               onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
-              className="block w-full text-left font-serif text-base uppercase tracking-widest py-2 border-b border-[#3A2A22]/10"
+              className="block w-full text-left font-serif text-base uppercase tracking-widest py-2.5 border-b border-[#35171B]/10 font-medium min-h-[44px] flex items-center"
             >
               Home
             </button>
 
-            <div className="space-y-2 pt-2">
-              <span className="text-xs font-serif text-[#8A6A4A] font-bold uppercase tracking-widest block">Sofa Collections</span>
+            {/* SOFAS SECTION */}
+            <div className="space-y-1 pt-1">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-xs font-serif text-[#6A353A] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                  <Armchair className="w-3.5 h-3.5 text-[#B89458]" />
+                  <span>Sofas</span>
+                </span>
+              </div>
               <button
                 onClick={() => { onNavigate('sofas', 'All Sofas'); setMobileMenuOpen(false); }}
-                className="block w-full text-left font-sans text-xs py-1.5 text-[#242424] font-medium"
+                className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
               >
-                View All Sofas
+                Explore All Sofas
               </button>
-              {SOFA_SUBCATEGORIES.map((sub) => (
-                <button
-                  key={sub}
-                  onClick={() => { onNavigate('sofas', sub); setMobileMenuOpen(false); }}
-                  className="block w-full text-left font-sans text-xs py-1 text-[#242424]/70 pl-3"
-                >
-                  {sub}
-                </button>
-              ))}
+              <div className="grid grid-cols-2 gap-1 pl-2">
+                {SOFA_MENU_ITEMS.map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => { onNavigate('sofas', sub); setMobileMenuOpen(false); }}
+                    className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
+                  >
+                    • {sub}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="space-y-2 pt-2">
-              <span className="text-xs font-serif text-[#8A6A4A] font-bold uppercase tracking-widest block">Table Collections</span>
+            {/* TABLES SECTION */}
+            <div className="space-y-1 pt-2 border-t border-[#35171B]/10">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-xs font-serif text-[#6A353A] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                  <TableIcon className="w-3.5 h-3.5 text-[#B89458]" />
+                  <span>Tables</span>
+                </span>
+              </div>
               <button
                 onClick={() => { onNavigate('tables', 'All Tables'); setMobileMenuOpen(false); }}
-                className="block w-full text-left font-sans text-xs py-1.5 text-[#242424] font-medium"
+                className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
               >
-                View All Tables
+                Explore All Tables
               </button>
-              {TABLE_SUBCATEGORIES.map((sub) => (
-                <button
-                  key={sub}
-                  onClick={() => { onNavigate('tables', sub); setMobileMenuOpen(false); }}
-                  className="block w-full text-left font-sans text-xs py-1 text-[#242424]/70 pl-3"
-                >
-                  {sub}
-                </button>
-              ))}
+              <div className="grid grid-cols-2 gap-1 pl-2">
+                {TABLE_MENU_ITEMS.map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => { onNavigate('tables', sub); setMobileMenuOpen(false); }}
+                    className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
+                  >
+                    • {sub}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <button
-              onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
-              className="block w-full text-left font-serif text-base uppercase tracking-widest py-2 border-t border-[#3A2A22]/10 pt-4"
-            >
-              Our Story
-            </button>
-
-            <button
-              onClick={() => { onNavigate('contact'); setMobileMenuOpen(false); }}
-              className="block w-full text-left font-serif text-base uppercase tracking-widest py-2"
-            >
-              Contact Us
-            </button>
-
+            {/* CUSTOM STUDIO CTA */}
             <button
               onClick={() => { onOpenBespoke(); setMobileMenuOpen(false); }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#C7A46A] text-[#3A2A22] font-serif text-xs font-bold uppercase tracking-widest mt-4"
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#B89458] hover:bg-[#a58248] text-[#35171B] font-serif text-xs font-bold uppercase tracking-widest mt-3 shadow-md min-h-[44px]"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Bespoke Studio Order</span>
+              <span>Custom Studio (Bespoke)</span>
             </button>
+
+            {/* ABOUT & CONTACT */}
+            <div className="pt-2 border-t border-[#35171B]/10 space-y-1">
+              <button
+                onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
+                className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
+              >
+                About / Craftsmanship
+              </button>
+
+              <button
+                onClick={() => { onNavigate('contact'); setMobileMenuOpen(false); }}
+                className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
+              >
+                Contact
+              </button>
+            </div>
           </div>
         )}
       </nav>

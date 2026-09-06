@@ -156,34 +156,34 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
   return (
     <div 
       id="bespoke-modal-backdrop"
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto flex items-start sm:items-center justify-center p-0 sm:p-4 lg:p-8 animate-in fade-in duration-300"
+      className="fixed inset-0 z-50 bg-[#24201E]/80 backdrop-blur-md overflow-y-auto flex items-start sm:items-center justify-center p-0 sm:p-4 lg:p-8 animate-in fade-in duration-300"
       onClick={onClose}
     >
       <div 
         id="bespoke-modal-container"
-        className="relative w-full min-h-screen sm:min-h-0 sm:max-w-3xl sm:max-h-[92vh] bg-[#F8F6F2] text-[#242424] sm:rounded-xl shadow-2xl border-0 sm:border border-[#3A2A22]/20 flex flex-col overflow-y-auto my-0 sm:my-4"
+        className="relative w-full min-h-screen sm:min-h-0 sm:max-w-3xl sm:max-h-[92vh] bg-[#F4EEE4] text-[#24201E] sm:rounded-2xl shadow-2xl border-0 sm:border border-[#35171B]/20 flex flex-col overflow-y-auto my-0 sm:my-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* STICKY HEADER WITH TOP-LEFT BACK BUTTON */}
-        <div className="sticky top-0 z-20 bg-[#3A2A22] text-[#F8F6F2] px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between border-b border-[#C7A46A]/30 shrink-0 shadow-xs">
+        <div className="sticky top-0 z-20 bg-[#35171B] text-[#F4EEE4] px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between border-b border-[#B89458]/30 shrink-0 shadow-xs">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <button
               onClick={onClose}
-              className="px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-[#C7A46A] text-[#C7A46A] hover:text-[#3A2A22] transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-serif font-semibold shrink-0"
+              className="px-3 py-2 rounded-full bg-white/10 hover:bg-[#B89458] text-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-serif font-semibold shrink-0 min-h-[44px]"
               aria-label="Back"
               title="Back"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back</span>
             </button>
-            <div className="p-2 rounded bg-[#C7A46A] text-[#3A2A22] hidden sm:block">
+            <div className="p-2 rounded-lg bg-[#B89458] text-[#35171B] hidden sm:block">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-serif text-base sm:text-2xl font-normal text-white leading-tight">
+              <h2 className="font-serif text-base sm:text-2xl font-normal text-[#F4EEE4] leading-tight">
                 Bespoke Custom Studio
               </h2>
-              <p className="text-[10px] sm:text-xs text-[#C7A46A] font-sans">
+              <p className="text-[10px] sm:text-xs text-[#B89458] font-sans">
                 Tailored dimensions, materials & artisan finishes.
               </p>
             </div>
@@ -191,7 +191,8 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-white transition-colors cursor-pointer shrink-0 hidden sm:block"
+            className="p-2.5 rounded-full hover:bg-white/10 text-white transition-colors cursor-pointer shrink-0 hidden sm:flex min-w-[44px] min-h-[44px] items-center justify-center"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -202,23 +203,23 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
           
           {submitted ? (
             <div className="text-center py-8 sm:py-12 space-y-4">
-              <CheckCircle2 className="w-12 h-12 sm:w-16 sm:h-16 text-[#C7A46A] mx-auto" />
-              <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-[#3A2A22]">
+              <CheckCircle2 className="w-12 h-12 sm:w-16 sm:h-16 text-[#B89458] mx-auto" />
+              <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-[#35171B]">
                 Custom Inquiry Transmitted
               </h3>
               {quoteId && (
-                <div className="inline-block px-4 py-1.5 bg-[#3A2A22]/10 rounded-full text-xs font-mono font-medium text-[#3A2A22]">
+                <div className="inline-block px-4 py-1.5 bg-[#35171B]/10 rounded-full text-xs font-mono font-medium text-[#35171B]">
                   Quote Spec Ref: {quoteId}
                 </div>
               )}
-              <p className="text-xs sm:text-sm text-[#242424]/80 max-w-md mx-auto font-light leading-relaxed">
-                Thank you, <strong className="font-semibold text-[#3A2A22]">{clientName || 'valued client'}</strong>. Our senior draughtsman and artisan team have received your specifications and will review your dimensions within 24 hours.
+              <p className="text-xs sm:text-sm text-[#24201E]/80 max-w-md mx-auto font-light leading-relaxed">
+                Thank you, <strong className="font-semibold text-[#35171B]">{clientName || 'valued client'}</strong>. Our senior draughtsman and artisan team have received your specifications and will review your dimensions within 24 hours.
               </p>
               <div className="pt-4 sm:pt-6 flex flex-wrap items-center justify-center gap-3">
                 <button
                   type="button"
                   onClick={handleWhatsAppSubmit}
-                  className="bg-[#25D366] text-white px-5 sm:px-6 py-2.5 rounded font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 cursor-pointer font-medium"
+                  className="bg-[#25D366] text-white px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 cursor-pointer font-medium min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Forward via WhatsApp</span>
@@ -229,7 +230,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                     setQuoteId('');
                     onClose();
                   }}
-                  className="bg-[#3A2A22] text-white px-5 sm:px-6 py-2.5 rounded font-serif text-xs uppercase tracking-widest hover:bg-[#C7A46A] hover:text-[#3A2A22] transition-colors cursor-pointer font-semibold"
+                  className="bg-[#35171B] text-[#F4EEE4] px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-widest hover:bg-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer font-semibold min-h-[44px]"
                 >
                   Return to Showroom
                 </button>
@@ -239,9 +240,9 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
             <form onSubmit={handleEmailSubmit} className="space-y-4 sm:space-y-6">
               
               {initialProduct && (
-                <div className="p-2.5 sm:p-3 bg-[#C7A46A]/15 rounded border border-[#C7A46A]/40 text-xs text-[#3A2A22] flex items-center justify-between gap-2">
+                <div className="p-3 bg-[#B89458]/15 rounded-xl border border-[#B89458]/40 text-xs text-[#35171B] flex items-center justify-between gap-2">
                   <span className="truncate">Customizing base model: <strong>{initialProduct.name}</strong></span>
-                  <span className="font-serif uppercase tracking-wider text-[10px] text-[#8A6A4A] shrink-0">{initialProduct.subcategory}</span>
+                  <span className="font-serif uppercase tracking-wider text-[10px] text-[#6A353A] shrink-0 font-semibold">{initialProduct.subcategory}</span>
                 </div>
               )}
 
@@ -249,13 +250,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                     Furniture Category / Piece
                   </label>
                   <select
                     value={furnitureType}
                     onChange={(e) => setFurnitureType(e.target.value)}
-                    className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   >
                     <option value="Custom Dining Table">Custom Dining Table</option>
                     <option value="Custom Sofa / Sectional">Custom Sofa / Sectional</option>
@@ -268,13 +269,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                 </div>
 
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                     Finish / Material Tone
                   </label>
                   <select
                     value={woodPreference}
                     onChange={(e) => setWoodPreference(e.target.value as WoodType)}
-                    className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   >
                     <option value="Deep Espresso">Deep Espresso Tone</option>
                     <option value="Natural Neutral">Natural Neutral Tone</option>
@@ -291,13 +292,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                     Upholstery / Textile
                   </label>
                   <select
                     value={fabricPreference}
                     onChange={(e) => setFabricPreference(e.target.value)}
-                    className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   >
                     <option value="Full-Grain Italian Aniline Leather">Full-Grain Italian Aniline Leather</option>
                     <option value="Heavy Belgian Textured Linen">Heavy Belgian Textured Linen</option>
@@ -309,13 +310,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                 </div>
 
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                     Surface Finish Style
                   </label>
                   <select
                     value={finishPreference}
                     onChange={(e) => setFinishPreference(e.target.value as FinishType)}
-                    className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   >
                     <option value="Hand-Rubbed Organic Oil">Hand-Rubbed Organic Oil</option>
                     <option value="Matte Hardwax">Matte Hardwax</option>
@@ -330,7 +331,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
               {/* CUSTOM DIMENSIONS & NOTES */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                     Required Dimensions (W × D × H)
                   </label>
                   <input
@@ -338,18 +339,18 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                     value={dimensions}
                     onChange={(e) => setDimensions(e.target.value)}
                     placeholder='e.g. 108" L x 42" W x 30" H'
-                    className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                     I Am A:
                   </label>
                   <select
                     value={clientType}
                     onChange={(e) => setClientType(e.target.value)}
-                    className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   >
                     <option value="Homeowner">Homeowner</option>
                     <option value="Interior Designer">Interior Designer</option>
@@ -362,8 +363,8 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
               </div>
 
               {/* CLIENT CONTACT INFORMATION */}
-              <div className="pt-2 border-t border-[#3A2A22]/10">
-                <span className="text-xs font-serif uppercase tracking-wider text-[#8A6A4A] block mb-3">
+              <div className="pt-2 border-t border-[#35171B]/10">
+                <span className="text-xs font-serif uppercase tracking-wider text-[#6A353A] block mb-3 font-semibold">
                   Your Contact Information
                 </span>
                 
@@ -374,7 +375,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="Full Name *"
-                    className="bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   />
                   <input
                     type="tel"
@@ -382,7 +383,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
                     placeholder="Phone Number *"
-                    className="bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   />
                   <input
                     type="email"
@@ -390,13 +391,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
                     placeholder="Email Address *"
-                    className="bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                    className="bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-serif uppercase tracking-wider text-[#3A2A22] font-semibold mb-1.5">
+                <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
                   Additional Project Notes or Floorplan Details
                 </label>
                 <textarea
@@ -404,7 +405,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Mention room lighting, brass accents, or specific finish shade preferences..."
-                  className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#C7A46A]"
+                  className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
                 />
               </div>
 
@@ -414,7 +415,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                 <button
                   type="button"
                   onClick={handleWhatsAppSubmit}
-                  className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3.5 px-4 rounded font-serif text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer font-medium"
+                  className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3.5 px-4 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer font-semibold min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Send Specs via WhatsApp</span>
@@ -423,7 +424,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#3A2A22] hover:bg-[#C7A46A] text-[#F8F6F2] hover:text-[#3A2A22] py-3.5 px-4 rounded font-serif text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-3.5 px-4 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 font-semibold min-h-[44px]"
                 >
                   <Send className="w-4 h-4" />
                   <span>{isSubmitting ? 'Transmitting Specs...' : 'Submit Form Inquiry'}</span>

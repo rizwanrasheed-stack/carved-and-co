@@ -7,24 +7,27 @@ interface ProductCardProps {
   onSelectProduct: (product: Product) => void;
   onToggleSave: (product: Product) => void;
   isSaved: boolean;
+  onCustomize?: (product: Product) => void;
 }
 
 export function ProductCard({
   product,
   onSelectProduct,
   onToggleSave,
-  isSaved
+  isSaved,
+  onCustomize
 }: ProductCardProps) {
   const primaryImage = product.images?.[0] || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800';
   const secondaryImage = product.images?.[1] || primaryImage;
+  const keyDetail = product.woodType || product.materials?.[0] || 'Artisan Joinery';
 
   return (
     <div 
-      className="group bg-[#F8F6F2] rounded-2xl border border-[#3A2A22]/10 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full relative cursor-pointer"
+      className="group bg-[#FAF7F2] rounded-xl sm:rounded-2xl border border-[#35171B]/10 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-500 flex flex-col h-full relative cursor-pointer hover:border-[#B89458]/40"
       onClick={() => onSelectProduct(product)}
     >
       {/* IMAGE CONTAINER WITH DUAL IMAGE HOVER */}
-      <div className="relative aspect-[4/3] sm:aspect-[4/3] overflow-hidden bg-[#ECE8E1]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#EDE3D5]">
         <img
           src={primaryImage}
           alt={product.name}
@@ -41,79 +44,99 @@ export function ProductCard({
         )}
 
         {/* SUBCATEGORY BADGE */}
-        <div className="absolute top-3 left-3 z-10">
-          <span className="px-2.5 py-1 rounded-full bg-[#3A2A22]/80 backdrop-blur-md text-white text-[10px] font-serif uppercase tracking-widest border border-white/20">
+        <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 pointer-events-none">
+          <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#35171B]/85 backdrop-blur-md text-[#F4EEE4] text-[9px] sm:text-[10px] font-serif uppercase tracking-widest border border-white/10 shadow-xs">
             {product.subcategory}
           </span>
         </div>
 
-        {/* SAVED WISHLIST HEART BUTTON */}
+        {/* SAVED WISHLIST HEART BUTTON (44px min tap target) */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onToggleSave(product);
           }}
-          className={`absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+          className={`absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10 w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 cursor-pointer ${
             isSaved 
-              ? 'bg-[#C7A46A] text-[#3A2A22] scale-110 shadow-md' 
-              : 'bg-black/30 text-white hover:bg-white hover:text-[#3A2A22]'
+              ? 'bg-[#B89458] text-[#35171B] scale-105 shadow-md' 
+              : 'bg-black/35 text-white hover:bg-[#F4EEE4] hover:text-[#35171B]'
           }`}
           title={isSaved ? "Saved to Wishlist" : "Save Item"}
+          aria-label={isSaved ? "Saved to Collection" : "Save to Collection"}
         >
-          <Heart className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isSaved ? 'fill-current' : ''}`} />
         </button>
 
-        {/* QUICK VIEW OVERLAY */}
-        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between text-white text-xs font-serif">
-          <span className="flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-[#C7A46A]" />
-            <span>Inspect Craft Details</span>
+        {/* QUICK VIEW HOVER BAR */}
+        <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 bg-gradient-to-t from-[#35171B]/90 via-[#35171B]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between text-[#F4EEE4] text-xs font-serif">
+          <span className="flex items-center gap-1.5 text-[11px] tracking-wider text-[#B89458]">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Atelier View</span>
           </span>
-          <ArrowUpRight className="w-4 h-4 text-[#C7A46A]" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-[#B89458]" />
         </div>
       </div>
 
       {/* CONTENT AREA */}
-      <div className="p-4 sm:p-5 flex flex-col justify-between flex-grow space-y-3">
+      <div className="p-3 sm:p-5 flex flex-col justify-between flex-grow space-y-2.5 sm:space-y-3">
         <div>
-          <div className="flex items-baseline justify-between gap-2 mb-1">
-            <h3 className="font-serif text-base sm:text-lg font-bold text-[#3A2A22] group-hover:text-[#8A6A4A] transition-colors line-clamp-1">
-              {product.name}
-            </h3>
+          {/* MICRO DETAIL PILL */}
+          <div className="flex items-center gap-1.5 mb-1 sm:mb-1.5">
+            <span className="text-[9px] sm:text-[10px] font-serif uppercase tracking-[0.2em] text-[#6A353A] font-semibold truncate">
+              {keyDetail}
+            </span>
           </div>
 
-          <p className="text-xs text-[#242424]/75 font-light line-clamp-2 leading-relaxed">
+          <h3 className="font-serif text-sm sm:text-base font-normal text-[#35171B] group-hover:text-[#6A353A] transition-colors line-clamp-1 leading-snug">
+            {product.name}
+          </h3>
+
+          <p className="text-[11px] sm:text-xs text-[#24201E]/75 font-light line-clamp-2 leading-relaxed mt-1 sm:mt-1.5">
             {product.tagline || product.shortDescription}
           </p>
         </div>
 
-        {/* COLOR SWATCHES & VIEW BUTTON */}
-        <div className="pt-2 border-t border-[#3A2A22]/10 flex items-center justify-between text-xs">
+        {/* COLOR SWATCHES & ACTIONS */}
+        <div className="pt-2 border-t border-[#35171B]/10 flex items-center justify-between text-xs gap-2">
           {product.colors && product.colors.length > 0 ? (
-            <div className="flex items-center gap-1.5">
-              {product.colors.slice(0, 4).map((c) => (
+            <div className="flex items-center gap-1">
+              {product.colors.slice(0, 3).map((c) => (
                 <span
                   key={c.name}
-                  className="w-3 h-3 rounded-full border border-black/20 shadow-xs"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-black/20 shadow-xs"
                   style={{ backgroundColor: c.hex }}
                   title={c.name}
                 />
               ))}
-              {product.colors.length > 4 && (
-                <span className="text-[10px] text-[#242424]/60 font-sans">
-                  +{product.colors.length - 4}
+              {product.colors.length > 3 && (
+                <span className="text-[9px] sm:text-[10px] text-[#24201E]/60 font-sans">
+                  +{product.colors.length - 3}
                 </span>
               )}
             </div>
           ) : (
-            <span className="text-[10px] uppercase font-serif text-[#8A6A4A] tracking-wider">
-              Handcrafted Joinery
+            <span className="text-[9px] sm:text-[10px] uppercase font-serif text-[#6A353A] tracking-wider">
+              Tailored Finish
             </span>
           )}
 
-          <span className="font-serif text-xs font-bold uppercase tracking-wider text-[#C7A46A] group-hover:underline">
-            Details &rarr;
-          </span>
+          <div className="flex items-center gap-2">
+            {onCustomize && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCustomize(product);
+                }}
+                className="hidden sm:inline-flex text-[10px] font-serif uppercase tracking-wider text-[#6A353A] hover:text-[#35171B] underline underline-offset-2"
+              >
+                Customize
+              </button>
+            )}
+            <span className="font-serif text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#B89458] group-hover:text-[#35171B] transition-colors shrink-0">
+              Details &rarr;
+            </span>
+          </div>
         </div>
       </div>
     </div>

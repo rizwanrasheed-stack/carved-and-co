@@ -3,11 +3,21 @@
 @theme {
   --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
-  --color-walnut: #3A2A22;
-  --color-oak: #8A6A4A;
-  --color-ivory: #F8F6F2;
-  --color-brass: #C7A46A;
-  --color-charcoal: #242424;
+  
+  /* CARVED & CO. LUXURY BURGUNDY PALETTE */
+  --color-burgundy: #4A1F24;
+  --color-burgundy-deep: #35171B;
+  --color-burgundy-light: #6A353A;
+  --color-ivory-warm: #F4EEE4;
+  --color-cream-soft: #EDE3D5;
+  --color-brass-muted: #B89458;
+  --color-charcoal: #24201E;
+
+  /* Backward compatible semantic aliases */
+  --color-walnut: #35171B;
+  --color-oak: #6A353A;
+  --color-ivory: #F4EEE4;
+  --color-brass: #B89458;
 }
 
 @layer base {
@@ -22,11 +32,11 @@
   body {
     font-family: var(--font-sans);
     color: var(--color-charcoal);
-    background-color: var(--color-ivory);
-    /* Subtle natural linen/wood grain texture under 3% opacity */
-    background-image: radial-gradient(#3A2A22 0.4px, transparent 0.4px), radial-gradient(#8A6A4A 0.4px, #F8F6F2 0.4px);
-    background-size: 24px 24px;
-    background-position: 0 0, 12px 12px;
+    background-color: var(--color-ivory-warm);
+    /* Subtle organic warm grain texture */
+    background-image: radial-gradient(#4A1F24 0.35px, transparent 0.35px), radial-gradient(#B89458 0.35px, #F4EEE4 0.35px);
+    background-size: 28px 28px;
+    background-position: 0 0, 14px 14px;
     background-blend-mode: overlay;
   }
   
@@ -41,11 +51,11 @@
 }
 
 .organic-corner-card {
-  border-radius: 24px 8px 24px 8px;
+  border-radius: 20px 8px 20px 8px;
 }
 
 .organic-corner-badge {
-  border-radius: 12px 4px 12px 4px;
+  border-radius: 10px 4px 10px 4px;
 }
 
 .organic-hover-zoom {
@@ -65,12 +75,12 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8F6F2;
+  background: #F4EEE4;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C7A46A;
+  background: #B89458;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8A6A4A;
+  background: #4A1F24;
 }

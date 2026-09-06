@@ -20,7 +20,7 @@ export function WhatsAppFloatingButton() {
       
       {/* QUICK POP-OVER DIALOG */}
       {isOpen && (
-        <div className="mb-3 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-[#F8F6F2] text-[#242424] rounded-xl shadow-2xl border border-[#3A2A22]/20 overflow-hidden animate-in slide-in-from-bottom duration-300">
+        <div className="mb-3 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-[#F4EEE4] text-[#24201E] rounded-2xl shadow-2xl border border-[#35171B]/20 overflow-hidden animate-in slide-in-from-bottom duration-300">
           <div className="bg-[#25D366] text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <MessageCircle className="w-5 h-5 fill-current" />
@@ -31,15 +31,16 @@ export function WhatsAppFloatingButton() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 hover:bg-black/10 rounded cursor-pointer"
+              className="p-2 hover:bg-black/10 rounded-full cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="p-4 space-y-3 bg-[#F2EDE4]">
-            <div className="p-3 bg-white rounded-lg shadow-xs text-xs text-[#242424]/90 space-y-1">
-              <p className="font-serif font-semibold text-[#3A2A22]">Hello there 👋</p>
+          <div className="p-4 space-y-3 bg-[#EDE3D5]">
+            <div className="p-3 bg-white rounded-xl shadow-xs text-xs text-[#24201E]/90 space-y-1">
+              <p className="font-serif font-semibold text-[#35171B]">Hello there 👋</p>
               <p className="font-light text-[11px] leading-relaxed">
                 Welcome to CARVED & CO. How can our master artisans assist with your furniture requirements today?
               </p>
@@ -50,12 +51,12 @@ export function WhatsAppFloatingButton() {
               value={userMsg}
               onChange={(e) => setUserMsg(e.target.value)}
               placeholder="Type your furniture inquiry..."
-              className="w-full bg-white border border-[#3A2A22]/20 rounded p-2.5 text-xs text-[#242424] focus:outline-none focus:border-[#25D366]"
+              className="w-full bg-white border border-[#35171B]/20 rounded-xl p-2.5 text-xs text-[#24201E] focus:outline-none focus:border-[#25D366]"
             />
 
             <button
               onClick={handleSend}
-              className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-2.5 rounded font-serif text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+              className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm font-semibold min-h-[44px]"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Start WhatsApp Chat</span>

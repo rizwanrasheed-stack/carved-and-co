@@ -182,11 +182,11 @@ export function ProductImageLightbox({
           <button
             id="lightbox-back-btn"
             onClick={onClose}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-[#C7A46A] text-white hover:text-[#3A2A22] text-xs font-serif font-semibold tracking-wider uppercase transition-colors cursor-pointer border border-white/20 shrink-0"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/15 hover:bg-[#B89458] text-white hover:text-[#35171B] text-xs font-serif font-semibold tracking-wider uppercase transition-colors cursor-pointer border border-white/20 shrink-0 min-h-[44px]"
             aria-label="Back"
             title="Back to Product Details"
           >
-            <ArrowLeft className="w-4 h-4 text-[#C7A46A]" />
+            <ArrowLeft className="w-4 h-4 text-[#B89458]" />
             <span>Back</span>
           </button>
 
@@ -194,7 +194,7 @@ export function ProductImageLightbox({
             <h3 className="font-serif text-sm sm:text-xl font-normal text-white truncate max-w-[150px] xs:max-w-[220px] sm:max-w-md">
               {productName || 'Product Image Gallery'}
             </h3>
-            <p className="text-[10px] sm:text-xs text-[#C7A46A] font-sans">
+            <p className="text-[10px] sm:text-xs text-[#B89458] font-sans">
               Image {currentIndex + 1} of {images.length} {scale > 1 ? `• ${(scale * 100).toFixed(0)}%` : ''}
             </p>
           </div>
@@ -203,12 +203,13 @@ export function ProductImageLightbox({
         {/* CONTROLS RIGHT */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* ZOOM BUTTONS */}
-          <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md rounded-lg p-1 border border-white/20">
+          <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
             <button
               onClick={handleZoomOut}
               disabled={scale <= 1}
-              className="p-1.5 hover:bg-white/20 rounded disabled:opacity-30 text-white transition-colors cursor-pointer"
+              className="p-2 hover:bg-white/20 rounded-lg disabled:opacity-30 text-white transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
               title="Zoom Out"
+              aria-label="Zoom Out"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
@@ -218,16 +219,18 @@ export function ProductImageLightbox({
             <button
               onClick={handleZoomIn}
               disabled={scale >= 4}
-              className="p-1.5 hover:bg-white/20 rounded disabled:opacity-30 text-white transition-colors cursor-pointer"
+              className="p-2 hover:bg-white/20 rounded-lg disabled:opacity-30 text-white transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
               title="Zoom In"
+              aria-label="Zoom In"
             >
               <ZoomIn className="w-4 h-4" />
             </button>
             {scale > 1 && (
               <button
                 onClick={handleResetZoom}
-                className="p-1.5 hover:bg-white/20 rounded text-white transition-colors cursor-pointer"
+                className="p-2 hover:bg-white/20 rounded-lg text-white transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
                 title="Reset Zoom"
+                aria-label="Reset Zoom"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -238,7 +241,7 @@ export function ProductImageLightbox({
           <button
             id="lightbox-close-btn"
             onClick={onClose}
-            className="p-2.5 bg-white/10 hover:bg-[#C7A46A] hover:text-[#3A2A22] rounded-full text-white transition-colors cursor-pointer shadow-lg ml-2"
+            className="p-2.5 bg-white/10 hover:bg-[#B89458] hover:text-[#35171B] rounded-full text-white transition-colors cursor-pointer shadow-lg ml-1 sm:ml-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label="Close Lightbox"
           >
             <X className="w-6 h-6" />
@@ -273,7 +276,7 @@ export function ProductImageLightbox({
             src={images[currentIndex]}
             alt={productName || 'Full resolution furniture detail'}
             referrerPolicy="no-referrer"
-            className="max-w-full max-h-[75vh] sm:max-h-[80vh] object-contain rounded shadow-2xl pointer-events-none"
+            className="max-w-full max-h-[75vh] sm:max-h-[80vh] object-contain rounded-lg shadow-2xl pointer-events-none"
           />
         </div>
 
@@ -283,7 +286,7 @@ export function ProductImageLightbox({
             <button
               id="lightbox-prev-btn"
               onClick={handlePrev}
-              className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 p-3 sm:p-4 rounded-full bg-black/60 hover:bg-[#C7A46A] hover:text-[#3A2A22] text-white transition-all cursor-pointer shadow-xl backdrop-blur-md z-20 border border-white/20"
+              className="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 p-3 sm:p-4 rounded-full bg-black/60 hover:bg-[#B89458] hover:text-[#35171B] text-white transition-all cursor-pointer shadow-xl backdrop-blur-md z-20 border border-white/20 min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -291,7 +294,7 @@ export function ProductImageLightbox({
             <button
               id="lightbox-next-btn"
               onClick={handleNext}
-              className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 p-3 sm:p-4 rounded-full bg-black/60 hover:bg-[#C7A46A] hover:text-[#3A2A22] text-white transition-all cursor-pointer shadow-xl backdrop-blur-md z-20 border border-white/20"
+              className="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 p-3 sm:p-4 rounded-full bg-black/60 hover:bg-[#B89458] hover:text-[#35171B] text-white transition-all cursor-pointer shadow-xl backdrop-blur-md z-20 border border-white/20 min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Next image"
             >
               <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -312,8 +315,8 @@ export function ProductImageLightbox({
               <button
                 key={idx}
                 onClick={() => onIndexChange(idx)}
-                className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
-                  currentIndex === idx ? 'border-[#C7A46A] scale-110 shadow-lg' : 'border-white/20 opacity-50 hover:opacity-100'
+                className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                  currentIndex === idx ? 'border-[#B89458] scale-110 shadow-lg' : 'border-white/20 opacity-50 hover:opacity-100'
                 }`}
               >
                 <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />

@@ -56,67 +56,61 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
   const whatsappUrl = `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(COMPANY_INFO.whatsappMessageDefault)}`;
 
   return (
-    <section id="hero-section" className="relative w-full min-h-[720px] lg:min-h-[88vh] bg-[#F8F6F2] text-[#242424] pt-28 sm:pt-32 lg:pt-36 overflow-hidden flex flex-col justify-center animate-in fade-in duration-700">
+    <section id="hero-section" className="relative w-full min-h-[720px] lg:min-h-[88vh] bg-[#F4EEE4] text-[#24201E] pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 overflow-hidden flex flex-col justify-center animate-in fade-in duration-700">
       
-      {/* RICH ARTISANAL WOOD-GRAIN & LUXURY OVERLAPPING COLOR GRADIENT BACKGROUND */}
+      {/* RICH EDITORIAL BURGUNDY, WARM IVORY & BRASS BACKGROUND */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Base Gradient Layer */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#FBF9F5_0%,#F5EFE4_50%,#EBE2D3_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#FAF7F2_0%,#F4EEE4_50%,#EDE3D5_100%)]" />
         
-        {/* Overlapping Color Blob 1: Golden Amber Glow (Top-Left) */}
-        <div className="absolute -top-24 -left-20 w-72 sm:w-[500px] h-72 sm:h-[500px] bg-gradient-to-br from-[#E6CA9A]/35 via-[#C7A46A]/20 to-transparent blur-[70px] sm:blur-[110px] rounded-full transform -rotate-12 animate-pulse duration-[8000ms]" />
+        {/* Subtle Burgundy Aura (Top-Left) */}
+        <div className="absolute -top-32 -left-20 w-80 sm:w-[540px] h-80 sm:h-[540px] bg-gradient-to-br from-[#4A1F24]/12 via-[#6A353A]/8 to-transparent blur-[80px] sm:blur-[120px] rounded-full transform -rotate-12" />
         
-        {/* Overlapping Color Blob 2: Warm Terracotta & Deep Oak Accent (Top-Right) */}
-        <div className="absolute top-10 -right-28 w-80 sm:w-[600px] h-80 sm:h-[600px] bg-gradient-to-bl from-[#B88056]/25 via-[#D69F73]/15 to-transparent blur-[80px] sm:blur-[130px] rounded-full transform rotate-45" />
+        {/* Soft Muted Brass Glow (Top-Right) */}
+        <div className="absolute top-8 -right-28 w-80 sm:w-[580px] h-80 sm:h-[580px] bg-gradient-to-bl from-[#B89458]/18 via-[#EDE3D5]/25 to-transparent blur-[90px] sm:blur-[130px] rounded-full" />
 
-        {/* Overlapping Color Blob 3: Rich Warm Honey (Center-Bottom) */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 sm:w-[700px] h-60 sm:h-[400px] bg-gradient-to-t from-[#D8B67D]/30 via-[#C7A46A]/15 to-transparent blur-[80px] sm:blur-[120px] rounded-full" />
+        {/* Warm Soft Cream Fill (Center-Bottom) */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 sm:w-[700px] h-60 sm:h-[380px] bg-gradient-to-t from-[#EDE3D5]/50 via-[#B89458]/10 to-transparent blur-[90px] sm:blur-[120px] rounded-full" />
 
-        {/* Overlapping Color Blob 4: Soft Deep Mahogany Tone (Bottom-Right) */}
-        <div className="absolute -bottom-20 -right-10 w-72 sm:w-[500px] h-72 sm:h-[450px] bg-gradient-to-tl from-[#5C3A21]/15 via-[#8A5A36]/10 to-transparent blur-[60px] sm:blur-[100px] rounded-full" />
-
-        {/* Organic Wood-Grain Architectural SVG Lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-30 text-[#C7A46A]" xmlns="http://www.w3.org/2000/svg">
+        {/* Refined Organic Curved Line Accent */}
+        <svg className="absolute inset-0 w-full h-full opacity-20 text-[#B89458]" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="hero-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#C7A46A" stopOpacity="0.5" />
-              <stop offset="50%" stopColor="#8A5A36" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#D49A6A" stopOpacity="0.4" />
+              <stop offset="0%" stopColor="#B89458" stopOpacity="0.6" />
+              <stop offset="50%" stopColor="#4A1F24" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#B89458" stopOpacity="0.4" />
             </linearGradient>
-            <radialGradient id="ring-grad-1" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#C7A46A" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#5C3A21" stopOpacity="0" />
-            </radialGradient>
           </defs>
-          <path d="M -100 200 C 300 100, 700 350, 1500 150 C 1900 50, 2200 400, 2500 200" fill="none" stroke="url(#hero-line-grad)" strokeWidth="2" />
-          <path d="M -100 350 C 400 250, 800 450, 1600 250 C 2000 150, 2300 500, 2600 300" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1.5" strokeDasharray="6 6" />
-          <path d="M -100 600 C 350 500, 900 700, 1400 550 C 1800 450, 2100 750, 2500 600" fill="none" stroke="url(#hero-line-grad)" strokeWidth="2" />
-          <circle cx="15%" cy="30%" r="240" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1.5" />
-          <circle cx="85%" cy="70%" r="350" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1" strokeDasharray="8 4" />
+          <path d="M -100 200 C 300 100, 700 350, 1500 150 C 1900 50, 2200 400, 2500 200" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1.5" />
+          <path d="M -100 400 C 400 300, 800 500, 1600 300 C 2000 200, 2300 550, 2600 350" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1" strokeDasharray="6 6" />
+          <circle cx="12%" cy="28%" r="220" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1" />
         </svg>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-between py-6 lg:py-12">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-between py-4 lg:py-8">
         
-        {/* PROMINENT BRAND SEAL AT TOP OF LANDING PAGE - FULL WIDTH & TRANSPARENT */}
-        <div className="flex flex-col items-center justify-center mb-8 lg:mb-12 w-full">
-          <div className="relative group cursor-pointer w-full max-w-5xl lg:max-w-7xl px-2 flex justify-center" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <BrandLogo variant="stacked" size="xl" isLightBg={true} />
+        {/* HOMEPAGE LOGO HERO STATEMENT — LARGE (1.5-2X SIZE), PROMINENT & BREATHING */}
+        <div className="flex flex-col items-center justify-center mb-8 sm:mb-12 w-full">
+          <div 
+            className="relative group cursor-pointer w-full max-w-5xl px-2 flex justify-center py-2" 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <BrandLogo variant="stacked" size="hero" isLightBg={true} />
           </div>
 
-          {/* QUICK ATELIER FEATURE HIGHLIGHT BAR */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-4 text-[9px] xs:text-[10px] sm:text-xs font-serif uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#8A6A4A] max-w-full px-2">
-            <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#3A2A22]/5 border border-[#3A2A22]/10 shrink-0">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C7A46A] shrink-0" />
-              <span>Handcrafted</span>
+          {/* CREDENTIALS PILLS — CLEAR, ELEGANT, UNTRUNCATED */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-4 text-[9.5px] xs:text-[10.5px] sm:text-xs font-serif uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#6A353A] max-w-full px-2">
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#35171B]/5 border border-[#35171B]/10 shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+              <span>Master Artisans in Pakistan</span>
             </span>
-            <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#3A2A22]/5 border border-[#3A2A22]/10 text-center">
-              <Sparkles className="w-3.5 h-3.5 text-[#C7A46A] shrink-0" />
-              <span>Custom Dimensions & Upholstery</span>
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#35171B]/5 border border-[#35171B]/10 shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+              <span>Made to Your Dimensions</span>
             </span>
-            <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#3A2A22]/5 border border-[#3A2A22]/10 shrink-0">
-              <Layers className="w-3.5 h-3.5 text-[#C7A46A] shrink-0" />
-              <span>10-Year Frame Warranty</span>
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#35171B]/5 border border-[#35171B]/10 shrink-0">
+              <Layers className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+              <span>100% Bespoke Tailoring</span>
             </span>
           </div>
         </div>
@@ -128,34 +122,34 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
           <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
             
             {/* HERO HEADING */}
-            <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-serif leading-[1.08] text-[#3A2A22] tracking-tight">
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-serif leading-[1.12] text-[#35171B] tracking-tight">
               Handcrafted Furniture. <br />
-              <span className="italic font-light text-[#8A6A4A]">Carved for Generations.</span>
+              <span className="italic font-light text-[#6A353A]">Carved for Generations.</span>
             </h1>
 
             {/* DESCRIPTION */}
-            <p className="text-base sm:text-lg text-[#3A2A22]/85 font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Explore our master-carved sofas, architectural center tables, and bespoke dining creations. Every piece is handcrafted by skilled artisans in solid teak, smoked walnut, and luxury fabrics.
+            <p className="text-base sm:text-lg text-[#24201E]/85 font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Explore master-carved sofas, architectural center tables, and bespoke dining creations. Every piece is individually handcrafted by skilled Pakistani artisans using seasoned solid woods, custom proportions, and curated fabrics.
             </p>
 
-            {/* CTA BUTTON GROUP */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full">
+            {/* UNCLUTTERED CTA BUTTON GROUP — PRIMARY + SECONDARY + WHATSAPP */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full max-w-md mx-auto lg:mx-0">
               <button
                 id="hero-browse-collection-btn"
                 onClick={onBrowseCollection}
-                className="w-full sm:w-auto px-5 sm:px-8 py-3.5 sm:py-4 bg-[#3A2A22] text-[#F8F6F2] text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold hover:bg-[#C7A46A] hover:text-[#3A2A22] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2.5 sm:gap-3 group rounded-lg"
+                className="px-6 sm:px-8 py-4 bg-[#35171B] text-[#F4EEE4] text-xs uppercase tracking-[0.16em] sm:tracking-[0.2em] font-bold hover:bg-[#4A1F24] transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2.5 group rounded-xl min-h-[48px]"
               >
-                <span>Explore Full Showroom</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 shrink-0" />
+                <span>Explore the Collection</span>
+                <ArrowRight className="w-4 h-4 text-[#B89458] group-hover:translate-x-1.5 transition-transform duration-300 shrink-0" />
               </button>
 
               <button
                 id="hero-custom-studio-btn"
                 onClick={onOpenBespoke}
-                className="w-full sm:w-auto px-5 sm:px-8 py-3.5 sm:py-4 bg-[#C7A46A] text-[#3A2A22] text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold hover:bg-[#3A2A22] hover:text-[#F8F6F2] transition-all duration-500 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer rounded-lg"
+                className="px-6 sm:px-8 py-4 bg-[#B89458] text-[#35171B] text-xs uppercase tracking-[0.16em] sm:tracking-[0.2em] font-bold hover:bg-[#a58248] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer rounded-xl min-h-[48px]"
               >
                 <Sliders className="w-4 h-4 shrink-0" />
-                <span>Bespoke Custom Studio</span>
+                <span>Create Your Piece</span>
               </button>
 
               <a
@@ -163,27 +157,27 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-5 sm:px-6 py-3.5 sm:py-4 border border-[#3A2A22]/30 text-[#3A2A22] text-xs uppercase tracking-[0.15em] sm:tracking-[0.18em] font-bold hover:bg-[#3A2A22] hover:text-[#F8F6F2] transition-all duration-500 flex items-center justify-center gap-2 cursor-pointer rounded-lg"
+                className="px-5 py-4 border border-[#35171B]/30 text-[#35171B] text-xs uppercase tracking-[0.14em] font-bold hover:bg-[#35171B] hover:text-[#F4EEE4] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer rounded-xl min-h-[48px]"
               >
                 <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
-                <span>WhatsApp Consult</span>
+                <span>WhatsApp</span>
               </a>
             </div>
 
             {/* SLIDE CATEGORY INDICATOR */}
-            <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 border-t border-[#3A2A22]/15">
+            <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 border-t border-[#35171B]/15">
               {HERO_SLIDES.map((slide, idx) => (
                 <button
                   key={slide.num}
                   onClick={() => setActiveSlide(idx)}
-                  className={`text-left transition-all cursor-pointer ${
+                  className={`text-left transition-all cursor-pointer min-h-[44px] flex flex-col justify-center ${
                     idx === activeSlide ? 'opacity-100 scale-105' : 'opacity-50 hover:opacity-80'
                   }`}
                 >
-                  <span className="text-[10px] font-serif uppercase tracking-widest text-[#C7A46A] font-bold block">
+                  <span className="text-[10px] font-serif uppercase tracking-widest text-[#B89458] font-bold block">
                     {slide.num}
                   </span>
-                  <span className="text-xs font-serif font-semibold text-[#3A2A22]">
+                  <span className="text-xs font-serif font-semibold text-[#35171B]">
                     {slide.title}
                   </span>
                 </button>
@@ -192,12 +186,12 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
 
           </div>
 
-          {/* RIGHT 5 COLUMNS: INTERACTIVE SHOWCASE CARD */}
+          {/* RIGHT 5 COLUMNS: INTERACTIVE SHOWCASE CARD IN DEEP BURGUNDY */}
           <div className="lg:col-span-5 relative">
-            <div className="relative bg-[#3A2A22] text-[#F8F6F2] rounded-2xl shadow-2xl border border-[#C7A46A]/30 overflow-hidden">
+            <div className="relative bg-[#35171B] text-[#F4EEE4] rounded-2xl shadow-2xl border border-[#B89458]/30 overflow-hidden">
               
               {/* IMAGE SHOWCASE */}
-              <div className="relative h-72 sm:h-80 overflow-hidden">
+              <div className="relative h-64 sm:h-80 overflow-hidden">
                 {HERO_SLIDES.map((slide, idx) => (
                   <div
                     key={slide.num}
@@ -211,29 +205,29 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#3A2A22] via-[#3A2A22]/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#35171B] via-[#35171B]/35 to-transparent" />
                   </div>
                 ))}
 
                 {/* OVERLAY BADGE */}
-                <div className="absolute top-4 left-4 z-20 bg-[#3A2A22]/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#C7A46A]/40 text-xs font-serif text-[#C7A46A] flex items-center gap-1.5">
+                <div className="absolute top-4 left-4 z-20 bg-[#35171B]/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#B89458]/40 text-xs font-serif text-[#B89458] flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Featured Collection Piece</span>
+                  <span>Featured Atelier Creation</span>
                 </div>
               </div>
 
               {/* INTERACTIVE MATERIAL SELECTOR & PREVIEW */}
-              <div className="p-5 sm:p-6 space-y-4 bg-[#3A2A22]">
-                <div className="flex items-center justify-between border-b border-[#C7A46A]/20 pb-3">
+              <div className="p-5 sm:p-6 space-y-4 bg-[#35171B]">
+                <div className="flex items-center justify-between border-b border-[#B89458]/20 pb-3">
                   <div>
                     <h3 className="font-serif text-lg sm:text-xl text-white font-medium">
                       {HERO_SLIDES[activeSlide].title}
                     </h3>
-                    <p className="text-xs text-[#C7A46A]">
+                    <p className="text-xs text-[#B89458]">
                       {HERO_SLIDES[activeSlide].subtitle}
                     </p>
                   </div>
-                  <span className="text-xs font-serif font-bold text-[#C7A46A] bg-white/10 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-serif font-bold text-[#B89458] bg-white/10 px-2.5 py-1 rounded-full">
                     {HERO_SLIDES[activeSlide].num} / 03
                   </span>
                 </div>
@@ -242,16 +236,16 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-white/80 font-serif">Select Wood Finish Sample:</span>
-                    <span className="text-[#C7A46A] font-medium">{selectedFinish.name}</span>
+                    <span className="text-[#B89458] font-medium">{selectedFinish.name}</span>
                   </div>
                   <div className="grid grid-cols-4 gap-2">
                     {MATERIAL_OPTIONS.map((finish) => (
                       <button
                         key={finish.id}
                         onClick={() => setSelectedFinish(finish)}
-                        className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                        className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 min-h-[44px] ${
                           selectedFinish.id === finish.id
-                            ? 'border-[#C7A46A] bg-[#C7A46A]/20'
+                            ? 'border-[#B89458] bg-[#B89458]/20'
                             : 'border-white/10 hover:border-white/40 bg-white/5'
                         }`}
                       >
@@ -269,7 +263,7 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
                 {/* TRIGGER ACTION */}
                 <button
                   onClick={onOpenBespoke}
-                  className="w-full py-3 bg-[#C7A46A] hover:bg-white text-[#3A2A22] transition-colors rounded-lg font-serif text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 bg-[#B89458] hover:bg-[#a58248] text-[#35171B] transition-colors rounded-xl font-serif text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Customize in {selectedFinish.name}</span>

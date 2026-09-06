@@ -21,16 +21,16 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
   ];
 
   return (
-    <footer id="main-footer" className="bg-[#242424] text-[#F8F6F2] pt-20 pb-12 border-t border-[#C7A46A]/20 relative">
+    <footer id="main-footer" className="bg-[#35171B] text-[#F4EEE4] pt-16 sm:pt-20 pb-12 border-t border-[#B89458]/20 relative">
       
       {/* INSTAGRAM EDITORIAL PREVIEW BANNER */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-16">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-4 border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 sm:mb-16">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-4 border-b border-[#F4EEE4]/15">
           <div>
-            <span className="text-xs font-serif uppercase tracking-[0.25em] text-[#C7A46A] block mb-1">
-              Live Workshop Feed
+            <span className="text-[11px] font-serif uppercase tracking-[0.25em] text-[#B89458] block mb-1 font-semibold">
+              Live Atelier Workshop Feed
             </span>
-            <h3 className="font-serif text-2xl text-white font-normal">
+            <h3 className="font-serif text-xl sm:text-2xl text-[#F4EEE4] font-normal">
               Follow Us {COMPANY_INFO.instagramHandle}
             </h3>
           </div>
@@ -38,30 +38,30 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
             href={COMPANY_INFO.instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 sm:mt-0 text-xs font-serif uppercase tracking-widest text-[#C7A46A] hover:text-white transition-colors flex items-center gap-2"
+            className="mt-3 sm:mt-0 text-xs font-serif uppercase tracking-widest text-[#B89458] hover:text-[#F4EEE4] transition-colors flex items-center gap-2 py-2"
           >
             <Instagram className="w-4 h-4" />
             <span>Visit Instagram Gallery →</span>
           </a>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {INSTAGRAM_SHOWCASE.map((img, i) => (
             <a
               key={i}
               href={COMPANY_INFO.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative h-40 organic-corner-card overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-500"
+              className="group relative h-36 sm:h-44 rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border border-[#F4EEE4]/10"
             >
               <img
                 src={img}
-                alt="CARVED & CO. Instagram"
+                alt="CARVED & CO. Atelier Furniture"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-serif">
-                <span>View Post</span>
+              <div className="absolute inset-0 bg-[#35171B]/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[#F4EEE4] text-xs font-serif">
+                <span>View Design</span>
               </div>
             </a>
           ))}
@@ -69,27 +69,33 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
       </div>
 
       {/* FOOTER MAIN CONTENT */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-12 pb-12 sm:pb-16 border-b border-[#F4EEE4]/15">
         
         {/* BRAND COLUMN */}
         <div className="lg:col-span-2 space-y-4">
           <BrandLogo variant="fullLength" size="lg" isLightBg={false} />
 
-          <p className="font-serif text-sm italic text-[#C7A46A]">
-            {COMPANY_INFO.tagline}
+          <p className="font-serif text-xs sm:text-sm text-[#B89458] font-medium">
+            Handcrafted Bespoke Furniture Atelier
           </p>
 
-          <p className="text-xs text-white/70 font-light leading-relaxed max-w-sm">
-            Bespoke handcrafted sofas, center tables, dining tables, and architectural furniture built with premium craftsmanship for modern living.
+          <p className="text-xs text-[#F4EEE4]/75 font-light leading-relaxed max-w-sm">
+            Architectural seating, sculptural tables, and tailored interior commissions. Handcrafted with pride in our workshop using seasoned hardwoods, durable composite cores, and bespoke tailored textiles.
           </p>
+
+          <div className="text-[11px] text-[#B89458]/90 font-serif flex items-center gap-2 pt-1">
+            <MapPin className="w-3.5 h-3.5 shrink-0 text-[#B89458]" />
+            <span>Handcrafted with pride in our atelier workshop</span>
+          </div>
 
           <div className="flex items-center gap-3 pt-2">
             <a
               href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 rounded-full bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors"
+              className="p-3 rounded-full bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="WhatsApp Concierge"
+              aria-label="WhatsApp Concierge"
             >
               <MessageCircle className="w-4 h-4" />
             </a>
@@ -98,16 +104,18 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
               href={COMPANY_INFO.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 rounded-full bg-white/10 text-white hover:bg-[#C7A46A] hover:text-[#3A2A22] transition-colors"
+              className="p-3 rounded-full bg-white/10 text-white hover:bg-[#B89458] hover:text-[#35171B] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="Instagram"
+              aria-label="Instagram Portfolio"
             >
               <Instagram className="w-4 h-4" />
             </a>
 
             <a
               href={`mailto:${COMPANY_INFO.email}`}
-              className="p-2.5 rounded-full bg-white/10 text-white hover:bg-[#C7A46A] hover:text-[#3A2A22] transition-colors"
+              className="p-3 rounded-full bg-white/10 text-white hover:bg-[#B89458] hover:text-[#35171B] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="Email Us"
+              aria-label="Email Us"
             >
               <Mail className="w-4 h-4" />
             </a>
@@ -116,38 +124,38 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
 
         {/* QUICK NAVIGATION */}
         <div className="space-y-3">
-          <h4 className="font-serif text-sm uppercase tracking-widest text-[#C7A46A] font-semibold">
+          <h4 className="font-serif text-xs uppercase tracking-widest text-[#B89458] font-semibold">
             Showroom Directory
           </h4>
-          <ul className="space-y-2 text-xs text-white/80 font-light">
+          <ul className="space-y-1.5 text-xs text-[#F4EEE4]/80 font-light">
             <li>
-              <button onClick={() => onNavigate('home')} className="hover:text-[#C7A46A] transition-colors cursor-pointer">
+              <button onClick={() => onNavigate('home')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Home Showroom
               </button>
             </li>
             <li>
-              <button onClick={() => onNavigate('about')} className="hover:text-[#C7A46A] transition-colors cursor-pointer">
+              <button onClick={() => onNavigate('about')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 About Our Workshop
               </button>
             </li>
             <li>
-              <button onClick={() => onNavigate('sofas')} className="hover:text-[#C7A46A] transition-colors cursor-pointer">
+              <button onClick={() => onNavigate('sofas')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Sofas & Sectionals Catalog
               </button>
             </li>
             <li>
-              <button onClick={() => onNavigate('tables')} className="hover:text-[#C7A46A] transition-colors cursor-pointer">
+              <button onClick={() => onNavigate('tables')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Tables & Consoles Catalog
               </button>
             </li>
             <li>
-              <button onClick={onOpenBespoke} className="hover:text-[#C7A46A] transition-colors cursor-pointer flex items-center gap-1.5 text-[#C7A46A]">
+              <button onClick={onOpenBespoke} className="hover:text-[#B89458] transition-colors cursor-pointer flex items-center gap-1.5 text-[#B89458] py-1">
                 <Sparkles className="w-3 h-3" />
-                <span>Custom Order Studio</span>
+                <span>Bespoke Custom Studio</span>
               </button>
             </li>
             <li>
-              <button onClick={() => onNavigate('contact')} className="hover:text-[#C7A46A] transition-colors cursor-pointer">
+              <button onClick={() => onNavigate('contact')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Contact & Concierge
               </button>
             </li>
@@ -156,15 +164,15 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
 
         {/* SOFA SUBCATEGORIES */}
         <div className="space-y-3">
-          <h4 className="font-serif text-sm uppercase tracking-widest text-[#C7A46A] font-semibold">
+          <h4 className="font-serif text-xs uppercase tracking-widest text-[#B89458] font-semibold">
             Sofa Collections
           </h4>
-          <ul className="space-y-1.5 text-xs text-white/70 font-light">
+          <ul className="space-y-1 text-xs text-[#F4EEE4]/70 font-light">
             {['Single Seaters', '2 Seater Sofas', '3 Seater Sofas', 'L-Shaped Sofas', 'Custom Sofas'].map((sub) => (
               <li key={sub}>
                 <button 
                   onClick={() => onNavigate('sofas', sub)}
-                  className="hover:text-[#C7A46A] transition-colors cursor-pointer"
+                  className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block text-left"
                 >
                   {sub}
                 </button>
@@ -175,15 +183,15 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
 
         {/* TABLE SUBCATEGORIES */}
         <div className="space-y-3">
-          <h4 className="font-serif text-sm uppercase tracking-widest text-[#C7A46A] font-semibold">
+          <h4 className="font-serif text-xs uppercase tracking-widest text-[#B89458] font-semibold">
             Table Collections
           </h4>
-          <ul className="space-y-1.5 text-xs text-white/70 font-light">
+          <ul className="space-y-1 text-xs text-[#F4EEE4]/70 font-light">
             {['Center Tables', 'Side Tables', 'Coffee Tables', 'Dining Tables', 'Console Tables', 'Custom Tables'].map((sub) => (
               <li key={sub}>
                 <button 
                   onClick={() => onNavigate('tables', sub)}
-                  className="hover:text-[#C7A46A] transition-colors cursor-pointer"
+                  className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block text-left"
                 >
                   {sub}
                 </button>
@@ -195,17 +203,17 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
       </div>
 
       {/* FOOTER BOTTOM LEGAL & BACK TO TOP */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-white/60 font-light gap-4">
-        <p>© {new Date().getFullYear()} CARVED & CO. Handcrafted Furniture. All rights reserved.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#F4EEE4]/60 font-light gap-4">
+        <p>© {new Date().getFullYear()} CARVED & CO. Handcrafted Bespoke Furniture. All rights reserved.</p>
 
         <div className="flex items-center gap-6">
-          <button onClick={onOpenPrivacy} className="hover:text-[#C7A46A] transition-colors cursor-pointer">
+          <button onClick={onOpenPrivacy} className="hover:text-[#B89458] transition-colors cursor-pointer py-1">
             Privacy Policy & Terms
           </button>
           
           <button 
             onClick={scrollToTop}
-            className="p-2.5 px-4 organic-corner-button bg-white/10 hover:bg-[#C7A46A] text-white hover:text-[#3A2A22] transition-all duration-300 flex items-center gap-2 cursor-pointer font-serif text-[11px] uppercase tracking-wider font-semibold"
+            className="p-2.5 px-4 rounded-full bg-white/10 hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] transition-all duration-300 flex items-center gap-2 cursor-pointer font-serif text-[11px] uppercase tracking-wider font-semibold min-h-[44px]"
           >
             <span>Top</span>
             <ArrowUp className="w-3.5 h-3.5" />
