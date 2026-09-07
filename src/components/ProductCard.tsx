@@ -1,5 +1,6 @@
+import { useState, useRef, WheelEvent, TouchEvent } from 'react';
 import { motion } from 'motion/react';
-import { Heart, Sparkles, ArrowUpRight } from 'lucide-react';
+import { Heart, Sparkles, ArrowUpRight, ZoomIn } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
@@ -18,9 +19,44 @@ export function ProductCard({
   isSaved,
   onCustomize
 }: ProductCardProps) {
-  const primaryImage = product.images?.[0] || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800';
-  const secondaryImage = product.images?.[1] || primaryImage;
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const lastWheelTime = useRef(0);
+  const touchStartX = useRef<number | null>(null);
+
+  const images = product.images && product.images.length > 0 ? product.images : [
+    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800'
+  ];
+  const primaryImage = images[0];
+  const closeUpImage = images[1] || primaryImage;
+  const hasMultipleImages = images.length > 1;
   const keyDetail = product.woodType || product.materials?.[0] || 'Artisan Joinery';
+
+  // Handle scroll over image container to cycle between full picture and close-up
+  const handleWheel = (e: WheelEvent) => {
+    if (!hasMultipleImages) return;
+    // Don't hijack vertical page scrolling unless intentional movement over image
+    if (Math.abs(e.deltaY) > 6 || Math.abs(e.deltaX) > 6) {
+      const now = Date.now();
+      if (now - lastWheelTime.current > 180) {
+        lastWheelTime.current = now;
+        setActiveImageIndex((prev) => (prev === 0 ? 1 : 0));
+      }
+    }
+  };
+
+  const handleTouchStart = (e: TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (touchStartX.current === null || !hasMultipleImages) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(diff) > 30) {
+      setActiveImageIndex((prev) => (prev === 0 ? 1 : 0));
+    }
+    touchStartX.current = null;
+  };
 
   return (
     <motion.div 
@@ -29,29 +65,71 @@ export function ProductCard({
       className="group bg-[#FAF7F2] rounded-xl sm:rounded-2xl border border-[#35171B]/10 overflow-hidden shadow-xs hover:shadow-xl transition-shadow duration-300 flex flex-col h-full relative cursor-pointer hover:border-[#B89458]/50 min-w-0 w-full"
       onClick={() => onSelectProduct(product)}
     >
-      {/* IMAGE CONTAINER WITH DUAL IMAGE HOVER */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#EDE3D5] w-full">
+      {/* IMAGE CONTAINER WITH DUAL IMAGE HOVER & SCROLL TOGGLE */}
+      <div 
+        className="relative aspect-[4/3] overflow-hidden bg-[#EDE3D5] w-full select-none"
+        onMouseEnter={() => {
+          setIsHovered(true);
+          if (hasMultipleImages) {
+            setActiveImageIndex(1);
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setActiveImageIndex(0);
+        }}
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* PRIMARY FULL VIEW IMAGE */}
         <img
           src={primaryImage}
           alt={product.name}
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className={`w-full h-full object-cover transition-all duration-600 ease-out group-hover:scale-105 ${
+            activeImageIndex === 0 ? 'opacity-100' : 'opacity-0'
+          }`}
         />
-        {secondaryImage !== primaryImage && (
+
+        {/* CLOSE-UP IMAGE (SWAPS ON HOVER / SCROLL) */}
+        {hasMultipleImages && (
           <img
-            src={secondaryImage}
-            alt={`${product.name} alternate view`}
+            src={closeUpImage}
+            alt={`${product.name} close-up detail`}
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 group-hover:scale-105"
+            className={`w-full h-full object-cover absolute inset-0 transition-all duration-600 ease-out group-hover:scale-105 ${
+              activeImageIndex === 1 ? 'opacity-100' : 'opacity-0'
+            }`}
           />
         )}
 
         {/* SUBCATEGORY BADGE */}
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 pointer-events-none max-w-[calc(100%-3.5rem)]">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 pointer-events-none max-w-[calc(100%-6.5rem)]">
           <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#35171B]/90 backdrop-blur-md text-[#F4EEE4] text-[8.5px] xs:text-[9px] sm:text-[10px] font-serif uppercase tracking-widest border border-white/10 shadow-xs truncate block">
             {product.subcategory}
           </span>
         </div>
+
+        {/* VIEW MODE INDICATOR BADGE */}
+        {hasMultipleImages && (
+          <div className="absolute top-2 right-12 sm:top-3 sm:right-13 z-10 pointer-events-none transition-all duration-300">
+            <span className={`px-2 py-0.5 rounded-full text-[8px] xs:text-[9px] font-serif uppercase tracking-wider backdrop-blur-md shadow-xs flex items-center gap-1 transition-all duration-300 ${
+              activeImageIndex === 1
+                ? 'bg-[#B89458] text-[#35171B] font-semibold opacity-100'
+                : 'bg-[#35171B]/70 text-[#F4EEE4] opacity-0 group-hover:opacity-90'
+            }`}>
+              {activeImageIndex === 1 ? (
+                <>
+                  <ZoomIn className="w-2.5 h-2.5" />
+                  <span>Close-Up</span>
+                </>
+              ) : (
+                <span>Scroll / Hover</span>
+              )}
+            </span>
+          </div>
+        )}
 
         {/* SAVED WISHLIST HEART BUTTON (Interactive Spring Tap) */}
         <motion.button
@@ -61,7 +139,7 @@ export function ProductCard({
             e.stopPropagation();
             onToggleSave(product);
           }}
-          className={`absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10 w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center rounded-full backdrop-blur-md transition-colors duration-300 cursor-pointer shadow-sm ${
+          className={`absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-colors duration-300 cursor-pointer shadow-sm ${
             isSaved 
               ? 'bg-[#B89458] text-[#35171B] shadow-md' 
               : 'bg-black/40 text-white hover:bg-[#F4EEE4] hover:text-[#35171B]'
@@ -73,18 +151,60 @@ export function ProductCard({
             animate={isSaved ? { scale: [1, 1.3, 1] } : { scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <Heart className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isSaved ? 'fill-current text-[#35171B]' : ''}`} />
+            <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isSaved ? 'fill-current text-[#35171B]' : ''}`} />
           </motion.div>
         </motion.button>
 
-        {/* QUICK VIEW HOVER BAR */}
-        <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-[#35171B]/90 via-[#35171B]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between text-[#F4EEE4] text-xs font-serif pointer-events-none">
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] tracking-wider text-[#B89458]">
-            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span>Atelier View</span>
-          </span>
-          <ArrowUpRight className="w-3.5 h-3.5 text-[#B89458]" />
-        </div>
+        {/* INTERACTIVE TOGGLE PILLS (Full View / Close-Up) */}
+        {hasMultipleImages && (
+          <div 
+            className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 p-0.5 rounded-full bg-[#35171B]/80 backdrop-blur-md border border-white/10 shadow-md transition-opacity duration-300 opacity-90 group-hover:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex(0);
+              }}
+              className={`px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-serif uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                activeImageIndex === 0 
+                  ? 'bg-[#F4EEE4] text-[#35171B] font-semibold shadow-xs' 
+                  : 'text-[#F4EEE4]/75 hover:text-white'
+              }`}
+              title="View full picture"
+            >
+              Full
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex(1);
+              }}
+              className={`px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-serif uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1 ${
+                activeImageIndex === 1 
+                  ? 'bg-[#B89458] text-[#35171B] font-semibold shadow-xs' 
+                  : 'text-[#F4EEE4]/75 hover:text-white'
+              }`}
+              title="View close-up detail (or scroll over picture)"
+            >
+              <ZoomIn className="w-2.5 h-2.5" />
+              <span>Close-Up</span>
+            </button>
+          </div>
+        )}
+
+        {/* QUICK VIEW HOVER BAR (shows when hovering if not over buttons) */}
+        {!hasMultipleImages && (
+          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-[#35171B]/90 via-[#35171B]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between text-[#F4EEE4] text-xs font-serif pointer-events-none">
+            <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] tracking-wider text-[#B89458]">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>Atelier View</span>
+            </span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-[#B89458]" />
+          </div>
+        )}
       </div>
 
       {/* CONTENT AREA */}

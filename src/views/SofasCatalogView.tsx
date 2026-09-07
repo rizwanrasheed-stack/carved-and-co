@@ -56,7 +56,7 @@ export function SofasCatalogView({
       if (selectedMaterial !== 'All Materials') {
         const matLower = selectedMaterial.toLowerCase();
         const matchesMat = p.materials.some((m) => m.toLowerCase().includes(matLower));
-        const matchesFinish = p.finishOptions.some((f) => f.name.toLowerCase().includes(matLower));
+        const matchesFinish = p.finishOptions?.some((f) => f.name.toLowerCase().includes(matLower)) || p.finish?.toLowerCase().includes(matLower);
         if (!matchesMat && !matchesFinish) {
           return false;
         }

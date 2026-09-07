@@ -248,7 +248,7 @@ export function Navbar({
               className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#B89458] hover:bg-[#a58248] text-[#35171B] font-serif text-xs font-bold uppercase tracking-wider transition-transform active:scale-95 shadow-md cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Bespoke Studio</span>
+              <span>Create Your Own Piece</span>
             </button>
 
             {/* MOBILE MENU TOGGLE (MIN 44PX) */}
@@ -341,7 +341,7 @@ export function Navbar({
                 className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#B89458] hover:bg-[#a58248] text-[#35171B] font-serif text-xs font-bold uppercase tracking-widest mt-3 shadow-md min-h-[44px] cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Custom Studio (Bespoke)</span>
+                <span>Create Your Own Piece</span>
               </motion.button>
 
               {/* ABOUT & CONTACT */}

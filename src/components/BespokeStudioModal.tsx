@@ -1,5 +1,18 @@
-import { useState, FormEvent } from 'react';
-import { X, Sparkles, MessageCircle, Send, CheckCircle2, Hammer, ArrowLeft } from 'lucide-react';
+import { useState, useRef, FormEvent, DragEvent, ChangeEvent } from 'react';
+import { 
+  X, 
+  Sparkles, 
+  MessageCircle, 
+  Send, 
+  CheckCircle2, 
+  ArrowLeft,
+  Upload,
+  Image as ImageIcon,
+  Trash2,
+  ZoomIn,
+  AlertCircle,
+  Plus
+} from 'lucide-react';
 import { Product, WoodType, FinishType } from '../types';
 import { COMPANY_INFO } from '../data/company';
 
@@ -7,6 +20,15 @@ interface BespokeStudioModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialProduct?: Product | null;
+}
+
+export interface UploadedReferenceImage {
+  id: string;
+  name: string;
+  sizeFormatted: string;
+  sizeBytes: number;
+  previewUrl: string;
+  note: string;
 }
 
 export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeStudioModalProps) {
@@ -34,13 +56,130 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [quoteId, setQuoteId] = useState<string>('');
 
-  const composeInquiryText = () => {
+  // REFERENCE IMAGES STATE
+  const [referenceImages, setReferenceImages] = useState<UploadedReferenceImage[]>([]);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [zoomedImage, setZoomedImage] = useState<UploadedReferenceImage | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleFiles = (files: FileList | File[]) => {
+    setUploadError(null);
+    const fileArray = Array.from(files);
+    const validImageFiles = fileArray.filter((file) => file.type.startsWith('image/'));
+
+    if (validImageFiles.length === 0 && fileArray.length > 0) {
+      setUploadError('Please select valid image files (JPG, PNG, WEBP, HEIC, etc.).');
+      return;
+    }
+
+    const maxPhotos = 6;
+    const remainingSlots = maxPhotos - referenceImages.length;
+    if (remainingSlots <= 0) {
+      setUploadError(`Maximum of ${maxPhotos} reference photos reached.`);
+      return;
+    }
+
+    const filesToProcess = validImageFiles.slice(0, remainingSlots);
+    if (validImageFiles.length > remainingSlots) {
+      setUploadError(`Only ${remainingSlots} more photo(s) could be added (max ${maxPhotos} photos total).`);
+    }
+
+    filesToProcess.forEach((file) => {
+      // 15MB size ceiling
+      if (file.size > 15 * 1024 * 1024) {
+        setUploadError(`"${file.name}" exceeds the 15MB size limit.`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        const newImg: UploadedReferenceImage = {
+          id: `ref-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          name: file.name,
+          sizeFormatted: formatFileSize(file.size),
+          sizeBytes: file.size,
+          previewUrl: result,
+          note: '',
+        };
+        setReferenceImages((prev) => {
+          if (prev.length >= maxPhotos) return prev;
+          return [...prev, newImg];
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
+      e.target.value = '';
+    }
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemoveImage = (id: string) => {
+    setReferenceImages((prev) => prev.filter((img) => img.id !== id));
+    if (zoomedImage?.id === id) {
+      setZoomedImage(null);
+    }
+  };
+
+  const handleUpdateImageNote = (id: string, note: string) => {
+    setReferenceImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, note } : img))
+    );
+  };
+
+  const composeInquiryText = (activeRefId?: string) => {
+    let imagesSummary = '• Reference Photos: None attached';
+    if (referenceImages.length > 0) {
+      imagesSummary = `• Reference Inspiration Photos (${referenceImages.length} attached):\n` +
+        referenceImages.map((img, i) => `   ${i + 1}. ${img.name}${img.note ? ` — "${img.note}"` : ''}`).join('\n') +
+        `\n  (Reference photos logged under Quote Ref ${activeRefId || quoteId || 'BESPOKE'}. You can also attach/send these reference pictures directly in this chat!)`;
+    }
+
     return `Hello CARVED & CO., I would like to request a bespoke custom furniture quotation:
 • Category/Piece: ${furnitureType} ${initialProduct ? `(Based on ${initialProduct.name})` : ''}
 • Preferred Finish Tone: ${woodPreference}
 • Upholstery/Fabric: ${fabricPreference}
 • Finish Style: ${finishPreference}
 • Custom Dimensions: ${dimensions}
+${imagesSummary}
 • Client Type: ${clientType}
 • Client Name: ${clientName || 'Not provided'}
 • Phone: ${clientPhone || 'Not provided'}
@@ -51,7 +190,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
   const handleWhatsAppSubmit = async () => {
     const fallbackId = `BESPOKE-${Date.now().toString(36).toUpperCase()}`;
     let activeQuoteId = fallbackId;
-    const message = composeInquiryText();
+    const message = composeInquiryText(activeQuoteId);
     const url = `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     
@@ -61,6 +200,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          quoteId: activeQuoteId,
           clientName,
           clientPhone,
           clientEmail,
@@ -71,6 +211,12 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
           finishPreference,
           dimensions,
           notes: `${notes} (Sent via WhatsApp)`,
+          referenceImages: referenceImages.map(img => ({
+            name: img.name,
+            size: img.sizeFormatted,
+            note: img.note,
+            previewUrl: img.previewUrl
+          }))
         })
       });
       if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
@@ -90,6 +236,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
           furnitureType,
           woodPreference,
           dimensions,
+          referenceImagesCount: referenceImages.length,
+          referenceImages: referenceImages.map(img => ({
+            name: img.name,
+            size: img.sizeFormatted,
+            note: img.note,
+            previewUrl: img.previewUrl
+          })),
           submittedAt: new Date().toISOString()
         });
         localStorage.setItem('carved_co_bespoke_quotes', JSON.stringify(saved.slice(0, 50)));
@@ -112,6 +265,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          quoteId: activeQuoteId,
           clientName,
           clientPhone,
           clientEmail,
@@ -122,6 +276,12 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
           finishPreference,
           dimensions,
           notes,
+          referenceImages: referenceImages.map(img => ({
+            name: img.name,
+            size: img.sizeFormatted,
+            note: img.note,
+            previewUrl: img.previewUrl
+          }))
         })
       });
       if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
@@ -141,6 +301,13 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
           furnitureType,
           woodPreference,
           dimensions,
+          referenceImagesCount: referenceImages.length,
+          referenceImages: referenceImages.map(img => ({
+            name: img.name,
+            size: img.sizeFormatted,
+            note: img.note,
+            previewUrl: img.previewUrl
+          })),
           submittedAt: new Date().toISOString()
         });
         localStorage.setItem('carved_co_bespoke_quotes', JSON.stringify(saved.slice(0, 50)));
@@ -151,6 +318,15 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
       setIsSubmitting(false);
       setSubmitted(true);
     }
+  };
+
+  const handleResetAndClose = () => {
+    setSubmitted(false);
+    setQuoteId('');
+    setReferenceImages([]);
+    setUploadError(null);
+    setZoomedImage(null);
+    onClose();
   };
 
   return (
@@ -168,7 +344,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
         <div className="sticky top-0 z-20 bg-[#35171B] text-[#F4EEE4] px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between border-b border-[#B89458]/30 shrink-0 shadow-xs">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <button
-              onClick={onClose}
+              onClick={handleResetAndClose}
               className="px-3 py-2 rounded-full bg-white/10 hover:bg-[#B89458] text-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-serif font-semibold shrink-0 min-h-[44px]"
               aria-label="Back"
               title="Back"
@@ -180,17 +356,18 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-serif text-base sm:text-2xl font-normal text-[#F4EEE4] leading-tight">
-                Bespoke Custom Studio
+              <h2 className="font-serif text-base sm:text-2xl font-normal text-[#F4EEE4] leading-tight flex items-center gap-2 flex-wrap">
+                <span>Create Your Own Piece</span>
+                <span className="text-[10px] sm:text-xs font-sans text-[#B89458] tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/10">Bespoke Studio</span>
               </h2>
               <p className="text-[10px] sm:text-xs text-[#B89458] font-sans">
-                Tailored dimensions, materials & artisan finishes.
+                Tailored dimensions, materials, reference photos & artisan finishes.
               </p>
             </div>
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleResetAndClose}
             className="p-2.5 rounded-full hover:bg-white/10 text-white transition-colors cursor-pointer shrink-0 hidden sm:flex min-w-[44px] min-h-[44px] items-center justify-center"
             aria-label="Close"
           >
@@ -215,6 +392,38 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
               <p className="text-xs sm:text-sm text-[#24201E]/80 max-w-md mx-auto font-light leading-relaxed">
                 Thank you, <strong className="font-semibold text-[#35171B]">{clientName || 'valued client'}</strong>. Our senior draughtsman and artisan team have received your specifications and will review your dimensions within 24 hours.
               </p>
+
+              {/* REFERENCE IMAGES SUMMARY ON SUBMITTED SCREEN */}
+              {referenceImages.length > 0 && (
+                <div className="bg-[#35171B]/5 rounded-xl p-4 border border-[#35171B]/15 max-w-lg mx-auto text-left">
+                  <div className="flex items-center gap-2 mb-2.5 text-xs font-serif uppercase tracking-wider font-semibold text-[#35171B]">
+                    <ImageIcon className="w-4 h-4 text-[#B89458]" />
+                    <span>{referenceImages.length} Reference Inspiration Photo(s) Attached</span>
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {referenceImages.map((img, idx) => (
+                      <div 
+                        key={img.id} 
+                        className="relative aspect-square rounded-lg overflow-hidden border border-[#35171B]/15 bg-white cursor-pointer group"
+                        onClick={() => setZoomedImage(img)}
+                        title="Click to view full reference photo"
+                      >
+                        <img src={img.previewUrl} alt={img.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <span className="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[8px] sm:text-[9px] px-1 py-0.5 truncate text-center font-mono">
+                          #{idx + 1} {img.name}
+                        </span>
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                          <ZoomIn className="w-4 h-4" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] sm:text-[11px] text-[#24201E]/70 mt-2.5 font-sans leading-relaxed">
+                    Tip: When opening WhatsApp, you can also attach or forward these reference pictures directly in the chat to discuss specific details with our draughtsman!
+                  </p>
+                </div>
+              )}
+
               <div className="pt-4 sm:pt-6 flex flex-wrap items-center justify-center gap-3">
                 <button
                   type="button"
@@ -225,11 +434,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                   <span>Forward via WhatsApp</span>
                 </button>
                 <button
-                  onClick={() => {
-                    setSubmitted(false);
-                    setQuoteId('');
-                    onClose();
-                  }}
+                  onClick={handleResetAndClose}
                   className="bg-[#35171B] text-[#F4EEE4] px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-widest hover:bg-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer font-semibold min-h-[44px]"
                 >
                   Return to Showroom
@@ -328,7 +533,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
 
               </div>
 
-              {/* CUSTOM DIMENSIONS & NOTES */}
+              {/* CUSTOM DIMENSIONS & CLIENT TYPE */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold mb-1.5">
@@ -360,6 +565,176 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
                     <option value="Boutique Hotel Director">Boutique Hotel Director</option>
                   </select>
                 </div>
+              </div>
+
+              {/* SECTION: REFERENCE PICTURES & INSPIRATION UPLOAD */}
+              <div id="bespoke-reference-photos-section" className="pt-2 border-t border-[#35171B]/10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-[#B89458]" />
+                    <label className="text-xs font-serif uppercase tracking-wider text-[#35171B] font-semibold">
+                      Reference Pictures & Visual Inspiration
+                    </label>
+                  </div>
+                  <span className="text-[11px] text-[#6A353A] font-medium font-sans">
+                    {referenceImages.length > 0 ? `${referenceImages.length} of 6 photos added` : 'Optional • Up to 6 photos'}
+                  </span>
+                </div>
+                
+                <p className="text-[11px] sm:text-xs text-[#24201E]/75 mb-3 font-light leading-relaxed">
+                  Upload photos of custom furniture you admire, Pinterest inspiration, sketches, blueprints, or room placement shots so our master craftsmen can build exactly what you envision.
+                </p>
+
+                {/* HIDDEN FILE INPUT (SUPPORTS CLICK + DRAG & DROP) */}
+                <input
+                  id="bespoke-reference-file-input"
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                {/* DRAG AND DROP ZONE */}
+                {referenceImages.length < 6 && (
+                  <div
+                    id="bespoke-dropzone-container"
+                    onDragOver={handleDragOver}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`relative rounded-xl border-2 border-dashed p-4 sm:p-5 text-center cursor-pointer transition-all duration-200 ${
+                      isDragging
+                        ? 'border-[#B89458] bg-[#B89458]/15 scale-[1.01]'
+                        : 'border-[#35171B]/25 hover:border-[#B89458] bg-white/70 hover:bg-white'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                      <div className={`p-3 rounded-full transition-colors ${
+                        isDragging ? 'bg-[#B89458] text-[#35171B]' : 'bg-[#35171B]/5 text-[#35171B]'
+                      }`}>
+                        <Upload className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-serif font-semibold text-[#35171B]">
+                          {isDragging ? 'Drop reference photos here' : 'Drag & drop reference pictures here, or browse files'}
+                        </p>
+                        <p className="text-[10px] sm:text-[11px] text-[#24201E]/60 mt-0.5 font-sans">
+                          Supports JPEG, PNG, WEBP, HEIC (max 15MB each • {6 - referenceImages.length} slots remaining)
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        id="bespoke-browse-reference-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fileInputRef.current?.click();
+                        }}
+                        className="pointer-events-auto mt-1 px-4 py-2 rounded-lg bg-[#35171B] text-[#F4EEE4] hover:bg-[#B89458] hover:text-[#35171B] text-[11px] font-serif font-semibold uppercase tracking-wider transition-colors min-h-[44px] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Select Reference Photos</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ERROR FEEDBACK */}
+                {uploadError && (
+                  <div className="mt-2.5 p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
+
+                {/* UPLOADED PICTURES PREVIEW CARDS */}
+                {referenceImages.length > 0 && (
+                  <div className="mt-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] text-[#35171B]/80 font-serif uppercase tracking-wider font-semibold">
+                      <span>Attached Reference Photos ({referenceImages.length}/6)</span>
+                      {referenceImages.length < 6 && (
+                        <button
+                          type="button"
+                          id="bespoke-add-more-photos-btn"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="text-[#B89458] hover:text-[#35171B] transition-colors flex items-center gap-1 cursor-pointer font-sans normal-case text-xs underline font-medium"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Add more photos</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {referenceImages.map((img, idx) => (
+                        <div
+                          key={img.id}
+                          id={`bespoke-ref-item-${img.id}`}
+                          className="flex items-start gap-2.5 p-2.5 bg-white rounded-xl border border-[#35171B]/15 shadow-xs relative group hover:border-[#B89458]/60 transition-colors"
+                        >
+                          {/* Thumbnail with zoom trigger */}
+                          <div 
+                            className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-lg overflow-hidden shrink-0 border border-[#35171B]/10 cursor-pointer group/thumb bg-[#24201E]/5"
+                            onClick={() => setZoomedImage(img)}
+                            title="Click to zoom reference photo"
+                          >
+                            <img
+                              src={img.previewUrl}
+                              alt={img.name}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center text-white">
+                              <ZoomIn className="w-4 h-4" />
+                            </div>
+                            <span className="absolute top-1 left-1 bg-black/65 text-white text-[9px] font-mono px-1 rounded">
+                              #{idx + 1}
+                            </span>
+                          </div>
+
+                          {/* Info & Notes */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
+                            <div>
+                              <div className="flex items-start justify-between gap-1.5">
+                                <p 
+                                  className="text-xs font-medium text-[#24201E] truncate max-w-[170px]"
+                                  title={img.name}
+                                >
+                                  {img.name}
+                                </p>
+                                <button
+                                  type="button"
+                                  id={`bespoke-remove-ref-btn-${img.id}`}
+                                  onClick={() => handleRemoveImage(img.id)}
+                                  className="text-[#24201E]/40 hover:text-red-600 transition-colors p-1 cursor-pointer shrink-0 rounded hover:bg-red-50 min-h-[32px] min-w-[32px] flex items-center justify-center"
+                                  aria-label={`Remove photo ${img.name}`}
+                                  title="Remove photo"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <span className="text-[10px] text-[#24201E]/50 font-mono block">
+                                {img.sizeFormatted}
+                              </span>
+                            </div>
+
+                            {/* Reference note for this specific photo */}
+                            <div className="mt-1.5">
+                              <input
+                                type="text"
+                                value={img.note}
+                                onChange={(e) => handleUpdateImageNote(img.id, e.target.value)}
+                                placeholder="Detail to note (e.g. leg profile, grain, color)..."
+                                className="w-full bg-[#F4EEE4]/60 border border-[#35171B]/15 rounded-md px-2 py-1 text-[11px] text-[#24201E] placeholder:text-[#24201E]/40 focus:outline-none focus:border-[#B89458] focus:bg-white transition-colors"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* CLIENT CONTACT INFORMATION */}
@@ -436,6 +811,60 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
           )}
 
         </div>
+
+        {/* ENLARGED REFERENCE PHOTO LIGHTBOX MODAL */}
+        {zoomedImage && (
+          <div
+            id="bespoke-zoom-lightbox"
+            className="fixed inset-0 z-60 bg-black/85 backdrop-blur-xs flex items-center justify-center p-4"
+            onClick={() => setZoomedImage(null)}
+          >
+            <div
+              className="relative max-w-2xl w-full bg-[#35171B] rounded-2xl overflow-hidden shadow-2xl border border-[#B89458]/40 flex flex-col max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-3 sm:p-4 bg-[#240F12] flex items-center justify-between border-b border-[#B89458]/20 shrink-0">
+                <div className="min-w-0 pr-3">
+                  <h4 className="text-xs sm:text-sm font-serif text-[#F4EEE4] font-medium truncate">
+                    {zoomedImage.name}
+                  </h4>
+                  <p className="text-[10px] font-mono text-[#B89458]">
+                    {zoomedImage.sizeFormatted}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setZoomedImage(null)}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  aria-label="Close photo preview"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-auto p-3 bg-black/40 flex items-center justify-center min-h-[250px]">
+                <img
+                  src={zoomedImage.previewUrl}
+                  alt={zoomedImage.name}
+                  className="max-h-[55vh] max-w-full object-contain rounded-lg shadow-lg"
+                />
+              </div>
+
+              <div className="p-3 sm:p-4 bg-[#240F12] border-t border-[#B89458]/20 shrink-0">
+                <label className="block text-[10px] font-serif uppercase tracking-wider text-[#B89458] mb-1 font-semibold">
+                  Reference Note / Instruction
+                </label>
+                <input
+                  type="text"
+                  value={zoomedImage.note}
+                  onChange={(e) => handleUpdateImageNote(zoomedImage.id, e.target.value)}
+                  placeholder="e.g. Love the curved pill edges on this piece..."
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-[#B89458]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

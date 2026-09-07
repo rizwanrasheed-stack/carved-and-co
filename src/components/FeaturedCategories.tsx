@@ -300,13 +300,13 @@ export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: Featured
                   </span>
                 </div>
                 <h3 className="font-serif text-2xl sm:text-3xl font-normal mb-2 sm:mb-3 text-white group-hover:text-[#B89458] transition-colors">
-                  Bespoke Studio
+                  Create Your Own Piece
                 </h3>
                 <p className="text-xs text-white/80 font-light mb-4 sm:mb-6 leading-relaxed line-clamp-2">
-                  Bring your exact floorplans, preferred finishes, and custom dimensions directly to our master craftsmen.
+                  Upload reference pictures, share inspiration, choose wood tones & specify dimensions directly to our master craftsmen.
                 </p>
                 <div className="inline-flex items-center gap-2 text-xs font-serif uppercase tracking-[0.16em] sm:tracking-[0.2em] text-[#B89458] group-hover:translate-x-2 transition-transform duration-300 font-semibold">
-                  <span>Start Custom Project</span>
+                  <span>Create Your Custom Piece</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
