@@ -1,4 +1,5 @@
-import { Sparkles, CheckCircle2, ShieldCheck, TreePine, Hammer } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Sparkles, CheckCircle2, Hammer } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 
 interface AboutSectionProps {
@@ -11,7 +12,13 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* SECTION HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+        >
           <span className="text-[11px] sm:text-xs font-serif tracking-[0.25em] text-[#6A353A] uppercase block mb-3 font-semibold">
             Heritage & Craftsmanship
           </span>
@@ -21,25 +28,31 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
           <p className="text-xs sm:text-sm lg:text-base text-[#24201E]/80 leading-relaxed font-light">
             CARVED & CO. was founded on a simple conviction: true luxury lies in authentic handcraftsmanship, premium tailored materials, and furniture built to survive generations of living.
           </p>
-        </div>
+        </motion.div>
 
         {/* SPLIT LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           
           {/* LEFT SIDE: WORKSHOP PHOTOGRAPHY COLLAGE */}
-          <div className="relative">
+          <motion.div 
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative min-w-0"
+          >
             
             {/* MAIN WORKSHOP PHOTO */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
               <img
                 src={COMPANY_INFO.workshopImages.hero1}
                 alt="CARVED & CO. Master Artisans Crafting Fine Furniture"
                 referrerPolicy="no-referrer"
-                className="w-full h-[380px] sm:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+                className="w-full h-[320px] xs:h-[380px] sm:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#35171B]/70 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <span className="text-xs font-serif uppercase tracking-widest text-[#B89458] block mb-1 font-semibold">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#35171B]/80 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white">
+                <span className="text-[10px] sm:text-xs font-serif uppercase tracking-widest text-[#B89458] block mb-1 font-semibold">
                   Artisan Workshop
                 </span>
                 <p className="text-xs sm:text-sm font-light text-[#F4EEE4]">
@@ -63,19 +76,25 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
               </div>
             </div>
 
-            {/* FLOATING BADGE */}
-            <div className="absolute top-6 left-6 bg-[#35171B]/90 backdrop-blur-md text-[#F4EEE4] p-4 rounded-xl border border-[#B89458]/40 shadow-lg flex items-center gap-3">
-              <Hammer className="w-6 h-6 text-[#B89458]" />
-              <div>
-                <p className="font-serif text-lg leading-none font-bold">50+ Years</p>
-                <p className="text-[10px] uppercase text-[#B89458] tracking-wider font-medium">Combined Design Heritage</p>
+            {/* FLOATING BADGE — RESPONSIVE SIZING FOR MOBILE */}
+            <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-[#35171B]/90 backdrop-blur-md text-[#F4EEE4] p-3 sm:p-4 rounded-xl border border-[#B89458]/40 shadow-lg flex items-center gap-2.5 sm:gap-3 max-w-[calc(100%-1.5rem)]">
+              <Hammer className="w-5 h-5 sm:w-6 sm:h-6 text-[#B89458] shrink-0" />
+              <div className="min-w-0">
+                <p className="font-serif text-base sm:text-lg leading-none font-bold truncate">50+ Years</p>
+                <p className="text-[9px] sm:text-[10px] uppercase text-[#B89458] tracking-wider font-medium truncate">Combined Design Heritage</p>
               </div>
             </div>
 
-          </div>
+          </motion.div>
 
           {/* RIGHT SIDE: STORY CONTENT */}
-          <div className="flex flex-col justify-center">
+          <motion.div 
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col justify-center min-w-0"
+          >
             
             <span className="inline-flex items-center gap-2 text-xs font-serif text-[#6A353A] uppercase tracking-widest mb-3 font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-[#B89458]" />
@@ -122,18 +141,20 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
             {/* ACTION BUTTON */}
             {onOpenBespoke && (
               <div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   id="about-bespoke-cta"
                   onClick={onOpenBespoke}
                   className="inline-flex items-center gap-3 bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-serif text-xs tracking-widest uppercase transition-colors duration-300 shadow-md cursor-pointer font-semibold min-h-[44px]"
                 >
                   <span>Request Custom Furniture Consultation</span>
                   <span>→</span>
-                </button>
+                </motion.button>
               </div>
             )}
 
-          </div>
+          </motion.div>
 
         </div>
 

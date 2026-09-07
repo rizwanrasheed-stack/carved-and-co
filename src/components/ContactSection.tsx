@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { motion } from 'motion/react';
 import { 
   MessageCircle, 
   Instagram, 
@@ -64,11 +65,17 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
   const whatsappUrl = `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(prefilledWhatsappMsg)}`;
 
   return (
-    <section id="contact-section" className="py-20 sm:py-28 bg-[#F4EEE4] text-[#24201E] relative">
+    <section id="contact-section" className="py-20 sm:py-28 bg-[#F4EEE4] text-[#24201E] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+        >
           <span className="text-[11px] sm:text-xs font-serif tracking-[0.25em] text-[#6A353A] uppercase block mb-3 font-semibold">
             Private Concierge & Custom Orders
           </span>
@@ -78,12 +85,18 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
           <p className="text-xs sm:text-sm lg:text-base text-[#24201E]/80 font-light leading-relaxed">
             Whether you need a single statement sofa, a custom 12-foot dining table, or full interior furniture specifications, our concierge team is ready to assist.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12">
           
           {/* LEFT 5 COLS: CONTACT INFORMATION & QUICK LINKS */}
-          <div className="lg:col-span-5 space-y-6 sm:space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 space-y-6 sm:space-y-8 min-w-0"
+          >
             
             <div className="bg-[#35171B] text-[#F4EEE4] p-6 sm:p-8 rounded-2xl shadow-2xl space-y-6 border border-[#B89458]/20">
               
@@ -97,19 +110,23 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
               </div>
 
               {/* WHATSAPP CTA BUTTON */}
-              <a
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 id="contact-whatsapp-direct"
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-4 px-6 rounded-xl font-serif text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-3 cursor-pointer font-bold min-h-[44px]"
+                className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-4 px-6 rounded-xl font-serif text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-3 cursor-pointer font-bold min-h-[44px]"
               >
                 <MessageCircle className="w-5 h-5" />
                 <span>Chat Instantly on WhatsApp</span>
-              </a>
+              </motion.a>
 
               {/* INSTAGRAM CTA BUTTON */}
-              <a
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 id="contact-instagram-direct"
                 href={COMPANY_INFO.instagramUrl}
                 target="_blank"
@@ -118,24 +135,24 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
               >
                 <Instagram className="w-5 h-5 text-[#B89458]" />
                 <span>Follow & DM on Instagram</span>
-              </a>
+              </motion.a>
 
               {/* CONTACT DETAILS LIST */}
               <div className="pt-4 border-t border-[#B89458]/20 space-y-4 text-xs font-light">
                 
                 <div className="flex items-start gap-3">
                   <Phone className="w-4 h-4 text-[#B89458] shrink-0 mt-0.5" />
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[#B89458] font-medium uppercase tracking-wider text-[10px]">Direct Phone</p>
-                    <a href={`tel:${COMPANY_INFO.phoneClean}`} className="text-[#F4EEE4] hover:underline font-normal">{COMPANY_INFO.phone}</a>
+                    <a href={`tel:${COMPANY_INFO.phoneClean}`} className="text-[#F4EEE4] hover:underline font-normal break-all">{COMPANY_INFO.phone}</a>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <Mail className="w-4 h-4 text-[#B89458] shrink-0 mt-0.5" />
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[#B89458] font-medium uppercase tracking-wider text-[10px]">Email Enquiries</p>
-                    <a href={`mailto:${COMPANY_INFO.email}`} className="text-[#F4EEE4] hover:underline font-normal">{COMPANY_INFO.email}</a>
+                    <a href={`mailto:${COMPANY_INFO.email}`} className="text-[#F4EEE4] hover:underline font-normal break-all">{COMPANY_INFO.email}</a>
                   </div>
                 </div>
 
@@ -143,10 +160,16 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
 
             </div>
 
-          </div>
+          </motion.div>
 
           {/* RIGHT 7 COLS: INQUIRY FORM */}
-          <div className="lg:col-span-7 bg-[#EDE3D5] p-6 sm:p-10 rounded-2xl border border-[#35171B]/15 shadow-xl">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7 bg-[#EDE3D5] p-5 xs:p-6 sm:p-10 rounded-2xl border border-[#35171B]/15 shadow-xl min-w-0"
+          >
             
             <div className="mb-6 border-b border-[#35171B]/10 pb-4">
               <span className="text-xs font-serif text-[#6A353A] uppercase tracking-widest block mb-1 font-semibold">
@@ -206,7 +229,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Elizabeth Taylor"
-                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
+                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458] min-h-[44px]"
                     />
                   </div>
 
@@ -220,7 +243,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+1 (555) 000-0000"
-                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
+                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458] min-h-[44px]"
                     />
                   </div>
                 </div>
@@ -236,7 +259,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="name@domain.com"
-                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
+                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458] min-h-[44px]"
                     />
                   </div>
 
@@ -247,7 +270,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                     <select
                       value={formData.clientType}
                       onChange={(e) => setFormData({ ...formData, clientType: e.target.value })}
-                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
+                      className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458] min-h-[44px]"
                     >
                       <option value="Homeowner">Homeowner</option>
                       <option value="Interior Designer">Interior Designer</option>
@@ -265,7 +288,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                   <select
                     value={formData.furnitureType}
                     onChange={(e) => setFormData({ ...formData, furnitureType: e.target.value })}
-                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458]"
+                    className="w-full bg-white border border-[#35171B]/20 rounded-xl p-3 text-xs text-[#24201E] focus:outline-none focus:border-[#B89458] min-h-[44px]"
                   >
                     <option value="Custom Sofas">Sofas & Sectionals</option>
                     <option value="Dining Tables">Dining Tables</option>
@@ -290,19 +313,21 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                   />
                 </div>
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-4 px-6 rounded-xl font-serif text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-3 cursor-pointer font-bold disabled:opacity-50 min-h-[44px]"
                 >
                   <Send className="w-4 h-4" />
                   <span>{isSubmitting ? 'Submitting to Studio...' : 'Submit Order Inquiry'}</span>
-                </button>
+                </motion.button>
 
               </form>
             )}
 
-          </div>
+          </motion.div>
 
         </div>
 

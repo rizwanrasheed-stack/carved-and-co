@@ -72,7 +72,7 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-12 pb-12 sm:pb-16 border-b border-[#F4EEE4]/15">
         
         {/* BRAND COLUMN */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4 min-w-0 max-w-full">
           <BrandLogo variant="fullLength" size="lg" isLightBg={false} />
 
           <p className="font-serif text-xs sm:text-sm text-[#B89458] font-medium">
@@ -93,7 +93,7 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
               href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-3 rounded-full bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center shadow-xs"
               title="WhatsApp Concierge"
               aria-label="WhatsApp Concierge"
             >
@@ -104,7 +104,7 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
               href={COMPANY_INFO.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full bg-white/10 text-white hover:bg-[#B89458] hover:text-[#35171B] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-3 rounded-full bg-white/10 text-white hover:bg-[#B89458] hover:text-[#35171B] transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center shadow-xs"
               title="Instagram"
               aria-label="Instagram Portfolio"
             >
@@ -113,7 +113,7 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
 
             <a
               href={`mailto:${COMPANY_INFO.email}`}
-              className="p-3 rounded-full bg-white/10 text-white hover:bg-[#B89458] hover:text-[#35171B] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-3 rounded-full bg-white/10 text-white hover:bg-[#B89458] hover:text-[#35171B] transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center shadow-xs"
               title="Email Us"
               aria-label="Email Us"
             >
@@ -203,17 +203,20 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
       </div>
 
       {/* FOOTER BOTTOM LEGAL & BACK TO TOP */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#F4EEE4]/60 font-light gap-4">
-        <p>© {new Date().getFullYear()} CARVED & CO. Handcrafted Bespoke Furniture. All rights reserved.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#F4EEE4]/70 font-light gap-4">
+        <p className="text-center sm:text-left text-[11px] sm:text-xs leading-relaxed max-w-full break-words">
+          © {new Date().getFullYear()} CARVED & CO. Handcrafted Bespoke Furniture. All rights reserved.
+        </p>
 
-        <div className="flex items-center gap-6">
-          <button onClick={onOpenPrivacy} className="hover:text-[#B89458] transition-colors cursor-pointer py-1">
+        <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+          <button onClick={onOpenPrivacy} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 text-[11px] sm:text-xs">
             Privacy Policy & Terms
           </button>
           
           <button 
             onClick={scrollToTop}
             className="p-2.5 px-4 rounded-full bg-white/10 hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] transition-all duration-300 flex items-center gap-2 cursor-pointer font-serif text-[11px] uppercase tracking-wider font-semibold min-h-[44px]"
+            aria-label="Back to Top"
           >
             <span>Top</span>
             <ArrowUp className="w-3.5 h-3.5" />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Search, Heart, Sparkles, Menu, X, ChevronDown, Armchair, Table as TableIcon, PhoneCall } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 import logoNoText from '../assets/images/carved and co logo no text alpha.png';
@@ -262,97 +263,106 @@ export function Navbar({
 
         </div>
 
-        {/* MOBILE DRAWER MENU - REFINED EDITORIAL LAYOUT */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#F4EEE4] text-[#35171B] px-5 pt-4 pb-8 border-b border-[#B89458]/30 space-y-4 animate-in slide-in-from-top duration-300 max-h-[85vh] overflow-y-auto">
-            <button
-              onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
-              className="block w-full text-left font-serif text-base uppercase tracking-widest py-2.5 border-b border-[#35171B]/10 font-medium min-h-[44px] flex items-center"
+        {/* MOBILE DRAWER MENU - REFINED EDITORIAL LAYOUT WITH MOTION */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="md:hidden bg-[#F4EEE4] text-[#35171B] px-5 pt-4 pb-8 border-b border-[#B89458]/30 space-y-4 max-h-[85vh] overflow-y-auto"
             >
-              Home
-            </button>
-
-            {/* SOFAS SECTION */}
-            <div className="space-y-1 pt-1">
-              <div className="flex items-center justify-between py-1">
-                <span className="text-xs font-serif text-[#6A353A] font-bold uppercase tracking-widest flex items-center gap-1.5">
-                  <Armchair className="w-3.5 h-3.5 text-[#B89458]" />
-                  <span>Sofas</span>
-                </span>
-              </div>
               <button
-                onClick={() => { onNavigate('sofas', 'All Sofas'); setMobileMenuOpen(false); }}
-                className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
+                onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
+                className="block w-full text-left font-serif text-base uppercase tracking-widest py-2.5 border-b border-[#35171B]/10 font-medium min-h-[44px] flex items-center"
               >
-                Explore All Sofas
-              </button>
-              <div className="grid grid-cols-2 gap-1 pl-2">
-                {SOFA_MENU_ITEMS.map((sub) => (
-                  <button
-                    key={sub}
-                    onClick={() => { onNavigate('sofas', sub); setMobileMenuOpen(false); }}
-                    className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
-                  >
-                    • {sub}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* TABLES SECTION */}
-            <div className="space-y-1 pt-2 border-t border-[#35171B]/10">
-              <div className="flex items-center justify-between py-1">
-                <span className="text-xs font-serif text-[#6A353A] font-bold uppercase tracking-widest flex items-center gap-1.5">
-                  <TableIcon className="w-3.5 h-3.5 text-[#B89458]" />
-                  <span>Tables</span>
-                </span>
-              </div>
-              <button
-                onClick={() => { onNavigate('tables', 'All Tables'); setMobileMenuOpen(false); }}
-                className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
-              >
-                Explore All Tables
-              </button>
-              <div className="grid grid-cols-2 gap-1 pl-2">
-                {TABLE_MENU_ITEMS.map((sub) => (
-                  <button
-                    key={sub}
-                    onClick={() => { onNavigate('tables', sub); setMobileMenuOpen(false); }}
-                    className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
-                  >
-                    • {sub}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* CUSTOM STUDIO CTA */}
-            <button
-              onClick={() => { onOpenBespoke(); setMobileMenuOpen(false); }}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#B89458] hover:bg-[#a58248] text-[#35171B] font-serif text-xs font-bold uppercase tracking-widest mt-3 shadow-md min-h-[44px]"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Custom Studio (Bespoke)</span>
-            </button>
-
-            {/* ABOUT & CONTACT */}
-            <div className="pt-2 border-t border-[#35171B]/10 space-y-1">
-              <button
-                onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
-                className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
-              >
-                About / Craftsmanship
+                Home
               </button>
 
-              <button
-                onClick={() => { onNavigate('contact'); setMobileMenuOpen(false); }}
-                className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
+              {/* SOFAS SECTION */}
+              <div className="space-y-1 pt-1">
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-xs font-serif text-[#6A353A] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                    <Armchair className="w-3.5 h-3.5 text-[#B89458]" />
+                    <span>Sofas</span>
+                  </span>
+                </div>
+                <button
+                  onClick={() => { onNavigate('sofas', 'All Sofas'); setMobileMenuOpen(false); }}
+                  className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
+                >
+                  Explore All Sofas
+                </button>
+                <div className="grid grid-cols-2 gap-1 pl-2">
+                  {SOFA_MENU_ITEMS.map((sub) => (
+                    <button
+                      key={sub}
+                      onClick={() => { onNavigate('sofas', sub); setMobileMenuOpen(false); }}
+                      className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
+                    >
+                      • {sub}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* TABLES SECTION */}
+              <div className="space-y-1 pt-2 border-t border-[#35171B]/10">
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-xs font-serif text-[#6A353A] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                    <TableIcon className="w-3.5 h-3.5 text-[#B89458]" />
+                    <span>Tables</span>
+                  </span>
+                </div>
+                <button
+                  onClick={() => { onNavigate('tables', 'All Tables'); setMobileMenuOpen(false); }}
+                  className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
+                >
+                  Explore All Tables
+                </button>
+                <div className="grid grid-cols-2 gap-1 pl-2">
+                  {TABLE_MENU_ITEMS.map((sub) => (
+                    <button
+                      key={sub}
+                      onClick={() => { onNavigate('tables', sub); setMobileMenuOpen(false); }}
+                      className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
+                    >
+                      • {sub}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CUSTOM STUDIO CTA */}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => { onOpenBespoke(); setMobileMenuOpen(false); }}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#B89458] hover:bg-[#a58248] text-[#35171B] font-serif text-xs font-bold uppercase tracking-widest mt-3 shadow-md min-h-[44px] cursor-pointer"
               >
-                Contact
-              </button>
-            </div>
-          </div>
-        )}
+                <Sparkles className="w-4 h-4" />
+                <span>Custom Studio (Bespoke)</span>
+              </motion.button>
+
+              {/* ABOUT & CONTACT */}
+              <div className="pt-2 border-t border-[#35171B]/10 space-y-1">
+                <button
+                  onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
+                  className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
+                >
+                  About / Craftsmanship
+                </button>
+
+                <button
+                  onClick={() => { onNavigate('contact'); setMobileMenuOpen(false); }}
+                  className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
+                >
+                  Contact
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </header>
   );

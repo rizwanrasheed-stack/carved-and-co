@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { 
   Hammer, 
   TreePine, 
@@ -56,7 +57,13 @@ export function WhyChooseUs() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* SECTION HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+        >
           <span className="text-[11px] sm:text-xs font-serif tracking-[0.25em] text-[#B89458] uppercase block mb-3 font-semibold">
             The CARVED & CO. Philosophy
           </span>
@@ -66,27 +73,32 @@ export function WhyChooseUs() {
           <svg className="w-20 h-2 text-[#B89458] mx-auto mt-5 sm:mt-6" viewBox="0 0 80 8" fill="none">
             <path d="M 0 4 Q 20 0, 40 4 T 80 4" stroke="#B89458" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
-        </div>
+        </motion.div>
 
         {/* 7 LUXURY FEATURE CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-8">
           {FEATURES.map((f, i) => {
             const IconComponent = f.icon;
             return (
-              <div 
+              <motion.div 
                 key={i}
-                className="bg-[#4A1F24]/50 p-6 sm:p-8 rounded-2xl border border-[#B89458]/25 hover:border-[#B89458] transition-all duration-500 group shadow-lg hover:shadow-2xl hover:-translate-y-1"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                whileHover={{ y: -6, scale: 1.01 }}
+                className="bg-[#4A1F24]/50 p-5 sm:p-8 rounded-2xl border border-[#B89458]/25 hover:border-[#B89458] transition-colors duration-300 group shadow-lg hover:shadow-2xl min-w-0"
               >
-                <div className="w-12 h-12 rounded-xl bg-[#B89458]/15 border border-[#B89458]/40 flex items-center justify-center text-[#B89458] mb-5 group-hover:bg-[#B89458] group-hover:text-[#35171B] transition-colors">
+                <div className="w-12 h-12 rounded-xl bg-[#B89458]/15 border border-[#B89458]/40 flex items-center justify-center text-[#B89458] mb-5 group-hover:bg-[#B89458] group-hover:text-[#35171B] transition-colors duration-300">
                   <IconComponent className="w-6 h-6" />
                 </div>
-                <h3 className="font-serif text-lg sm:text-xl font-semibold text-[#F4EEE4] mb-2.5 group-hover:text-[#B89458] transition-colors">
+                <h3 className="font-serif text-lg sm:text-xl font-semibold text-[#F4EEE4] mb-2.5 group-hover:text-[#B89458] transition-colors duration-300">
                   {f.title}
                 </h3>
                 <p className="text-xs text-[#F4EEE4]/80 font-light leading-relaxed">
                   {f.description}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>
