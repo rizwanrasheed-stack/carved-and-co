@@ -11,10 +11,12 @@ import {
   Trash2,
   ZoomIn,
   AlertCircle,
-  Plus
+  Plus,
+  Mail
 } from 'lucide-react';
 import { Product, WoodType, FinishType } from '../types';
 import { COMPANY_INFO } from '../data/company';
+import { sendInquiryToCompanyEmail, generateMailtoUrl, TARGET_COMPANY_EMAIL } from '../services/emailService';
 
 interface BespokeStudioModalProps {
   isOpen: boolean;
@@ -27,9 +29,26 @@ export interface UploadedReferenceImage {
   name: string;
   sizeFormatted: string;
   sizeBytes: number;
+  mimeType: string;
   previewUrl: string;
   note: string;
 }
+
+const ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.heic', '.heif'];
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/heic',
+  'image/heif',
+  'image/pjpeg',
+  'image/x-png',
+];
+const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024; // 8MB per file
+const MAX_TOTAL_SIZE_BYTES = 20 * 1024 * 1024; // 20MB total attachments
+const MAX_PHOTOS_COUNT = 6;
 
 export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeStudioModalProps) {
   if (!isOpen) return null;
@@ -54,6 +73,7 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
   const [notes, setNotes] = useState<string>('');
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submissionMethod, setSubmissionMethod] = useState<'email' | 'whatsapp'>('email');
   const [quoteId, setQuoteId] = useState<string>('');
 
   // REFERENCE IMAGES STATE
@@ -69,48 +89,89 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const isImageFileValid = (file: File): boolean => {
+    const nameLower = file.name.toLowerCase();
+    const hasValidExt = ALLOWED_IMAGE_EXTENSIONS.some((ext) => nameLower.endsWith(ext));
+    const hasValidMime =
+      Boolean(file.type) &&
+      (ALLOWED_MIME_TYPES.includes(file.type.toLowerCase()) || file.type.startsWith('image/'));
+    return hasValidExt || hasValidMime;
+  };
+
   const handleFiles = (files: FileList | File[]) => {
     setUploadError(null);
     const fileArray = Array.from(files);
-    const validImageFiles = fileArray.filter((file) => file.type.startsWith('image/'));
 
-    if (validImageFiles.length === 0 && fileArray.length > 0) {
-      setUploadError('Please select valid image files (JPG, PNG, WEBP, HEIC, etc.).');
+    if (fileArray.length === 0) return;
+
+    // 1. Validate File Types
+    const invalidTypeFiles = fileArray.filter((file) => !isImageFileValid(file));
+    if (invalidTypeFiles.length > 0) {
+      setUploadError(
+        `"${invalidTypeFiles[0].name}" is not a supported image. Please upload JPG, PNG, WEBP, GIF, or HEIC files.`
+      );
       return;
     }
 
-    const maxPhotos = 6;
-    const remainingSlots = maxPhotos - referenceImages.length;
+    const remainingSlots = MAX_PHOTOS_COUNT - referenceImages.length;
     if (remainingSlots <= 0) {
-      setUploadError(`Maximum of ${maxPhotos} reference photos reached.`);
+      setUploadError(`Maximum of ${MAX_PHOTOS_COUNT} reference photos reached.`);
       return;
     }
 
-    const filesToProcess = validImageFiles.slice(0, remainingSlots);
-    if (validImageFiles.length > remainingSlots) {
-      setUploadError(`Only ${remainingSlots} more photo(s) could be added (max ${maxPhotos} photos total).`);
+    const filesToProcess = fileArray.slice(0, remainingSlots);
+    if (fileArray.length > remainingSlots) {
+      setUploadError(
+        `Only ${remainingSlots} more photo(s) could be added (maximum ${MAX_PHOTOS_COUNT} photos total).`
+      );
     }
+
+    // 2. Calculate current total size
+    let runningTotalBytes = referenceImages.reduce((sum, img) => sum + img.sizeBytes, 0);
 
     filesToProcess.forEach((file) => {
-      // 15MB size ceiling
-      if (file.size > 15 * 1024 * 1024) {
-        setUploadError(`"${file.name}" exceeds the 15MB size limit.`);
+      // 3. Validate Single File Size (8MB ceiling)
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setUploadError(
+          `"${file.name}" (${formatFileSize(file.size)}) exceeds the 8MB attachment limit for email delivery. Please select a photo under 8MB.`
+        );
         return;
       }
+
+      // 4. Validate Total Attachment Size (20MB ceiling)
+      if (runningTotalBytes + file.size > MAX_TOTAL_SIZE_BYTES) {
+        setUploadError(
+          `Adding "${file.name}" would exceed the 20MB total attachment limit. Please upload a smaller photo or remove an existing one.`
+        );
+        return;
+      }
+
+      runningTotalBytes += file.size;
 
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
+        const detectedMime =
+          file.type ||
+          (file.name.toLowerCase().endsWith('.png')
+            ? 'image/png'
+            : file.name.toLowerCase().endsWith('.webp')
+            ? 'image/webp'
+            : file.name.toLowerCase().endsWith('.gif')
+            ? 'image/gif'
+            : 'image/jpeg');
+
         const newImg: UploadedReferenceImage = {
           id: `ref-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           name: file.name,
           sizeFormatted: formatFileSize(file.size),
           sizeBytes: file.size,
+          mimeType: detectedMime,
           previewUrl: result,
           note: '',
         };
         setReferenceImages((prev) => {
-          if (prev.length >= maxPhotos) return prev;
+          if (prev.length >= MAX_PHOTOS_COUNT) return prev;
           return [...prev, newImg];
         });
       };
@@ -194,100 +255,67 @@ ${imagesSummary}
     const url = `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     
-    // Also record on backend if available, and localStorage
     try {
-      const res = await fetch('/api/bespoke', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          quoteId: activeQuoteId,
-          clientName,
-          clientPhone,
-          clientEmail,
-          clientType,
-          furnitureType,
-          woodPreference,
-          fabricPreference,
-          finishPreference,
-          dimensions,
-          notes: `${notes} (Sent via WhatsApp)`,
-          referenceImages: referenceImages.map(img => ({
-            name: img.name,
-            size: img.sizeFormatted,
-            note: img.note,
-            previewUrl: img.previewUrl
-          }))
-        })
+      const saved = JSON.parse(localStorage.getItem('carved_co_bespoke_quotes') || '[]');
+      saved.unshift({
+        id: activeQuoteId,
+        method: 'whatsapp',
+        clientName,
+        clientPhone,
+        clientEmail,
+        furnitureType,
+        woodPreference,
+        dimensions,
+        referenceImagesCount: referenceImages.length,
+        referenceImages: referenceImages.map(img => ({
+          name: img.name,
+          size: img.sizeFormatted,
+          note: img.note,
+          previewUrl: img.previewUrl
+        })),
+        submittedAt: new Date().toISOString()
       });
-      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
-        const data = await res.json();
-        if (data.quoteId) activeQuoteId = data.quoteId;
-      }
+      localStorage.setItem('carved_co_bespoke_quotes', JSON.stringify(saved.slice(0, 50)));
     } catch {
-      // Graceful static hosting fallback
-    } finally {
-      try {
-        const saved = JSON.parse(localStorage.getItem('carved_co_bespoke_quotes') || '[]');
-        saved.unshift({
-          id: activeQuoteId,
-          clientName,
-          clientPhone,
-          clientEmail,
-          furnitureType,
-          woodPreference,
-          dimensions,
-          referenceImagesCount: referenceImages.length,
-          referenceImages: referenceImages.map(img => ({
-            name: img.name,
-            size: img.sizeFormatted,
-            note: img.note,
-            previewUrl: img.previewUrl
-          })),
-          submittedAt: new Date().toISOString()
-        });
-        localStorage.setItem('carved_co_bespoke_quotes', JSON.stringify(saved.slice(0, 50)));
-      } catch {
-        // storage ignored
-      }
-      setQuoteId(activeQuoteId);
-      setSubmitted(true);
+      // storage ignored
     }
+    setQuoteId(activeQuoteId);
+    setSubmissionMethod('whatsapp');
+    setSubmitted(true);
   };
 
-  const handleEmailSubmit = async (e: FormEvent) => {
+  // Form submission: sends directly to company email (carvedandco@carvedandco.net)
+  const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     const fallbackId = `BESPOKE-${Date.now().toString(36).toUpperCase()}`;
     let activeQuoteId = fallbackId;
 
     try {
-      const res = await fetch('/api/bespoke', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          quoteId: activeQuoteId,
-          clientName,
-          clientPhone,
-          clientEmail,
-          clientType,
-          furnitureType,
-          woodPreference,
-          fabricPreference,
-          finishPreference,
-          dimensions,
-          notes,
-          referenceImages: referenceImages.map(img => ({
-            name: img.name,
-            size: img.sizeFormatted,
-            note: img.note,
-            previewUrl: img.previewUrl
-          }))
-        })
+      const res = await sendInquiryToCompanyEmail({
+        quoteId: activeQuoteId,
+        clientName,
+        clientPhone,
+        clientEmail,
+        clientType,
+        furnitureType,
+        woodPreference,
+        fabricPreference,
+        finishPreference,
+        dimensions,
+        notes,
+        referenceImagesCount: referenceImages.length,
+        referenceImagesNotes: referenceImages.map(img => `${img.name}: ${img.note || 'No custom note'}`),
+        referenceImages: referenceImages.map(img => ({
+          name: img.name,
+          mimeType: img.mimeType || 'image/jpeg',
+          sizeBytes: img.sizeBytes,
+          sizeFormatted: img.sizeFormatted,
+          data: img.previewUrl,
+          note: img.note || ''
+        }))
       });
-      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
-        const data = await res.json();
-        if (data.quoteId) activeQuoteId = data.quoteId;
-      }
+      if (res.referenceNumber) activeQuoteId = res.referenceNumber;
     } catch {
       // Graceful static hosting fallback
     } finally {
@@ -295,6 +323,8 @@ ${imagesSummary}
         const saved = JSON.parse(localStorage.getItem('carved_co_bespoke_quotes') || '[]');
         saved.unshift({
           id: activeQuoteId,
+          method: 'email',
+          targetEmail: TARGET_COMPANY_EMAIL,
           clientName,
           clientPhone,
           clientEmail,
@@ -305,8 +335,9 @@ ${imagesSummary}
           referenceImages: referenceImages.map(img => ({
             name: img.name,
             size: img.sizeFormatted,
-            note: img.note,
-            previewUrl: img.previewUrl
+            sizeBytes: img.sizeBytes,
+            mimeType: img.mimeType,
+            note: img.note
           })),
           submittedAt: new Date().toISOString()
         });
@@ -316,6 +347,7 @@ ${imagesSummary}
       }
       setQuoteId(activeQuoteId);
       setIsSubmitting(false);
+      setSubmissionMethod('email');
       setSubmitted(true);
     }
   };
@@ -382,16 +414,27 @@ ${imagesSummary}
             <div className="text-center py-8 sm:py-12 space-y-4">
               <CheckCircle2 className="w-12 h-12 sm:w-16 sm:h-16 text-[#B89458] mx-auto" />
               <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-[#35171B]">
-                Custom Inquiry Transmitted
+                {submissionMethod === 'email' ? 'Bespoke Specs Sent to Studio Email' : 'Custom Inquiry Transmitted to WhatsApp'}
               </h3>
               {quoteId && (
                 <div className="inline-block px-4 py-1.5 bg-[#35171B]/10 rounded-full text-xs font-mono font-medium text-[#35171B]">
                   Quote Spec Ref: {quoteId}
                 </div>
               )}
-              <p className="text-xs sm:text-sm text-[#24201E]/80 max-w-md mx-auto font-light leading-relaxed">
-                Thank you, <strong className="font-semibold text-[#35171B]">{clientName || 'valued client'}</strong>. Our senior draughtsman and artisan team have received your specifications and will review your dimensions within 24 hours.
-              </p>
+              {submissionMethod === 'email' ? (
+                <div className="space-y-2 max-w-md mx-auto">
+                  <p className="text-xs sm:text-sm text-[#24201E]/85 font-light leading-relaxed">
+                    Thank you, <strong className="font-semibold text-[#35171B]">{clientName || 'valued client'}</strong>. Your tailored dimensions, wood finish preferences, and reference specifications have been submitted directly to <strong className="font-semibold text-[#35171B]">carvedandco@carvedandco.net</strong>.
+                  </p>
+                  <p className="text-[11px] text-[#24201E]/70 font-light">
+                    Our senior draughtsman and master artisans will review your custom order and contact you at <strong>{clientEmail || 'your provided contact'}</strong> within 24 hours.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs sm:text-sm text-[#24201E]/80 max-w-md mx-auto font-light leading-relaxed">
+                  Thank you, <strong className="font-semibold text-[#35171B]">{clientName || 'valued client'}</strong>. Your specifications have been formatted and launched directly in WhatsApp.
+                </p>
+              )}
 
               {/* REFERENCE IMAGES SUMMARY ON SUBMITTED SCREEN */}
               {referenceImages.length > 0 && (
@@ -419,30 +462,63 @@ ${imagesSummary}
                     ))}
                   </div>
                   <p className="text-[10px] sm:text-[11px] text-[#24201E]/70 mt-2.5 font-sans leading-relaxed">
-                    Tip: When opening WhatsApp, you can also attach or forward these reference pictures directly in the chat to discuss specific details with our draughtsman!
+                    Note: A summary of these reference photos has been recorded with quote ref <span className="font-mono text-[#35171B] font-semibold">{quoteId}</span>.
                   </p>
                 </div>
               )}
 
               <div className="pt-4 sm:pt-6 flex flex-wrap items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleWhatsAppSubmit}
-                  className="bg-[#25D366] text-white px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 cursor-pointer font-medium min-h-[44px]"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Forward via WhatsApp</span>
-                </button>
+                {submissionMethod === 'email' ? (
+                  <>
+                    <a
+                      href={generateMailtoUrl({
+                        quoteId,
+                        clientName,
+                        clientPhone,
+                        clientEmail,
+                        clientType,
+                        furnitureType,
+                        woodPreference,
+                        fabricPreference,
+                        finishPreference,
+                        dimensions,
+                        notes,
+                        referenceImagesCount: referenceImages.length
+                      }, quoteId)}
+                      className="bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-widest transition-colors flex items-center gap-2 font-semibold min-h-[44px]"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>Email Copy (carvedandco@carvedandco.net)</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleWhatsAppSubmit}
+                      className="bg-[#25D366] text-white px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 cursor-pointer font-medium min-h-[44px]"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Also Connect on WhatsApp</span>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppSubmit}
+                    className="bg-[#25D366] text-white px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 cursor-pointer font-medium min-h-[44px]"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Open WhatsApp Again</span>
+                  </button>
+                )}
                 <button
                   onClick={handleResetAndClose}
-                  className="bg-[#35171B] text-[#F4EEE4] px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-widest hover:bg-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer font-semibold min-h-[44px]"
+                  className="bg-white border border-[#35171B]/20 text-[#35171B] px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-widest hover:bg-[#FAF6F0] transition-colors cursor-pointer font-semibold min-h-[44px]"
                 >
                   Return to Showroom
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleEmailSubmit} className="space-y-4 sm:space-y-6">
+            <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6">
               
               {initialProduct && (
                 <div className="p-3 bg-[#B89458]/15 rounded-xl border border-[#B89458]/40 text-xs text-[#35171B] flex items-center justify-between gap-2">
@@ -622,7 +698,7 @@ ${imagesSummary}
                           {isDragging ? 'Drop reference photos here' : 'Drag & drop reference pictures here, or browse files'}
                         </p>
                         <p className="text-[10px] sm:text-[11px] text-[#24201E]/60 mt-0.5 font-sans">
-                          Supports JPEG, PNG, WEBP, HEIC (max 15MB each • {6 - referenceImages.length} slots remaining)
+                          Supports JPG, PNG, WEBP, GIF, HEIC (up to 8MB each • {MAX_PHOTOS_COUNT - referenceImages.length} slots remaining)
                         </p>
                       </div>
                       <button
@@ -784,27 +860,36 @@ ${imagesSummary}
                 />
               </div>
 
-              {/* SUBMIT BUTTONS */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                
-                <button
-                  type="button"
-                  onClick={handleWhatsAppSubmit}
-                  className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3.5 px-4 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer font-semibold min-h-[44px]"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Send Specs via WhatsApp</span>
-                </button>
-
+              {/* SUBMIT BUTTONS: EMAIL & WHATSAPP */}
+              <div className="pt-2 space-y-3">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-3.5 px-4 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 font-semibold min-h-[44px]"
+                  className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-4 px-6 rounded-xl font-serif text-xs sm:text-sm uppercase tracking-widest transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 font-bold min-h-[48px]"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Transmitting Specs...' : 'Submit Form Inquiry'}</span>
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>{isSubmitting ? 'Sending to carvedandco@carvedandco.net...' : 'Submit Bespoke Specs to Company Email'}</span>
                 </button>
+                <p className="text-[11px] text-center text-[#24201E]/70 font-sans">
+                  Custom specs and reference notes are sent directly to <strong className="text-[#35171B] font-medium">carvedandco@carvedandco.net</strong>.
+                </p>
 
+                <div className="relative flex items-center justify-center py-0.5">
+                  <div className="border-t border-[#35171B]/15 w-full"></div>
+                  <span className="bg-[#F4EEE4] px-3 text-[10px] font-serif uppercase tracking-widest text-[#35171B]/60 font-semibold shrink-0">
+                    Or Inquire via WhatsApp
+                  </span>
+                  <div className="border-t border-[#35171B]/15 w-full"></div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleWhatsAppSubmit}
+                  className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3.5 px-6 rounded-xl font-serif text-xs sm:text-sm uppercase tracking-wider transition-colors shadow-sm hover:shadow-md flex items-center justify-center gap-2.5 cursor-pointer font-semibold min-h-[44px]"
+                >
+                  <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Send Specs via WhatsApp Instead</span>
+                </button>
               </div>
 
             </form>

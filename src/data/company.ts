@@ -8,7 +8,7 @@ export const COMPANY_INFO = {
   whatsappMessageDefault: "Hello CARVED & CO., I'm interested in discussing custom furniture designs.",
   instagramHandle: '@carvedandco',
   instagramUrl: 'https://instagram.com/carvedandco',
-  email: 'concierge@carvedandco.com',
+  email: 'carvedandco@carvedandco.net',
   address: '488 Artisans Way, Mill District, Craftsville',
   workingHours: 'Mon - Sat: 9:00 AM - 7:00 PM EST',
   googleMapsUrl: 'https://maps.google.com/?q=488+Artisans+Way+Craftsville',

@@ -88,6 +88,13 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
             <span>Handcrafted with pride in our atelier workshop</span>
           </div>
 
+          <div className="text-[11px] text-[#F4EEE4]/85 font-mono flex items-center gap-2">
+            <Mail className="w-3.5 h-3.5 shrink-0 text-[#B89458]" />
+            <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-[#B89458] transition-colors">
+              {COMPANY_INFO.email}
+            </a>
+          </div>
+
           <div className="flex items-center gap-3 pt-2">
             <a
               href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}

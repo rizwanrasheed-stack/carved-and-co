@@ -7,9 +7,11 @@ import {
   Mail, 
   Send, 
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
+import { sendInquiryToCompanyEmail, generateMailtoUrl, TARGET_COMPANY_EMAIL } from '../services/emailService';
 
 interface ContactSectionProps {
   onOpenBespoke?: () => void;
@@ -27,8 +29,21 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionMethod, setSubmissionMethod] = useState<'email' | 'whatsapp'>('email');
   const [referenceNumber, setReferenceNumber] = useState('');
 
+  const buildWhatsappMessage = (ref: string) => {
+    return `Hello CARVED & CO., I would like to submit a furniture inquiry:
+• Inquiry Ref: ${ref}
+• Client Name: ${formData.name || 'Not provided'}
+• Client Type: ${formData.clientType}
+• Phone: ${formData.phone || 'Not provided'}
+• Email: ${formData.email || 'Not provided'}
+• Furniture Category: ${formData.furnitureType}
+• Requirements / Message: ${formData.message || 'I would like to inquire about custom options.'}`;
+  };
+
+  // Default form submission: sends directly to company email (carvedandco@carvedandco.net)
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -36,33 +51,55 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
     let refId = fallbackRef;
 
     try {
-      const res = await fetch('/api/inquiries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      const res = await sendInquiryToCompanyEmail({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        clientType: formData.clientType,
+        furnitureType: formData.furnitureType,
+        message: formData.message,
+        referenceNumber: fallbackRef
       });
-      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
-        const data = await res.json();
-        if (data.referenceNumber) refId = data.referenceNumber;
-      }
+      if (res.referenceNumber) refId = res.referenceNumber;
     } catch {
-      // Graceful static hosting fallback for Hostinger
+      // Graceful local logging fallback
     } finally {
       try {
         const saved = JSON.parse(localStorage.getItem('carved_co_inquiries') || '[]');
-        saved.unshift({ ...formData, id: refId, submittedAt: new Date().toISOString() });
+        saved.unshift({ ...formData, id: refId, method: 'email', targetEmail: TARGET_COMPANY_EMAIL, submittedAt: new Date().toISOString() });
         localStorage.setItem('carved_co_inquiries', JSON.stringify(saved.slice(0, 50)));
       } catch {
         // storage ignored
       }
       setReferenceNumber(refId);
       setIsSubmitting(false);
+      setSubmissionMethod('email');
       setSubmitted(true);
     }
   };
 
-  const prefilledWhatsappMsg = `Hello CARVED & CO., my name is ${formData.name || 'a client'}. I would like to inquire about ${formData.furnitureType}. Message: ${formData.message || 'I would like to discuss custom options.'}`;
+  // Direct WhatsApp submission option
+  const handleWhatsAppSubmit = () => {
+    const fallbackRef = `INQ-${Date.now().toString(36).toUpperCase()}`;
+    const whatsappMsg = buildWhatsappMessage(fallbackRef);
+    const waUrl = `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(whatsappMsg)}`;
+    window.open(waUrl, '_blank');
+
+    try {
+      const saved = JSON.parse(localStorage.getItem('carved_co_inquiries') || '[]');
+      saved.unshift({ ...formData, id: fallbackRef, method: 'whatsapp', submittedAt: new Date().toISOString() });
+      localStorage.setItem('carved_co_inquiries', JSON.stringify(saved.slice(0, 50)));
+    } catch {
+      // storage ignored
+    }
+    setReferenceNumber(fallbackRef);
+    setSubmissionMethod('whatsapp');
+    setSubmitted(true);
+  };
+
+  const prefilledWhatsappMsg = buildWhatsappMessage(referenceNumber || 'INQUIRY');
   const whatsappUrl = `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(prefilledWhatsappMsg)}`;
+  const mailtoUrl = generateMailtoUrl(formData, referenceNumber);
 
   return (
     <section id="contact-section" className="py-20 sm:py-28 bg-[#F4EEE4] text-[#24201E] relative overflow-hidden">
@@ -181,35 +218,68 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
             </div>
 
             {submitted ? (
-              <div className="text-center py-12 space-y-4">
-                <CheckCircle2 className="w-16 h-16 text-[#B89458] mx-auto" />
+              <div className="text-center py-10 sm:py-12 space-y-4">
+                <CheckCircle2 className="w-14 h-14 sm:w-16 sm:h-16 text-[#B89458] mx-auto" />
                 <h4 className="font-serif text-2xl font-semibold text-[#35171B]">
-                  Thank You for Reaching Out
+                  {submissionMethod === 'email' ? 'Inquiry Sent to Studio Email' : 'Inquiry Sent to WhatsApp'}
                 </h4>
                 {referenceNumber && (
                   <div className="inline-block px-4 py-1.5 bg-[#35171B]/10 rounded-full text-xs font-mono font-medium text-[#35171B]">
                     Reference: {referenceNumber}
                   </div>
                 )}
-                <p className="text-sm text-[#24201E]/80 font-light leading-relaxed max-w-md mx-auto">
-                  We have received your message. A CARVED & CO. furniture designer will contact you within 12 business hours.
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-[#25D366] text-white px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 font-semibold min-h-[44px]"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Send via WhatsApp</span>
-                  </a>
+                {submissionMethod === 'email' ? (
+                  <div className="space-y-2 max-w-md mx-auto">
+                    <p className="text-xs sm:text-sm text-[#24201E]/85 font-light leading-relaxed">
+                      Your inquiry has been submitted and dispatched directly to <strong className="font-semibold text-[#35171B]">carvedandco@carvedandco.net</strong>.
+                    </p>
+                    <p className="text-[11px] text-[#24201E]/70 font-light">
+                      Our furniture concierge will review your requirements and respond to <strong>{formData.email}</strong> within 12 business hours.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs sm:text-sm text-[#24201E]/80 font-light leading-relaxed max-w-md mx-auto">
+                    Your specifications have been launched directly in WhatsApp. If WhatsApp did not open automatically, tap below to forward your message:
+                  </p>
+                )}
+
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+                  {submissionMethod === 'email' ? (
+                    <>
+                      <a
+                        href={mailtoUrl}
+                        className="bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-widest transition-colors flex items-center gap-2 font-semibold min-h-[44px]"
+                      >
+                        <Mail className="w-4 h-4" />
+                        <span>Email App (carvedandco@carvedandco.net)</span>
+                      </a>
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#25D366] text-white px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 font-semibold min-h-[44px]"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Also Chat on WhatsApp</span>
+                      </a>
+                    </>
+                  ) : (
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[#25D366] text-white px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors flex items-center gap-2 font-semibold min-h-[44px]"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Open in WhatsApp</span>
+                    </a>
+                  )}
                   <button
                     onClick={() => {
                       setSubmitted(false);
                       setReferenceNumber('');
                     }}
-                    className="bg-[#35171B] text-[#F4EEE4] px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-widest hover:bg-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer font-semibold min-h-[44px]"
+                    className="bg-white border border-[#35171B]/20 text-[#35171B] px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-widest hover:bg-[#FAF6F0] transition-colors cursor-pointer font-semibold min-h-[44px]"
                   >
                     Send Another Message
                   </button>
@@ -313,16 +383,39 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                   />
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-4 px-6 rounded-xl font-serif text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-3 cursor-pointer font-bold disabled:opacity-50 min-h-[44px]"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Submitting to Studio...' : 'Submit Order Inquiry'}</span>
-                </motion.button>
+                {/* SUBMIT ACTIONS: EMAIL & WHATSAPP */}
+                <div className="space-y-3 pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-4 px-6 rounded-xl font-serif text-xs uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-3 cursor-pointer font-bold disabled:opacity-50 min-h-[48px]"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>{isSubmitting ? 'Sending to carvedandco@carvedandco.net...' : 'Submit Inquiry to Company Email'}</span>
+                  </motion.button>
+                  <p className="text-[11px] text-center text-[#24201E]/70 font-sans">
+                    Form inquiries are sent directly to <strong className="text-[#35171B] font-medium">carvedandco@carvedandco.net</strong>.
+                  </p>
+
+                  <div className="relative flex items-center justify-center py-1">
+                    <div className="border-t border-[#35171B]/15 w-full"></div>
+                    <span className="bg-[#EDE3D5] px-3 text-[10px] font-serif uppercase tracking-widest text-[#35171B]/60 font-semibold shrink-0">
+                      Or Connect via WhatsApp
+                    </span>
+                    <div className="border-t border-[#35171B]/15 w-full"></div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppSubmit}
+                    className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3.5 px-6 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors shadow-sm hover:shadow-md flex items-center justify-center gap-2.5 cursor-pointer font-semibold min-h-[44px]"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Send Inquiry via WhatsApp Instead</span>
+                  </button>
+                </div>
 
               </form>
             )}

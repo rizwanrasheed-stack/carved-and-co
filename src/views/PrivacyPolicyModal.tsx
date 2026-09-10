@@ -58,7 +58,7 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
 
           <h4 className="font-serif text-sm font-semibold text-[#3A2A22]">4. Contact Us</h4>
           <p>
-            For any questions regarding our workshop privacy standards or custom orders, email us directly at <strong>concierge@carvedandco.com</strong>.
+            For any questions regarding our workshop privacy standards or custom orders, email us directly at <strong>carvedandco@carvedandco.net</strong>.
           </p>
         </div>
 

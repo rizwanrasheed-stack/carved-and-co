@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Check,
   ZoomIn,
-  ArrowLeft
+  ArrowLeft,
+  Mail
 } from 'lucide-react';
 import { Product } from '../types';
 import { COMPANY_INFO } from '../data/company';
@@ -313,28 +314,37 @@ export function ProductDetailModal({
                 <span>Request Customization on WhatsApp</span>
               </a>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   id="modal-bespoke-spec-btn"
                   onClick={() => {
                     onClose();
                     onOpenBespokeWithProduct(product);
                   }}
-                  className="bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-3 px-3 rounded-lg text-xs font-serif tracking-wider uppercase transition-colors text-center cursor-pointer font-semibold min-h-[44px] flex items-center justify-center gap-1.5 shadow-xs"
+                  className="bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-3 px-2.5 rounded-lg text-[11px] font-serif tracking-wider uppercase transition-colors text-center cursor-pointer font-semibold min-h-[44px] flex items-center justify-center gap-1.5 shadow-xs"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[#B89458]" />
-                  <span>Configure Custom Specs</span>
+                  <Sparkles className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                  <span>Custom Specs</span>
                 </button>
+
+                <a
+                  id="modal-email-btn"
+                  href={`mailto:${COMPANY_INFO.email}?subject=${encodeURIComponent(`Inquiry: ${product.name} (Ref: ${product.id.toUpperCase()})`)}&body=${encodeURIComponent(`Hello CARVED & CO.,\n\nI am interested in inquiring about ${product.name} (Ref: ${product.id.toUpperCase()}).\nCategory: ${product.subcategory}\nDimensions: ${typeof product.dimensions === 'string' ? product.dimensions : 'Standard'}\n\nPlease share finish options, pricing, and workshop availability.\n\nThank you!`)}`}
+                  className="bg-white hover:bg-[#EDE3D5] text-[#35171B] border border-[#35171B]/20 py-3 px-2.5 rounded-lg text-[11px] font-serif tracking-wider uppercase transition-colors text-center flex items-center justify-center gap-1.5 cursor-pointer font-medium min-h-[44px]"
+                >
+                  <Mail className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                  <span>Email Studio</span>
+                </a>
 
                 <a
                   id="modal-instagram-btn"
                   href={COMPANY_INFO.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white hover:bg-[#EDE3D5] text-[#35171B] border border-[#35171B]/20 py-3 px-3 rounded-lg text-xs font-serif tracking-wider uppercase transition-colors text-center flex items-center justify-center gap-2 cursor-pointer font-medium min-h-[44px]"
+                  className="bg-white hover:bg-[#EDE3D5] text-[#35171B] border border-[#35171B]/20 py-3 px-2.5 rounded-lg text-[11px] font-serif tracking-wider uppercase transition-colors text-center flex items-center justify-center gap-1.5 cursor-pointer font-medium min-h-[44px]"
                 >
-                  <Instagram className="w-4 h-4 text-[#E1306C] shrink-0" />
-                  <span>DM on Instagram</span>
+                  <Instagram className="w-3.5 h-3.5 text-[#E1306C] shrink-0" />
+                  <span>Instagram</span>
                 </a>
               </div>
 
