@@ -1,11 +1,10 @@
 <?php
 // ==============================================================================
-// CARVED & CO. - Production Email Dispatcher with Image Attachments & Auto-Reply
+// CARVED & CO. - Production Email Dispatcher with Hostinger Authenticated SMTP
 // Delivers website inquiries directly to carvedandco@carvedandco.net
-// Hostinger Shared & Cloud Hosting Optimized (RFC 5322 / RFC 2046 compliant)
+// With backup notification to mrizwanrasheed.786@gmail.com & Inquiries Dashboard
 // ==============================================================================
 
-// Increase memory and execution time limits for attachments
 @ini_set('memory_limit', '256M');
 @ini_set('max_execution_time', '90');
 
@@ -21,12 +20,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Load configuration
+$configFile = __DIR__ . '/config.php';
+$config = file_exists($configFile) ? include($configFile) : [];
+
+$primaryRecipient = !empty($config['primary_recipient']) ? $config['primary_recipient'] : 'carvedandco@carvedandco.net';
+$backupRecipient = !empty($config['backup_recipient']) ? $config['backup_recipient'] : 'mrizwanrasheed.786@gmail.com';
+$smtpConfig = !empty($config['smtp']) ? $config['smtp'] : [];
+
 // Health check via GET
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $hasSmtpPass = !empty($smtpConfig['password']);
     echo json_encode([
         "status" => "online",
         "service" => "CARVED & CO. Mail Dispatcher",
-        "recipient" => "carvedandco@carvedandco.net",
+        "primary_recipient" => $primaryRecipient,
+        "backup_recipient" => $backupRecipient,
+        "smtp_configured" => $hasSmtpPass,
+        "smtp_host" => !empty($smtpConfig['host']) ? $smtpConfig['host'] : 'smtp.hostinger.com',
+        "inquiries_dashboard" => "/api/view-inquiries.php?key=" . (!empty($config['admin_access_key']) ? $config['admin_access_key'] : 'carved2026'),
         "php_version" => phpversion()
     ]);
     exit;
@@ -38,10 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// 1. Read and parse incoming request payload (JSON or Multipart Form)
-$contentType = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
+// 1. Read and parse incoming request payload
 $data = [];
-
 $rawInput = file_get_contents('php://input');
 if (!empty($rawInput)) {
     $decoded = json_decode($rawInput, true);
@@ -60,9 +70,7 @@ if (empty($data) && empty($_FILES)) {
     exit;
 }
 
-// 2. Core Recipient & Form Fields
-$to = "carvedandco@carvedandco.net";
-
+// 2. Core Fields
 $ref = !empty($data['referenceNumber']) ? $data['referenceNumber'] : 
       (!empty($data['quoteId']) ? $data['quoteId'] : ('INQ-' . strtoupper(substr(uniqid(), -6))));
 
@@ -95,8 +103,8 @@ $allowedMimeTypes = [
     'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
     'image/gif', 'image/heic', 'image/heif', 'image/pjpeg', 'image/x-png'
 ];
-$maxFileSizeBytes = 10 * 1024 * 1024; // 10MB per file
-$maxTotalSizeBytes = 25 * 1024 * 1024; // 25MB total attachments
+$maxFileSizeBytes = 10 * 1024 * 1024;
+$maxTotalSizeBytes = 25 * 1024 * 1024;
 
 $validAttachments = [];
 $totalAttachmentBytes = 0;
@@ -107,7 +115,6 @@ function formatBytes($bytes, $precision = 1) {
     return round($bytes / 1048576, $precision) . ' MB';
 }
 
-// A. Check for JSON-based reference images (base64)
 $referenceImages = [];
 if (!empty($data['referenceImages']) && is_array($data['referenceImages'])) {
     $referenceImages = $data['referenceImages'];
@@ -118,17 +125,14 @@ if (!empty($data['referenceImages']) && is_array($data['referenceImages'])) {
 foreach ($referenceImages as $idx => $img) {
     if (!is_array($img)) continue;
 
-    $originalName = !empty($img['name']) ? $img['name'] : (!empty($img['filename']) ? $img['filename'] : "reference-photo-" . ($idx + 1) . ".jpg");
+    $originalName = !empty($img['name']) ? $img['name'] : (!empty($img['filename']) ? $img['filename'] : "ref-photo-" . ($idx + 1) . ".jpg");
     $fileExt = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-    
     if (empty($fileExt) || !in_array($fileExt, $allowedExtensions)) {
         $fileExt = 'jpg';
     }
 
     $cleanBaseName = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
-    if (empty($cleanBaseName)) {
-        $cleanBaseName = "ref_image_" . ($idx + 1);
-    }
+    if (empty($cleanBaseName)) $cleanBaseName = "ref_img_" . ($idx + 1);
     $safeFilename = $cleanBaseName . '.' . $fileExt;
 
     $rawPayload = !empty($img['data']) ? $img['data'] : (!empty($img['previewUrl']) ? $img['previewUrl'] : '');
@@ -147,19 +151,9 @@ foreach ($referenceImages as $idx => $img) {
         $binaryContent = base64_decode($rawPayload);
     }
 
-    if ($binaryContent === false || strlen($binaryContent) === 0) {
-        continue;
-    }
-
+    if ($binaryContent === false || strlen($binaryContent) === 0) continue;
     $fileSize = strlen($binaryContent);
-
-    if ($fileSize > $maxFileSizeBytes) {
-        continue;
-    }
-
-    if (($totalAttachmentBytes + $fileSize) > $maxTotalSizeBytes) {
-        continue;
-    }
+    if ($fileSize > $maxFileSizeBytes || ($totalAttachmentBytes + $fileSize) > $maxTotalSizeBytes) continue;
 
     $totalAttachmentBytes += $fileSize;
     $clientNote = !empty($img['note']) ? trim($img['note']) : '';
@@ -175,57 +169,9 @@ foreach ($referenceImages as $idx => $img) {
     ];
 }
 
-// B. Check for Multipart $_FILES
-if (!empty($_FILES)) {
-    foreach ($_FILES as $fileGroup) {
-        if (!is_array($fileGroup['name'])) {
-            $filesToCheck = [$fileGroup];
-        } else {
-            $filesToCheck = [];
-            for ($i = 0; $i < count($fileGroup['name']); $i++) {
-                $filesToCheck[] = [
-                    'name' => $fileGroup['name'][$i],
-                    'type' => $fileGroup['type'][$i],
-                    'tmp_name' => $fileGroup['tmp_name'][$i],
-                    'error' => $fileGroup['error'][$i],
-                    'size' => $fileGroup['size'][$i]
-                ];
-            }
-        }
-
-        foreach ($filesToCheck as $f) {
-            if ($f['error'] !== UPLOAD_ERR_OK || empty($f['tmp_name'])) continue;
-            
-            $originalName = $f['name'];
-            $fileExt = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-            if (!in_array($fileExt, $allowedExtensions)) continue;
-
-            $safeFilename = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
-            $binaryContent = @file_get_contents($f['tmp_name']);
-            if (!$binaryContent) continue;
-
-            $fileSize = strlen($binaryContent);
-            if ($fileSize > $maxFileSizeBytes || ($totalAttachmentBytes + $fileSize) > $maxTotalSizeBytes) continue;
-
-            $totalAttachmentBytes += $fileSize;
-            $mime = !empty($f['type']) ? $f['type'] : 'image/jpeg';
-
-            $validAttachments[] = [
-                'name' => $safeFilename,
-                'originalName' => $originalName,
-                'type' => $mime,
-                'content' => $binaryContent,
-                'sizeBytes' => $fileSize,
-                'sizeFormatted' => formatBytes($fileSize),
-                'note' => ''
-            ];
-        }
-    }
-}
-
-// 4. Build Clean, High-Contrast HTML Email Body for CARVED & CO.
 $attachmentsCount = count($validAttachments);
 
+// 4. Build Clean, High-Contrast HTML Email Body
 $html = "
 <!DOCTYPE html>
 <html>
@@ -300,7 +246,7 @@ if ($attachmentsCount > 0) {
       <div class='section-title'>Attached Reference Photos ({$attachmentsCount})</div>
       <div class='attachment-box'>
         <p style='font-size: 12px; color: #6A353A; font-weight: 600; margin: 0 0 10px 0;'>
-          📎 {$attachmentsCount} photo(s) are attached directly to this email message. You can preview, open, and download them from your inbox attachment bar.
+          📎 {$attachmentsCount} photo(s) are attached directly to this message.
         </p>";
 
     foreach ($validAttachments as $idx => $att) {
@@ -321,20 +267,28 @@ if ($attachmentsCount > 0) {
     $html .= "</div>";
 }
 
+$cleanPhoneNum = preg_replace('/[^0-9]/', '', $clientPhone);
 $html .= "
       <div class='section-title'>Client Message / Specifications</div>
       <div class='notes-box'>" . htmlspecialchars($notes) . "</div>
       
-      <div style='text-align: center; margin-top: 24px;'>
-        <a href='https://wa.me/" . preg_replace('/[^0-9]/', '', $clientPhone) . "' class='action-btn'>
+      <div style='text-align: center; margin-top: 24px;'>";
+if (!empty($cleanPhoneNum)) {
+    $html .= "
+        <a href='https://wa.me/{$cleanPhoneNum}' class='action-btn' style='margin-right:8px;'>
           Direct Message Client on WhatsApp
+        </a>";
+}
+$html .= "
+        <a href='https://carvedandco.net/api/view-inquiries.php?key=carved2026' style='display:inline-block; background-color:#35171B; color:#ffffff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold; font-size:12px; margin-top:12px;'>
+          View All Inquiries on Dashboard
         </a>
       </div>
     </div>
     
     <div class='footer'>
       Official Website Inquiry • CARVED & CO.<br>
-      Delivered directly to: <strong>carvedandco@carvedandco.net</strong> • Ref: <strong>{$ref}</strong>
+      Delivered to: <strong>{$primaryRecipient}</strong> • Ref: <strong>{$ref}</strong>
     </div>
   </div>
 </body>
@@ -365,7 +319,7 @@ if ($attachmentsCount > 0) {
 }
 $plainText .= "=================================================\n";
 
-// 6. Build Standard RFC 5322 & RFC 2046 Multipart Message
+// 6. Build MIME Multipart Message
 $eol = "\r\n";
 $boundary = "==CARVED_MIXED_" . md5(uniqid(rand(), true));
 $altBoundary = "==CARVED_ALT_" . md5(uniqid(rand(), true));
@@ -373,16 +327,15 @@ $altBoundary = "==CARVED_ALT_" . md5(uniqid(rand(), true));
 $cleanClientName = preg_replace('/[\r\n",<>]/', '', $clientName);
 $cleanClientEmail = filter_var($clientEmail, FILTER_VALIDATE_EMAIL) ? $clientEmail : '';
 
-// RFC 5322 Compliant Headers - Quoted display name to prevent unquoted '&' syntax errors
 $headers = [];
 $headers[] = "MIME-Version: 1.0";
-$headers[] = 'From: "CARVED & CO." <carvedandco@carvedandco.net>';
+$headers[] = 'From: "CARVED & CO. Concierge" <' . $primaryRecipient . '>';
 if (!empty($cleanClientEmail)) {
     $headers[] = 'Reply-To: "' . $cleanClientName . '" <' . $cleanClientEmail . '>';
 } else {
-    $headers[] = 'Reply-To: "CARVED & CO." <carvedandco@carvedandco.net>';
+    $headers[] = 'Reply-To: "' . $cleanClientName . '" <' . $primaryRecipient . '>';
 }
-$headers[] = "X-Mailer: PHP/" . phpversion();
+$headers[] = "X-Mailer: Hostinger Mailer / PHP " . phpversion();
 
 if ($attachmentsCount > 0) {
     $headers[] = "Content-Type: multipart/mixed; boundary=\"{$boundary}\"";
@@ -390,13 +343,11 @@ if ($attachmentsCount > 0) {
     $body = "--{$boundary}{$eol}";
     $body .= "Content-Type: multipart/alternative; boundary=\"{$altBoundary}\"{$eol}{$eol}";
 
-    // Plain text
     $body .= "--{$altBoundary}{$eol}";
     $body .= "Content-Type: text/plain; charset=\"UTF-8\"{$eol}";
     $body .= "Content-Transfer-Encoding: 8bit{$eol}{$eol}";
     $body .= $plainText . "{$eol}{$eol}";
 
-    // HTML
     $body .= "--{$altBoundary}{$eol}";
     $body .= "Content-Type: text/html; charset=\"UTF-8\"{$eol}";
     $body .= "Content-Transfer-Encoding: 8bit{$eol}{$eol}";
@@ -404,7 +355,6 @@ if ($attachmentsCount > 0) {
 
     $body .= "--{$altBoundary}--{$eol}{$eol}";
 
-    // Attachments
     foreach ($validAttachments as $att) {
         $body .= "--{$boundary}{$eol}";
         $body .= "Content-Type: {$att['type']}; name=\"{$att['name']}\"{$eol}";
@@ -430,29 +380,64 @@ if ($attachmentsCount > 0) {
     $body .= "--{$altBoundary}--";
 }
 
-// 7. Dispatch Mail to carvedandco@carvedandco.net
-// Hostinger Requirement: 5th parameter "-fcarvedandco@carvedandco.net" sets the envelope Return-Path
-$headersString = implode($eol, $headers);
+// 7. Multi-Channel Dispatch:
+// A) Hostinger Authenticated SMTP (if credentials configured)
+// B) Dual Delivery to Primary ($primaryRecipient) AND Backup ($backupRecipient)
 $mailSent = false;
-$mailError = null;
+$smtpAttempted = false;
+$smtpError = null;
+$smtpLogs = [];
 
-// Attempt 1: Standard Hostinger dispatch with envelope sender parameter
-$mailSent = @mail($to, $subject, $body, $headersString, "-f" . $to);
-
-// Attempt 2: If attempt 1 fails (e.g. mail configuration restriction), retry without -f
-if (!$mailSent) {
-    $mailSent = @mail($to, $subject, $body, $headersString);
+// Check if SmtpMailer is available
+$smtpMailerPath = __DIR__ . '/SmtpMailer.php';
+if (file_exists($smtpMailerPath)) {
+    require_once $smtpMailerPath;
 }
 
-// Attempt 3: If CRLF is rejected by Unix MTA, try \n
-if (!$mailSent) {
-    $unixHeaders = implode("\n", $headers);
-    $mailSent = @mail($to, $subject, $body, $unixHeaders, "-f" . $to);
+// Recipient list for delivery
+$recipientsList = array_unique(array_filter([$primaryRecipient, $backupRecipient]));
+
+if (!empty($smtpConfig['enabled']) && !empty($smtpConfig['password']) && class_exists('HostingerSmtpClient')) {
+    $smtpAttempted = true;
+    try {
+        $smtpClient = new HostingerSmtpClient($smtpConfig);
+        
+        $smtpHeaders = "Subject: {$subject}\r\n" . implode("\r\n", $headers);
+        $smtpResult = $smtpClient->send($primaryRecipient, $recipientsList, $smtpHeaders, $body);
+        $smtpLogs = $smtpClient->getLogs();
+        
+        if (!empty($smtpResult['success'])) {
+            $mailSent = true;
+        } else {
+            $smtpError = !empty($smtpResult['error']) ? $smtpResult['error'] : 'Hostinger SMTP rejected delivery';
+        }
+    } catch (Exception $e) {
+        $smtpError = $e->getMessage();
+    }
 }
 
+// If SMTP was not used or failed, fall back to PHP mail()
 if (!$mailSent) {
-    $err = error_get_last();
-    $mailError = isset($err['message']) ? $err['message'] : 'Host MTA did not accept mail dispatch';
+    $headersString = implode($eol, $headers);
+    
+    // Attempt delivery to each recipient individually to prevent one failure from dropping the other
+    $deliverySuccessCount = 0;
+    foreach ($recipientsList as $rcpt) {
+        $sentToRcpt = @mail($rcpt, $subject, $body, $headersString, "-f" . $primaryRecipient);
+        if (!$sentToRcpt) {
+            $sentToRcpt = @mail($rcpt, $subject, $body, $headersString);
+        }
+        if ($sentToRcpt) {
+            $deliverySuccessCount++;
+        }
+    }
+    
+    if ($deliverySuccessCount > 0) {
+        $mailSent = true;
+    } else {
+        $err = error_get_last();
+        $smtpError = isset($err['message']) ? $err['message'] : 'Local MTA mail dispatch unacknowledged';
+    }
 }
 
 // 8. Auto-Reply Confirmation to Customer (if valid email provided)
@@ -472,7 +457,7 @@ if (!empty($cleanClientEmail) && filter_var($cleanClientEmail, FILTER_VALIDATE_E
         <div style='padding:28px 24px;'>
           <p style='font-size:15px; margin-top:0;'>Dear <strong>" . htmlspecialchars($clientName) . "</strong>,</p>
           <p style='font-size:13px; line-height:1.6; color:#333;'>
-            Thank you for reaching out to <strong>CARVED & CO.</strong> Your bespoke furniture inquiry has been received by our senior draughtsman and master artisans under reference:
+            Thank you for reaching out to <strong>CARVED & CO.</strong> Your bespoke furniture inquiry has been received under reference:
           </p>
           <div style='background-color:#FAF6F0; border-left:3px solid #B89458; padding:12px 16px; margin:16px 0; font-family:monospace; font-weight:bold; font-size:13px; color:#35171B;'>
             Reference ID: {$ref}
@@ -484,17 +469,17 @@ if (!empty($cleanClientEmail) && filter_var($cleanClientEmail, FILTER_VALIDATE_E
             " . ($attachmentsCount > 0 ? "<strong>Reference Photos:</strong> {$attachmentsCount} attached<br>" : "") . "
           </p>
           <p style='font-size:13px; line-height:1.6; color:#333;'>
-            Our team is preparing your custom consultation and will contact you directly within 12–24 business hours. If you need urgent assistance, you can also reach our concierge directly on WhatsApp:
+            Our workshop is reviewing your specifications and will follow up with you directly. You may also contact our concierge directly on WhatsApp:
           </p>
           <p style='text-align:center; margin:24px 0;'>
-            <a href='https://wa.me/923009223156?text=" . urlencode("Hello CARVED & CO., following up on my inquiry {$ref}") . "' style='display:inline-block; background-color:#25D366; color:#ffffff; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:13px;'>
+            <a href='https://wa.me/923404772669?text=" . urlencode("Hello CARVED & CO., following up on my inquiry {$ref}") . "' style='display:inline-block; background-color:#25D366; color:#ffffff; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:13px;'>
               Chat With Concierge on WhatsApp
             </a>
           </p>
         </div>
         <div style='background-color:#FAF6F0; padding:16px; text-align:center; font-size:11px; color:#777; border-top:1px solid #eee;'>
           CARVED & CO. • Handcrafted Furniture. Timeless Living.<br>
-          Email: carvedandco@carvedandco.net • Direct: +92 300 9223156
+          Email: {$primaryRecipient} • Direct: +92 340 4772669
         </div>
       </div>
     </body>
@@ -503,15 +488,14 @@ if (!empty($cleanClientEmail) && filter_var($cleanClientEmail, FILTER_VALIDATE_E
     $autoHeaders = [
         "MIME-Version: 1.0",
         "Content-Type: text/html; charset=UTF-8",
-        'From: "CARVED & CO." <carvedandco@carvedandco.net>',
-        'Reply-To: "CARVED & CO." <carvedandco@carvedandco.net>',
-        "X-Mailer: PHP/" . phpversion()
+        'From: "CARVED & CO. Concierge" <' . $primaryRecipient . '>',
+        'Reply-To: "CARVED & CO." <' . $primaryRecipient . '>',
+        "X-Mailer: Hostinger Mailer / PHP " . phpversion()
     ];
-    $autoReplySent = @mail($cleanClientEmail, $autoSubject, $autoHtml, implode($eol, $autoHeaders), "-f" . $to);
+    $autoReplySent = @mail($cleanClientEmail, $autoSubject, $autoHtml, implode($eol, $autoHeaders), "-f" . $primaryRecipient);
 }
 
-// 9. Persistent Server-Side Backup Log
-// Ensures zero inquiries are ever lost even if the mail daemon is delayed
+// 9. Persistent Server-Side Backup Log (Never Lose a Lead)
 $logEntry = [
     "ref" => $ref,
     "timestamp" => date('c'),
@@ -522,9 +506,11 @@ $logEntry = [
     "furnitureType" => $furnitureType,
     "dimensions" => $dimensions,
     "woodPreference" => $woodPreference,
+    "fabricPreference" => $fabricPreference,
     "notes" => $notes,
     "attachmentsCount" => $attachmentsCount,
-    "mailSent" => $mailSent
+    "mailSent" => $mailSent,
+    "smtpAttempted" => $smtpAttempted
 ];
 
 $logFile = __DIR__ . '/inquiries_log.json';
@@ -549,14 +535,16 @@ $attachmentSummaries = array_map(function($att) {
 echo json_encode([
     "success" => true,
     "mailSent" => (bool)$mailSent,
+    "smtpAttempted" => (bool)$smtpAttempted,
     "autoReplySent" => (bool)$autoReplySent,
     "referenceNumber" => $ref,
-    "recipient" => $to,
+    "recipients" => $recipientsList,
     "attachmentsCount" => $attachmentsCount,
     "attachments" => $attachmentSummaries,
     "logged" => true,
-    "error" => $mailError,
+    "error" => $smtpError,
+    "inquiries_dashboard" => "/api/view-inquiries.php?key=" . (!empty($config['admin_access_key']) ? $config['admin_access_key'] : 'carved2026'),
     "message" => $mailSent 
-        ? "Inquiry successfully dispatched to {$to}" 
-        : "Inquiry captured and logged to server backup"
+        ? "Inquiry dispatched to " . implode(', ', $recipientsList) 
+        : "Inquiry saved to server inquiries log"
 ]);

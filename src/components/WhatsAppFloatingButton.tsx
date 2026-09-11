@@ -148,7 +148,7 @@ export function WhatsAppFloatingButton() {
                   className="w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white py-3 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm font-semibold min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Start WhatsApp Chat (+92 300 9223156)</span>
+                  <span>Start WhatsApp Chat ({COMPANY_INFO.phone})</span>
                 </button>
               </>
             ) : (
