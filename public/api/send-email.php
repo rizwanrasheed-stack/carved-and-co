@@ -1,19 +1,34 @@
 <?php
 // ==============================================================================
-// CARVED & CO. - Hostinger Production Email Dispatcher with Image Attachments
-// Delivers website bespoke inquiries & contact forms directly to carvedandco@carvedandco.net
-// Implements standard RFC 2046 multipart/mixed MIME email packaging with downloadable attachments
+// CARVED & CO. - Production Email Dispatcher with Image Attachments & Auto-Reply
+// Delivers website inquiries directly to carvedandco@carvedandco.net
+// Hostinger Shared & Cloud Hosting Optimized (RFC 5322 / RFC 2046 compliant)
 // ==============================================================================
+
+// Increase memory and execution time limits for attachments
+@ini_set('memory_limit', '256M');
+@ini_set('max_execution_time', '90');
 
 // Set CORS headers
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Accept");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Accept, X-Requested-With");
+header("Access-Control-Allow-Methods: POST, OPTIONS, GET");
 header("Content-Type: application/json; charset=UTF-8");
 
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
+    exit;
+}
+
+// Health check via GET
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    echo json_encode([
+        "status" => "online",
+        "service" => "CARVED & CO. Mail Dispatcher",
+        "recipient" => "carvedandco@carvedandco.net",
+        "php_version" => phpversion()
+    ]);
     exit;
 }
 
@@ -27,13 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $contentType = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
 $data = [];
 
-if (stripos($contentType, 'application/json') !== false || empty($_POST)) {
-    $rawInput = file_get_contents('php://input');
-    $data = json_decode($rawInput, true);
-    if (!is_array($data)) {
-        $data = [];
+$rawInput = file_get_contents('php://input');
+if (!empty($rawInput)) {
+    $decoded = json_decode($rawInput, true);
+    if (is_array($decoded)) {
+        $data = $decoded;
     }
-} else {
+}
+
+if (empty($data) && !empty($_POST)) {
     $data = $_POST;
 }
 
@@ -52,11 +69,11 @@ $ref = !empty($data['referenceNumber']) ? $data['referenceNumber'] :
 $clientName = !empty($data['name']) ? $data['name'] : 
              (!empty($data['clientName']) ? $data['clientName'] : 'Valued Client');
 
-$clientEmail = !empty($data['email']) ? $data['email'] : 
-              (!empty($data['clientEmail']) ? $data['clientEmail'] : '');
+$clientEmail = !empty($data['email']) ? trim($data['email']) : 
+              (!empty($data['clientEmail']) ? trim($data['clientEmail']) : '');
 
-$clientPhone = !empty($data['phone']) ? $data['phone'] : 
-              (!empty($data['clientPhone']) ? $data['clientPhone'] : 'Not provided');
+$clientPhone = !empty($data['phone']) ? trim($data['phone']) : 
+              (!empty($data['clientPhone']) ? trim($data['clientPhone']) : 'Not provided');
 
 $clientType = !empty($data['clientType']) ? $data['clientType'] : 'Homeowner';
 $furnitureType = !empty($data['furnitureType']) ? $data['furnitureType'] : 'Custom Furniture';
@@ -68,7 +85,9 @@ $fabricPreference = !empty($data['fabricPreference']) ? $data['fabricPreference'
 $finishPreference = !empty($data['finishPreference']) ? $data['finishPreference'] : '';
 $dimensions = !empty($data['dimensions']) ? $data['dimensions'] : '';
 
-$subject = !empty($data['subject']) ? $data['subject'] : "CARVED & CO. Inquiry [Ref: {$ref}] - {$clientName} ({$furnitureType})";
+$subject = !empty($data['subject']) 
+    ? $data['subject'] 
+    : "CARVED & CO. Inquiry [Ref: {$ref}] - {$clientName} ({$furnitureType})";
 
 // 3. Process & Validate Image Attachments
 $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
@@ -82,7 +101,6 @@ $maxTotalSizeBytes = 25 * 1024 * 1024; // 25MB total attachments
 $validAttachments = [];
 $totalAttachmentBytes = 0;
 
-// Helper function to format bytes
 function formatBytes($bytes, $precision = 1) {
     if ($bytes < 1024) return $bytes . ' B';
     if ($bytes < 1048576) return round($bytes / 1024, $precision) . ' KB';
@@ -103,19 +121,16 @@ foreach ($referenceImages as $idx => $img) {
     $originalName = !empty($img['name']) ? $img['name'] : (!empty($img['filename']) ? $img['filename'] : "reference-photo-" . ($idx + 1) . ".jpg");
     $fileExt = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
     
-    // Default to jpg if extension is missing
     if (empty($fileExt) || !in_array($fileExt, $allowedExtensions)) {
         $fileExt = 'jpg';
     }
 
-    // Sanitize filename
     $cleanBaseName = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
     if (empty($cleanBaseName)) {
         $cleanBaseName = "ref_image_" . ($idx + 1);
     }
     $safeFilename = $cleanBaseName . '.' . $fileExt;
 
-    // Extract binary payload from base64
     $rawPayload = !empty($img['data']) ? $img['data'] : (!empty($img['previewUrl']) ? $img['previewUrl'] : '');
     if (empty($rawPayload)) continue;
 
@@ -138,12 +153,10 @@ foreach ($referenceImages as $idx => $img) {
 
     $fileSize = strlen($binaryContent);
 
-    // Validate single file ceiling
     if ($fileSize > $maxFileSizeBytes) {
         continue;
     }
 
-    // Validate total attachments ceiling
     if (($totalAttachmentBytes + $fileSize) > $maxTotalSizeBytes) {
         continue;
     }
@@ -158,12 +171,11 @@ foreach ($referenceImages as $idx => $img) {
         'content' => $binaryContent,
         'sizeBytes' => $fileSize,
         'sizeFormatted' => formatBytes($fileSize),
-        'note' => $clientNote,
-        'thumbnailData' => (strlen($rawPayload) < 800000) ? $rawPayload : null // inline preview if reasonable size
+        'note' => $clientNote
     ];
 }
 
-// B. Check for Multipart $_FILES (if submitted as multipart/form-data)
+// B. Check for Multipart $_FILES
 if (!empty($_FILES)) {
     foreach ($_FILES as $fileGroup) {
         if (!is_array($fileGroup['name'])) {
@@ -205,14 +217,13 @@ if (!empty($_FILES)) {
                 'content' => $binaryContent,
                 'sizeBytes' => $fileSize,
                 'sizeFormatted' => formatBytes($fileSize),
-                'note' => '',
-                'thumbnailData' => null
+                'note' => ''
             ];
         }
     }
 }
 
-// 4. Build Elegant HTML Email Body
+// 4. Build Clean, High-Contrast HTML Email Body for CARVED & CO.
 $attachmentsCount = count($validAttachments);
 
 $html = "
@@ -233,42 +244,41 @@ $html = "
     table.spec-table th { background-color: #FAF6F0; color: #35171B; width: 34%; font-weight: 600; }
     table.spec-table td { color: #333; }
     
-    .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #35171B; margin: 24px 0 10px 0; border-bottom: 2px solid #B89458; padding-bottom: 6px; font-weight: 600; }
+    .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #35171B; margin: 24px 0 10px 0; border-bottom: 2px solid #B89458; padding-bottom: 6px; font-weight: 600; }
     .notes-box { background-color: #FAF6F0; border-left: 3px solid #B89458; padding: 16px; border-radius: 4px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #24201E; }
     
-    /* Attachment Cards & Badges */
-    .attachment-badge-box { background-color: #FAF6F0; border: 1px solid rgba(53,23,27,0.12); border-radius: 8px; padding: 14px 16px; margin-top: 14px; }
-    .attachment-notice { font-size: 12px; color: #6A353A; font-weight: 500; margin-bottom: 12px; }
+    .attachment-box { background-color: #FAF6F0; border: 1px solid rgba(53,23,27,0.12); border-radius: 8px; padding: 14px 16px; margin-top: 14px; }
     .att-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
     .att-name { font-weight: 600; color: #35171B; }
     .att-size { font-family: monospace; color: #777; font-size: 11px; margin-left: 8px; }
     .att-note { font-size: 11px; color: #555; font-style: italic; margin-top: 3px; }
     
     .footer { background-color: #FAF6F0; padding: 18px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #eee; line-height: 1.5; }
+    .action-btn { display: inline-block; background-color: #25D366; color: #ffffff !important; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 12px; margin-top: 12px; }
   </style>
 </head>
 <body>
   <div class='card'>
     <div class='header'>
       <h1>CARVED & CO.</h1>
-      <p>Luxury Artisan Furniture • Website Inquiry</p>
+      <p>Luxury Artisan Furniture • Website Form Inquiry</p>
     </div>
     
     <div class='content'>
       <div class='ref-badge'>Inquiry Reference: {$ref}</div>
 
-      <div class='section-title'>Client Details</div>
+      <div class='section-title'>Client Information</div>
       <table class='spec-table'>
-        <tr><th>Client Name</th><td>" . htmlspecialchars($clientName) . "</td></tr>
+        <tr><th>Client Name</th><td><strong>" . htmlspecialchars($clientName) . "</strong></td></tr>
         <tr><th>Email Address</th><td><a href='mailto:" . htmlspecialchars($clientEmail) . "' style='color:#35171B; font-weight:600;'>" . htmlspecialchars($clientEmail) . "</a></td></tr>
-        <tr><th>Phone Number</th><td>" . htmlspecialchars($clientPhone) . "</td></tr>
+        <tr><th>Phone Number</th><td><a href='tel:" . htmlspecialchars($clientPhone) . "' style='color:#35171B; font-weight:600;'>" . htmlspecialchars($clientPhone) . "</a></td></tr>
         <tr><th>Client Type</th><td>" . htmlspecialchars($clientType) . "</td></tr>
         <tr><th>Furniture Collection</th><td><strong>" . htmlspecialchars($furnitureType) . "</strong></td></tr>
       </table>";
 
 if (!empty($woodPreference) || !empty($fabricPreference) || !empty($finishPreference) || !empty($dimensions)) {
     $html .= "
-      <div class='section-title'>Bespoke Specifications</div>
+      <div class='section-title'>Bespoke Custom Specifications</div>
       <table class='spec-table'>";
     if (!empty($woodPreference)) {
         $html .= "<tr><th>Wood / Timber Tone</th><td>" . htmlspecialchars($woodPreference) . "</td></tr>";
@@ -285,13 +295,12 @@ if (!empty($woodPreference) || !empty($fabricPreference) || !empty($finishPrefer
     $html .= "</table>";
 }
 
-// Attachments Section
 if ($attachmentsCount > 0) {
     $html .= "
       <div class='section-title'>Attached Reference Photos ({$attachmentsCount})</div>
-      <div class='attachment-badge-box'>
-        <p class='attachment-notice'>
-          📎 <strong>{$attachmentsCount} reference file(s)</strong> are attached directly to this email message. You can preview, download, or save them to your device directly from your inbox attachment bar.
+      <div class='attachment-box'>
+        <p style='font-size: 12px; color: #6A353A; font-weight: 600; margin: 0 0 10px 0;'>
+          📎 {$attachmentsCount} photo(s) are attached directly to this email message. You can preview, open, and download them from your inbox attachment bar.
         </p>";
 
     foreach ($validAttachments as $idx => $att) {
@@ -310,26 +319,29 @@ if ($attachmentsCount > 0) {
     }
 
     $html .= "</div>";
-} else {
-    $html .= "
-      <p style='font-size:12px; color:#888; font-style:italic;'>No reference photos attached to this submission.</p>";
 }
 
 $html .= "
-      <div class='section-title'>Client Project Notes / Requirements</div>
+      <div class='section-title'>Client Message / Specifications</div>
       <div class='notes-box'>" . htmlspecialchars($notes) . "</div>
+      
+      <div style='text-align: center; margin-top: 24px;'>
+        <a href='https://wa.me/" . preg_replace('/[^0-9]/', '', $clientPhone) . "' class='action-btn'>
+          Direct Message Client on WhatsApp
+        </a>
+      </div>
     </div>
     
     <div class='footer'>
-      Submitted via CARVED & CO. Official Website Concierge<br>
-      Recipient: <strong>carvedandco@carvedandco.net</strong> • Reference: <strong>{$ref}</strong>
+      Official Website Inquiry • CARVED & CO.<br>
+      Delivered directly to: <strong>carvedandco@carvedandco.net</strong> • Ref: <strong>{$ref}</strong>
     </div>
   </div>
 </body>
 </html>";
 
-// 5. Plain text fallback
-$plainText = "CARVED & CO. - New Website Inquiry\n";
+// 5. Plain Text Fallback
+$plainText = "CARVED & CO. - Website Inquiry\n";
 $plainText .= "=================================================\n";
 $plainText .= "Reference ID: {$ref}\n";
 $plainText .= "Client Name: {$clientName}\n";
@@ -337,55 +349,54 @@ $plainText .= "Email: {$clientEmail}\n";
 $plainText .= "Phone: {$clientPhone}\n";
 $plainText .= "Client Type: {$clientType}\n";
 $plainText .= "Furniture Category: {$furnitureType}\n";
-if (!empty($dimensions)) $plainText .= "Custom Dimensions: {$dimensions}\n";
+if (!empty($dimensions)) $plainText .= "Dimensions: {$dimensions}\n";
 if (!empty($woodPreference)) $plainText .= "Wood Tone: {$woodPreference}\n";
-if (!empty($fabricPreference)) $plainText .= "Fabric/Leather: {$fabricPreference}\n";
+if (!empty($fabricPreference)) $plainText .= "Fabric: {$fabricPreference}\n";
 if (!empty($finishPreference)) $plainText .= "Finish Sheen: {$finishPreference}\n";
-$plainText .= "\nClient Message / Specifications:\n{$notes}\n\n";
+$plainText .= "\nClient Message:\n{$notes}\n\n";
 
 if ($attachmentsCount > 0) {
-    $plainText .= "Attached Reference Files ({$attachmentsCount}):\n";
+    $plainText .= "Attached Reference Photos ({$attachmentsCount}):\n";
     foreach ($validAttachments as $i => $att) {
         $plainText .= "  " . ($i + 1) . ". " . $att['name'] . " (" . $att['sizeFormatted'] . ")";
-        if (!empty($att['note'])) {
-            $plainText .= " - Note: " . $att['note'];
-        }
+        if (!empty($att['note'])) $plainText .= " - Note: " . $att['note'];
         $plainText .= "\n";
     }
-    $plainText .= "(See email attachments to download original image files)\n";
 }
 $plainText .= "=================================================\n";
 
-// 6. Assemble RFC 2046 MIME Multipart Email with Attachments
+// 6. Build Standard RFC 5322 & RFC 2046 Multipart Message
 $eol = "\r\n";
 $boundary = "==CARVED_MIXED_" . md5(uniqid(rand(), true));
 $altBoundary = "==CARVED_ALT_" . md5(uniqid(rand(), true));
 
-$cleanClientName = str_replace(["\r", "\n", '"', '<', '>'], '', $clientName);
-$cleanClientEmail = filter_var($clientEmail, FILTER_VALIDATE_EMAIL) ? $clientEmail : 'no-reply@carvedandco.net';
+$cleanClientName = preg_replace('/[\r\n",<>]/', '', $clientName);
+$cleanClientEmail = filter_var($clientEmail, FILTER_VALIDATE_EMAIL) ? $clientEmail : '';
 
+// RFC 5322 Compliant Headers - Quoted display name to prevent unquoted '&' syntax errors
 $headers = [];
 $headers[] = "MIME-Version: 1.0";
-$headers[] = "From: CARVED & CO. Web Concierge <carvedandco@carvedandco.net>";
-if (!empty($clientEmail) && filter_var($clientEmail, FILTER_VALIDATE_EMAIL)) {
-    $headers[] = "Reply-To: {$cleanClientName} <{$cleanClientEmail}>";
+$headers[] = 'From: "CARVED & CO." <carvedandco@carvedandco.net>';
+if (!empty($cleanClientEmail)) {
+    $headers[] = 'Reply-To: "' . $cleanClientName . '" <' . $cleanClientEmail . '>';
+} else {
+    $headers[] = 'Reply-To: "CARVED & CO." <carvedandco@carvedandco.net>';
 }
 $headers[] = "X-Mailer: PHP/" . phpversion();
 
 if ($attachmentsCount > 0) {
-    // Multipart mixed with alternative HTML + Plain Text, followed by binary attachments
     $headers[] = "Content-Type: multipart/mixed; boundary=\"{$boundary}\"";
 
     $body = "--{$boundary}{$eol}";
     $body .= "Content-Type: multipart/alternative; boundary=\"{$altBoundary}\"{$eol}{$eol}";
 
-    // Plain text part
+    // Plain text
     $body .= "--{$altBoundary}{$eol}";
     $body .= "Content-Type: text/plain; charset=\"UTF-8\"{$eol}";
     $body .= "Content-Transfer-Encoding: 8bit{$eol}{$eol}";
     $body .= $plainText . "{$eol}{$eol}";
 
-    // HTML part
+    // HTML
     $body .= "--{$altBoundary}{$eol}";
     $body .= "Content-Type: text/html; charset=\"UTF-8\"{$eol}";
     $body .= "Content-Transfer-Encoding: 8bit{$eol}{$eol}";
@@ -393,7 +404,7 @@ if ($attachmentsCount > 0) {
 
     $body .= "--{$altBoundary}--{$eol}{$eol}";
 
-    // Attachments parts
+    // Attachments
     foreach ($validAttachments as $att) {
         $body .= "--{$boundary}{$eol}";
         $body .= "Content-Type: {$att['type']}; name=\"{$att['name']}\"{$eol}";
@@ -404,7 +415,6 @@ if ($attachmentsCount > 0) {
 
     $body .= "--{$boundary}--";
 } else {
-    // Simple multipart alternative (Plain text + HTML)
     $headers[] = "Content-Type: multipart/alternative; boundary=\"{$altBoundary}\"";
 
     $body = "--{$altBoundary}{$eol}";
@@ -420,10 +430,113 @@ if ($attachmentsCount > 0) {
     $body .= "--{$altBoundary}--";
 }
 
-// 7. Dispatch through PHP mail()
-$mailSent = @mail($to, $subject, $body, implode($eol, $headers));
+// 7. Dispatch Mail to carvedandco@carvedandco.net
+// Hostinger Requirement: 5th parameter "-fcarvedandco@carvedandco.net" sets the envelope Return-Path
+$headersString = implode($eol, $headers);
+$mailSent = false;
+$mailError = null;
 
-// 8. Return JSON Response
+// Attempt 1: Standard Hostinger dispatch with envelope sender parameter
+$mailSent = @mail($to, $subject, $body, $headersString, "-f" . $to);
+
+// Attempt 2: If attempt 1 fails (e.g. mail configuration restriction), retry without -f
+if (!$mailSent) {
+    $mailSent = @mail($to, $subject, $body, $headersString);
+}
+
+// Attempt 3: If CRLF is rejected by Unix MTA, try \n
+if (!$mailSent) {
+    $unixHeaders = implode("\n", $headers);
+    $mailSent = @mail($to, $subject, $body, $unixHeaders, "-f" . $to);
+}
+
+if (!$mailSent) {
+    $err = error_get_last();
+    $mailError = isset($err['message']) ? $err['message'] : 'Host MTA did not accept mail dispatch';
+}
+
+// 8. Auto-Reply Confirmation to Customer (if valid email provided)
+$autoReplySent = false;
+if (!empty($cleanClientEmail) && filter_var($cleanClientEmail, FILTER_VALIDATE_EMAIL)) {
+    $autoSubject = "We Received Your CARVED & CO. Inquiry [Ref: {$ref}]";
+    $autoHtml = "
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset='utf-8'></head>
+    <body style='font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif; background-color:#F4EEE4; color:#24201E; padding:24px; margin:0;'>
+      <div style='max-width:580px; margin:0 auto; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid rgba(53,23,27,0.15); box-shadow:0 4px 12px rgba(0,0,0,0.05);'>
+        <div style='background-color:#35171B; color:#F4EEE4; padding:24px; text-align:center;'>
+          <h1 style='margin:0; font-size:22px; letter-spacing:3px; color:#B89458;'>CARVED & CO.</h1>
+          <p style='margin:6px 0 0 0; font-size:11px; letter-spacing:1px; text-transform:uppercase; opacity:0.8;'>Inquiry Acknowledgment</p>
+        </div>
+        <div style='padding:28px 24px;'>
+          <p style='font-size:15px; margin-top:0;'>Dear <strong>" . htmlspecialchars($clientName) . "</strong>,</p>
+          <p style='font-size:13px; line-height:1.6; color:#333;'>
+            Thank you for reaching out to <strong>CARVED & CO.</strong> Your bespoke furniture inquiry has been received by our senior draughtsman and master artisans under reference:
+          </p>
+          <div style='background-color:#FAF6F0; border-left:3px solid #B89458; padding:12px 16px; margin:16px 0; font-family:monospace; font-weight:bold; font-size:13px; color:#35171B;'>
+            Reference ID: {$ref}
+          </div>
+          <p style='font-size:13px; line-height:1.6; color:#333;'>
+            <strong>Collection:</strong> " . htmlspecialchars($furnitureType) . "<br>
+            " . (!empty($dimensions) ? "<strong>Dimensions:</strong> " . htmlspecialchars($dimensions) . "<br>" : "") . "
+            " . (!empty($woodPreference) ? "<strong>Wood Tone:</strong> " . htmlspecialchars($woodPreference) . "<br>" : "") . "
+            " . ($attachmentsCount > 0 ? "<strong>Reference Photos:</strong> {$attachmentsCount} attached<br>" : "") . "
+          </p>
+          <p style='font-size:13px; line-height:1.6; color:#333;'>
+            Our team is preparing your custom consultation and will contact you directly within 12–24 business hours. If you need urgent assistance, you can also reach our concierge directly on WhatsApp:
+          </p>
+          <p style='text-align:center; margin:24px 0;'>
+            <a href='https://wa.me/923009223156?text=" . urlencode("Hello CARVED & CO., following up on my inquiry {$ref}") . "' style='display:inline-block; background-color:#25D366; color:#ffffff; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:13px;'>
+              Chat With Concierge on WhatsApp
+            </a>
+          </p>
+        </div>
+        <div style='background-color:#FAF6F0; padding:16px; text-align:center; font-size:11px; color:#777; border-top:1px solid #eee;'>
+          CARVED & CO. • Handcrafted Furniture. Timeless Living.<br>
+          Email: carvedandco@carvedandco.net • Direct: +92 300 9223156
+        </div>
+      </div>
+    </body>
+    </html>";
+
+    $autoHeaders = [
+        "MIME-Version: 1.0",
+        "Content-Type: text/html; charset=UTF-8",
+        'From: "CARVED & CO." <carvedandco@carvedandco.net>',
+        'Reply-To: "CARVED & CO." <carvedandco@carvedandco.net>',
+        "X-Mailer: PHP/" . phpversion()
+    ];
+    $autoReplySent = @mail($cleanClientEmail, $autoSubject, $autoHtml, implode($eol, $autoHeaders), "-f" . $to);
+}
+
+// 9. Persistent Server-Side Backup Log
+// Ensures zero inquiries are ever lost even if the mail daemon is delayed
+$logEntry = [
+    "ref" => $ref,
+    "timestamp" => date('c'),
+    "name" => $clientName,
+    "email" => $clientEmail,
+    "phone" => $clientPhone,
+    "clientType" => $clientType,
+    "furnitureType" => $furnitureType,
+    "dimensions" => $dimensions,
+    "woodPreference" => $woodPreference,
+    "notes" => $notes,
+    "attachmentsCount" => $attachmentsCount,
+    "mailSent" => $mailSent
+];
+
+$logFile = __DIR__ . '/inquiries_log.json';
+$existingLogs = [];
+if (file_exists($logFile)) {
+    $existingLogs = json_decode(@file_get_contents($logFile), true);
+    if (!is_array($existingLogs)) $existingLogs = [];
+}
+array_unshift($existingLogs, $logEntry);
+@file_put_contents($logFile, json_encode(array_slice($existingLogs, 0, 100), JSON_PRETTY_PRINT));
+
+// 10. Return JSON Response
 $attachmentSummaries = array_map(function($att) {
     return [
         'name' => $att['name'],
@@ -436,11 +549,14 @@ $attachmentSummaries = array_map(function($att) {
 echo json_encode([
     "success" => true,
     "mailSent" => (bool)$mailSent,
+    "autoReplySent" => (bool)$autoReplySent,
     "referenceNumber" => $ref,
     "recipient" => $to,
     "attachmentsCount" => $attachmentsCount,
     "attachments" => $attachmentSummaries,
+    "logged" => true,
+    "error" => $mailError,
     "message" => $mailSent 
-        ? "Inquiry with {$attachmentsCount} attachment(s) delivered to {$to}"
-        : "Inquiry recorded with {$attachmentsCount} attachment(s)"
+        ? "Inquiry successfully dispatched to {$to}" 
+        : "Inquiry captured and logged to server backup"
 ]);

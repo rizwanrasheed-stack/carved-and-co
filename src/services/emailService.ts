@@ -77,19 +77,26 @@ export async function sendInquiryToCompanyEmail(data: InquiryEmailData): Promise
 
   // 1. Try native Hostinger PHP mail endpoint (/api/send-email.php first, then /send-email.php)
   const endpoints = ['/api/send-email.php', '/send-email.php'];
+  let phpMailAttemptSucceeded = false;
+
   for (const endpoint of endpoints) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout
+
       const phpRes = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (phpRes.ok) {
         const contentType = phpRes.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
           const result = await phpRes.json();
-          if (result && result.success) {
+          if (result && result.success && result.mailSent !== false) {
             return {
               success: true,
               referenceNumber: result.referenceNumber || ref,
@@ -97,47 +104,60 @@ export async function sendInquiryToCompanyEmail(data: InquiryEmailData): Promise
               method: 'hostinger-php',
             };
           }
+          if (result && result.mailSent === false) {
+            // PHP mailer responded but MTA dispatch flagged false; proceed to fallback tier
+            phpMailAttemptSucceeded = false;
+          }
         }
       }
     } catch {
-      // Proceed to fallback endpoint
+      // Proceed to fallback endpoint or secondary gateway
     }
   }
 
   // 2. Try FormSubmit AJAX gateway directly to carvedandco@carvedandco.net
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+    const imagesSummary = referenceImages.length > 0
+      ? `${referenceImages.length} photo(s) submitted: ${referenceImages.map((img, i) => `#${i + 1} ${img.name}${img.note ? ` (${img.note})` : ''}`).join(', ')}`
+      : 'None';
+
     const formSubmitRes = await fetch(`https://formsubmit.co/ajax/${TARGET_COMPANY_EMAIL}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
+      signal: controller.signal,
       body: JSON.stringify({
-        _subject: `New CARVED & CO. Inquiry [Ref: ${ref}] - ${clientName}`,
-        _replyto: clientEmail,
+        _subject: `CARVED & CO. Inquiry [Ref: ${ref}] - ${clientName} (${furnitureType})`,
+        _replyto: clientEmail || TARGET_COMPANY_EMAIL,
+        _captcha: 'false',
         _template: 'table',
         'Reference ID': ref,
         'Client Name': clientName,
         'Client Type': clientType,
-        'Email Address': clientEmail,
-        'Phone Number': clientPhone,
+        'Email Address': clientEmail || 'Not provided',
+        'Phone Number': clientPhone || 'Not provided',
         'Furniture Collection': furnitureType,
         'Wood Preference': data.woodPreference || 'Standard / Per Consultation',
         'Fabric / Leather': data.fabricPreference || 'None specified',
         'Finish Style': data.finishPreference || 'Standard',
         'Custom Dimensions': data.dimensions || 'Standard sizing',
-        'Reference Photos': data.referenceImagesCount
-          ? `${data.referenceImagesCount} inspiration photos uploaded`
-          : 'None',
+        'Reference Photos': imagesSummary,
         'Client Message / Requirements': notes,
         'Submission Timestamp': new Date().toLocaleString(),
       }),
     });
+    clearTimeout(timeoutId);
 
     if (formSubmitRes.ok) {
       return {
         success: true,
         referenceNumber: ref,
+        attachmentsCount: referenceImages.length,
         method: 'formsubmit-ajax',
       };
     }
@@ -148,8 +168,35 @@ export async function sendInquiryToCompanyEmail(data: InquiryEmailData): Promise
   return {
     success: true,
     referenceNumber: ref,
+    attachmentsCount: referenceImages.length,
     method: 'local-stored',
   };
+}
+
+/**
+ * Generates a pre-filled WhatsApp link with complete inquiry details
+ */
+export function generateWhatsAppUrl(data: InquiryEmailData, refId?: string): string {
+  const ref = refId || data.referenceNumber || data.quoteId || 'INQUIRY';
+  const clientName = data.name || data.clientName || 'Valued Client';
+  const phone = data.phone || data.clientPhone || 'Not provided';
+  const email = data.email || data.clientEmail || 'Not provided';
+  const furnitureType = data.furnitureType || 'Custom Furniture';
+  const notes = data.message || data.notes || 'Please provide design consultation & pricing.';
+
+  let msg = `Hello CARVED & CO., I would like to submit a furniture inquiry:\n`;
+  msg += `• Reference: ${ref}\n`;
+  msg += `• Name: ${clientName}\n`;
+  msg += `• Phone: ${phone}\n`;
+  msg += `• Email: ${email}\n`;
+  msg += `• Category: ${furnitureType}\n`;
+  if (data.dimensions) msg += `• Dimensions: ${data.dimensions}\n`;
+  if (data.woodPreference) msg += `• Wood Tone: ${data.woodPreference}\n`;
+  if (data.fabricPreference) msg += `• Upholstery: ${data.fabricPreference}\n`;
+  if (data.referenceImagesCount) msg += `• Reference Photos: ${data.referenceImagesCount} inspiration photos prepared\n`;
+  msg += `• Requirements: ${notes}`;
+
+  return `https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(msg)}`;
 }
 
 /**

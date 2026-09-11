@@ -12,7 +12,8 @@ import {
   ZoomIn,
   AlertCircle,
   Plus,
-  Mail
+  Mail,
+  Phone
 } from 'lucide-react';
 import { Product, WoodType, FinishType } from '../types';
 import { COMPANY_INFO } from '../data/company';
@@ -98,7 +99,62 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
     return hasValidExt || hasValidMime;
   };
 
-  const handleFiles = (files: FileList | File[]) => {
+  /**
+   * Compresses image on a background canvas before base64 encoding.
+   * Prevents server post_max_size rejections and network timeouts on mobile.
+   */
+  const compressImageFile = async (
+    file: File,
+    maxDimension = 1400,
+    quality = 0.82
+  ): Promise<{ dataUrl: string; sizeBytes: number; mimeType: string }> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const rawDataUrl = e.target?.result as string;
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL('image/jpeg', quality);
+            const base64Len = compressed.length - (compressed.indexOf(',') + 1);
+            const approxBytes = Math.floor((base64Len * 3) / 4);
+            resolve({
+              dataUrl: compressed,
+              sizeBytes: approxBytes,
+              mimeType: 'image/jpeg',
+            });
+          } else {
+            resolve({ dataUrl: rawDataUrl, sizeBytes: file.size, mimeType: file.type || 'image/jpeg' });
+          }
+        };
+        img.onerror = () => {
+          resolve({ dataUrl: rawDataUrl, sizeBytes: file.size, mimeType: file.type || 'image/jpeg' });
+        };
+        img.src = rawDataUrl;
+      };
+      reader.onerror = () => {
+        resolve({ dataUrl: '', sizeBytes: 0, mimeType: 'image/jpeg' });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFiles = async (files: FileList | File[]) => {
     setUploadError(null);
     const fileArray = Array.from(files);
 
@@ -126,57 +182,47 @@ export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeS
       );
     }
 
-    // 2. Calculate current total size
     let runningTotalBytes = referenceImages.reduce((sum, img) => sum + img.sizeBytes, 0);
 
-    filesToProcess.forEach((file) => {
-      // 3. Validate Single File Size (8MB ceiling)
-      if (file.size > MAX_FILE_SIZE_BYTES) {
+    for (const file of filesToProcess) {
+      // Validate Single File Size (12MB raw ceiling before compression)
+      if (file.size > 12 * 1024 * 1024) {
         setUploadError(
-          `"${file.name}" (${formatFileSize(file.size)}) exceeds the 8MB attachment limit for email delivery. Please select a photo under 8MB.`
+          `"${file.name}" (${formatFileSize(file.size)}) exceeds the 12MB raw limit. Please select a photo under 12MB.`
         );
-        return;
+        continue;
       }
 
-      // 4. Validate Total Attachment Size (20MB ceiling)
-      if (runningTotalBytes + file.size > MAX_TOTAL_SIZE_BYTES) {
-        setUploadError(
-          `Adding "${file.name}" would exceed the 20MB total attachment limit. Please upload a smaller photo or remove an existing one.`
-        );
-        return;
-      }
+      try {
+        const { dataUrl, sizeBytes, mimeType } = await compressImageFile(file);
 
-      runningTotalBytes += file.size;
+        if (runningTotalBytes + sizeBytes > MAX_TOTAL_SIZE_BYTES) {
+          setUploadError(
+            `Total attachment size limit reached. Please remove an existing photo to add more.`
+          );
+          break;
+        }
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        const detectedMime =
-          file.type ||
-          (file.name.toLowerCase().endsWith('.png')
-            ? 'image/png'
-            : file.name.toLowerCase().endsWith('.webp')
-            ? 'image/webp'
-            : file.name.toLowerCase().endsWith('.gif')
-            ? 'image/gif'
-            : 'image/jpeg');
+        runningTotalBytes += sizeBytes;
 
         const newImg: UploadedReferenceImage = {
           id: `ref-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           name: file.name,
-          sizeFormatted: formatFileSize(file.size),
-          sizeBytes: file.size,
-          mimeType: detectedMime,
-          previewUrl: result,
+          sizeFormatted: formatFileSize(sizeBytes),
+          sizeBytes: sizeBytes,
+          mimeType: mimeType,
+          previewUrl: dataUrl,
           note: '',
         };
+
         setReferenceImages((prev) => {
           if (prev.length >= MAX_PHOTOS_COUNT) return prev;
           return [...prev, newImg];
         });
-      };
-      reader.readAsDataURL(file);
-    });
+      } catch {
+        // Continue if single file fails
+      }
+    }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -498,6 +544,13 @@ ${imagesSummary}
                       <MessageCircle className="w-4 h-4" />
                       <span>Also Connect on WhatsApp</span>
                     </button>
+                    <a
+                      href={`tel:${COMPANY_INFO.phoneClean}`}
+                      className="bg-[#35171B]/10 hover:bg-[#35171B]/20 text-[#35171B] border border-[#35171B]/30 px-5 sm:px-6 py-3 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors flex items-center gap-2 font-medium min-h-[44px]"
+                    >
+                      <Phone className="w-4 h-4 text-[#B89458]" />
+                      <span>Call Concierge ({COMPANY_INFO.phone})</span>
+                    </a>
                   </>
                 ) : (
                   <button

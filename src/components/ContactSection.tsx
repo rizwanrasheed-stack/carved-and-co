@@ -262,6 +262,13 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
                         <MessageCircle className="w-4 h-4" />
                         <span>Also Chat on WhatsApp</span>
                       </a>
+                      <a
+                        href={`tel:${COMPANY_INFO.phoneClean}`}
+                        className="bg-[#35171B]/10 hover:bg-[#35171B]/20 text-[#35171B] border border-[#35171B]/30 px-5 py-3 rounded-xl font-serif text-xs uppercase tracking-wider transition-colors flex items-center gap-2 font-semibold min-h-[44px]"
+                      >
+                        <Phone className="w-4 h-4 text-[#B89458]" />
+                        <span>Call ({COMPANY_INFO.phone})</span>
+                      </a>
                     </>
                   ) : (
                     <a
