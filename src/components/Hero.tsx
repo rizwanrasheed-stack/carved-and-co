@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, ArrowRight, Sparkles, Layers, Sliders, Check, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 import { BrandLogo } from './BrandLogo';
+import heroBgImage from '../assets/images/background.png';
 
 interface HeroProps {
   onBrowseCollection: () => void;
@@ -97,27 +98,42 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
   return (
     <section 
       id="hero-section" 
-      className="relative w-full min-h-[700px] lg:min-h-[88vh] bg-[#F4EEE4] text-[#24201E] pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 overflow-hidden flex flex-col justify-center"
+      className="relative w-full min-h-[700px] lg:min-h-[88vh] bg-[#C5C8CE] text-[#151618] pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 overflow-hidden flex flex-col justify-center"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       
-      {/* RICH EDITORIAL BURGUNDY, WARM IVORY & BRASS BACKGROUND */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Base Gradient Layer */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#FAF7F2_0%,#F4EEE4_50%,#EDE3D5_100%)]" />
-        
-        {/* Subtle Burgundy Aura (Top-Left) */}
-        <div className="absolute -top-32 -left-20 w-72 sm:w-[540px] h-72 sm:h-[540px] bg-gradient-to-br from-[#4A1F24]/12 via-[#6A353A]/8 to-transparent blur-[70px] sm:blur-[120px] rounded-full transform -rotate-12" />
-        
-        {/* Soft Muted Brass Glow (Top-Right) */}
-        <div className="absolute top-8 -right-28 w-72 sm:w-[580px] h-72 sm:h-[580px] bg-gradient-to-bl from-[#B89458]/18 via-[#EDE3D5]/25 to-transparent blur-[80px] sm:blur-[130px] rounded-full" />
+      {/* FULL-WIDTH ARTISANAL CANE & WALNUT BACKGROUND (BEHIND LOGO) WITH SEAMLESS BOTTOM FADE */}
+      <div 
+        className="absolute top-0 left-0 right-0 w-full h-[580px] xs:h-[640px] sm:h-[720px] md:h-[780px] lg:h-[840px] pointer-events-none z-0 overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)'
+        }}
+      >
+        <img
+          src={heroBgImage}
+          alt="CARVED & CO. Handcrafted Walnut & Cane Atelier"
+          className="w-full h-full object-cover object-[center_32%]"
+        />
+        {/* Subtle warm atmospheric overlay to ensure white logo & gold typography are razor-sharp while wood and cane weave stay luminous */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1C0A0E]/60 via-[#1C0A0E]/40 to-transparent" />
+        <div className="absolute inset-0 bg-black/20" />
 
-        {/* Warm Soft Cream Fill (Center-Bottom) */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-72 sm:w-[700px] h-60 sm:h-[380px] bg-gradient-to-t from-[#EDE3D5]/50 via-[#B89458]/10 to-transparent blur-[80px] sm:blur-[120px] rounded-full" />
+        {/* Smooth bottom fade into the website's #C5C8CE grey canvas */}
+        <div className="absolute inset-x-0 bottom-0 h-44 sm:h-64 bg-gradient-to-t from-[#C5C8CE] via-[#C5C8CE]/70 to-transparent pointer-events-none" />
+      </div>
+
+      {/* RICH EDITORIAL BURGUNDY, WARM IVORY & BRASS BACKGROUND ACCENTS (LOWER HERO) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+        {/* Subtle Burgundy Aura (Bottom-Left) */}
+        <div className="absolute bottom-10 -left-20 w-72 sm:w-[540px] h-72 sm:h-[540px] bg-gradient-to-br from-[#4A1F24]/10 via-[#6A353A]/6 to-transparent blur-[70px] sm:blur-[120px] rounded-full transform -rotate-12" />
+        
+        {/* Soft Muted Brass Glow (Bottom-Right) */}
+        <div className="absolute bottom-4 -right-28 w-72 sm:w-[580px] h-72 sm:h-[580px] bg-gradient-to-bl from-[#B89458]/15 via-[#B5B8BE]/20 to-transparent blur-[80px] sm:blur-[130px] rounded-full" />
 
         {/* Refined Organic Curved Line Accent */}
-        <svg className="absolute inset-0 w-full h-full opacity-20 text-[#B89458]" xmlns="http://www.w3.org/2000/svg">
+        <svg className="absolute inset-0 w-full h-full opacity-15 text-[#B89458]" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="hero-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#B89458" stopOpacity="0.6" />
@@ -125,42 +141,44 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
               <stop offset="100%" stopColor="#B89458" stopOpacity="0.4" />
             </linearGradient>
           </defs>
-          <path d="M -100 200 C 300 100, 700 350, 1500 150 C 1900 50, 2200 400, 2500 200" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1.5" />
-          <path d="M -100 400 C 400 300, 800 500, 1600 300 C 2000 200, 2300 550, 2600 350" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1" strokeDasharray="6 6" />
-          <circle cx="12%" cy="28%" r="220" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1" />
+          <path d="M -100 450 C 300 350, 700 600, 1500 400 C 1900 300, 2200 650, 2500 450" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1.5" />
+          <path d="M -100 650 C 400 550, 800 750, 1600 550 C 2000 450, 2300 800, 2600 600" fill="none" stroke="url(#hero-line-grad)" strokeWidth="1" strokeDasharray="6 6" />
         </svg>
       </div>
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-between py-4 lg:py-8">
         
-        {/* HOMEPAGE LOGO HERO STATEMENT — LARGE, PROMINENT & MOBILE FIT */}
+        {/* HOMEPAGE LOGO HERO STATEMENT */}
         <motion.div 
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="flex flex-col items-center justify-center mb-6 sm:mb-10 w-full"
+          className="flex flex-col items-center justify-center mb-8 sm:mb-12 w-full"
         >
           <div 
-            className="relative group cursor-pointer w-full max-w-5xl px-2 flex justify-center py-2" 
+            className="relative group cursor-pointer w-full flex flex-col items-center justify-center py-4 xs:py-6 sm:py-8 px-4" 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <BrandLogo variant="stacked" size="hero" isLightBg={true} />
-          </div>
+            {/* LOGO IN FOREGROUND */}
+            <div className="relative z-10 flex flex-col items-center justify-center drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)]">
+              <BrandLogo variant="stacked" size="hero" isLightBg={false} />
 
-          {/* CREDENTIALS PILLS — CLEAR, ELEGANT, UNTRUNCATED */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-3 text-[9px] xs:text-[10px] sm:text-xs font-serif uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#6A353A] max-w-full px-2">
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#35171B]/5 border border-[#35171B]/10 shrink-0 shadow-2xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
-              <span>Master Artisans in Pakistan</span>
-            </span>
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#35171B]/5 border border-[#35171B]/10 shrink-0 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
-              <span>Made to Your Dimensions</span>
-            </span>
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#35171B]/5 border border-[#35171B]/10 shrink-0 shadow-2xs">
-              <Layers className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
-              <span>100% Bespoke Tailoring</span>
-            </span>
+              {/* CREDENTIALS PILLS — ELEGANT TRANSLUCENT FROSTED BADGES */}
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-5 sm:mt-7 text-[9px] xs:text-[10px] sm:text-xs font-serif uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#F4EEE4] max-w-full px-2">
+                <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                  <span>Master Artisans in Pakistan</span>
+                </span>
+                <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
+                  <Sparkles className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                  <span>Made to Your Dimensions</span>
+                </span>
+                <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
+                  <Layers className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                  <span>100% Bespoke Tailoring</span>
+                </span>
+              </div>
+            </div>
           </div>
         </motion.div>
 

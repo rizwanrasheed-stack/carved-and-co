@@ -79,7 +79,7 @@ export function WhatsAppFloatingButton() {
                 C&C
               </div>
               <div>
-                <p className="font-serif font-bold text-sm leading-tight text-[#F4EEE4]">CARVED & CO. Concierge</p>
+                <p className="font-serif font-bold text-sm leading-tight text-[#EAEBED]">CARVED & CO. Concierge</p>
                 <p className="text-[10px] text-[#B89458]">Instant Client Communication</p>
               </div>
             </div>
@@ -93,7 +93,7 @@ export function WhatsAppFloatingButton() {
           </div>
 
           {/* TAB SWITCHER */}
-          <div className="grid grid-cols-2 bg-[#EDE3D5] p-1 border-b border-[#35171B]/15 text-xs font-serif font-semibold">
+          <div className="grid grid-cols-2 bg-[#DFE1E5] p-1 border-b border-[#35171B]/15 text-xs font-serif font-semibold">
             <button
               type="button"
               onClick={() => setActiveTab('whatsapp')}
@@ -111,7 +111,7 @@ export function WhatsAppFloatingButton() {
               onClick={() => setActiveTab('email')}
               className={`py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'email'
-                  ? 'bg-[#35171B] text-[#F4EEE4] shadow-xs'
+                  ? 'bg-[#35171B] text-[#EAEBED] shadow-xs'
                   : 'text-[#35171B] hover:bg-white/50'
               }`}
             >
@@ -121,7 +121,7 @@ export function WhatsAppFloatingButton() {
           </div>
 
           {/* TAB CONTENT */}
-          <div className="p-4 space-y-3 bg-[#FAF6F0]">
+          <div className="p-4 space-y-3 bg-[#F8F9FA]">
             
             {activeTab === 'whatsapp' ? (
               <>

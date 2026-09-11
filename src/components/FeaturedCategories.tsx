@@ -24,7 +24,7 @@ interface FeaturedCategoriesProps {
 
 export function FeaturedCategories({ onSelectCategory, onOpenBespoke }: FeaturedCategoriesProps) {
   return (
-    <section id="featured-categories-section" className="py-16 sm:py-20 bg-[#EDE3D5] text-[#24201E] relative overflow-hidden">
+    <section id="featured-categories-section" className="py-16 sm:py-20 bg-[#B5B8BE] text-[#151618] relative overflow-hidden">
       
       {/* OVERLAPPING COLOR VARIATIONS BACKGROUND */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

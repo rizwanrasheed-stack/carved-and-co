@@ -36,11 +36,11 @@ export function SearchModal({ isOpen, onClose, onSelectProduct }: SearchModalPro
     >
       <div 
         id="search-modal-container"
-        className="w-full max-w-3xl bg-[#F4EEE4] text-[#24201E] rounded-2xl shadow-2xl border border-[#35171B]/20 overflow-hidden"
+        className="w-full max-w-3xl bg-[#EAEBED] text-[#1C1D20] rounded-2xl shadow-2xl border border-[#35171B]/20 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* INPUT HEADER */}
-        <div className="p-3 sm:p-5 bg-[#35171B] text-[#F4EEE4] flex items-center gap-2 sm:gap-3 border-b border-[#B89458]/30">
+        <div className="p-3 sm:p-5 bg-[#35171B] text-[#EAEBED] flex items-center gap-2 sm:gap-3 border-b border-[#B89458]/30">
           <button
             onClick={onClose}
             className="px-3 py-2 rounded-full bg-white/10 hover:bg-[#B89458] text-[#B89458] hover:text-[#35171B] transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-serif font-semibold shrink-0 min-h-[44px]"
@@ -57,7 +57,7 @@ export function SearchModal({ isOpen, onClose, onSelectProduct }: SearchModalPro
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search sofas, tables, finishes..."
-            className="w-full bg-transparent text-[#F4EEE4] placeholder-[#F4EEE4]/50 font-serif text-sm sm:text-lg focus:outline-none"
+            className="w-full bg-transparent text-[#EAEBED] placeholder-[#EAEBED]/50 font-serif text-sm sm:text-lg focus:outline-none"
           />
           <button
             onClick={onClose}
@@ -69,7 +69,7 @@ export function SearchModal({ isOpen, onClose, onSelectProduct }: SearchModalPro
         </div>
 
         {/* POPULAR SUGGESTIONS TAGS */}
-        <div className="px-4 sm:px-6 py-3 bg-[#EDE3D5] border-b border-[#35171B]/10 flex items-center gap-2 text-xs overflow-x-auto">
+        <div className="px-4 sm:px-6 py-3 bg-[#DFE1E5] border-b border-[#35171B]/10 flex items-center gap-2 text-xs overflow-x-auto">
           <span className="font-serif text-[#6A353A] font-semibold shrink-0">Popular:</span>
           {['Italian Leather', 'Dining Table', 'L-Shaped', 'Luxury Sofa', 'Console Table', 'Coffee Table'].map((tag) => (
             <button
@@ -102,7 +102,7 @@ export function SearchModal({ isOpen, onClose, onSelectProduct }: SearchModalPro
                     onSelectProduct(p);
                     onClose();
                   }}
-                  className="flex items-center gap-3 p-3 bg-white hover:bg-[#EDE3D5]/60 rounded-xl border border-[#35171B]/10 cursor-pointer transition-colors group"
+                  className="flex items-center gap-3 p-3 bg-white hover:bg-[#DFE1E5]/60 rounded-xl border border-[#35171B]/10 cursor-pointer transition-colors group"
                 >
                   <img
                     src={p.images[0]}

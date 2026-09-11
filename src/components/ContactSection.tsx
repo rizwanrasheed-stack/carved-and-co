@@ -102,7 +102,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
   const mailtoUrl = generateMailtoUrl(formData, referenceNumber);
 
   return (
-    <section id="contact-section" className="py-20 sm:py-28 bg-[#F4EEE4] text-[#24201E] relative overflow-hidden">
+    <section id="contact-section" className="py-20 sm:py-28 bg-[#EAEBED] text-[#1C1D20] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* HEADER */}
@@ -205,7 +205,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-7 bg-[#EDE3D5] p-5 xs:p-6 sm:p-10 rounded-2xl border border-[#35171B]/15 shadow-xl min-w-0"
+            className="lg:col-span-7 bg-[#DFE1E5] p-5 xs:p-6 sm:p-10 rounded-2xl border border-[#35171B]/15 shadow-xl min-w-0"
           >
             
             <div className="mb-6 border-b border-[#35171B]/10 pb-4">
@@ -408,7 +408,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
 
                   <div className="relative flex items-center justify-center py-1">
                     <div className="border-t border-[#35171B]/15 w-full"></div>
-                    <span className="bg-[#EDE3D5] px-3 text-[10px] font-serif uppercase tracking-widest text-[#35171B]/60 font-semibold shrink-0">
+                    <span className="bg-[#DFE1E5] px-3 text-[10px] font-serif uppercase tracking-widest text-[#35171B]/60 font-semibold shrink-0">
                       Or Connect via WhatsApp
                     </span>
                     <div className="border-t border-[#35171B]/15 w-full"></div>

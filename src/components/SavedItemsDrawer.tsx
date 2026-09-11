@@ -33,11 +33,11 @@ export function SavedItemsDrawer({
     >
       <div 
         id="saved-drawer-container"
-        className="w-full max-w-md bg-[#F4EEE4] text-[#24201E] h-full shadow-2xl border-l border-[#35171B]/20 flex flex-col justify-between overflow-hidden animate-in slide-in-from-right duration-300"
+        className="w-full max-w-md bg-[#EAEBED] text-[#1C1D20] h-full shadow-2xl border-l border-[#35171B]/20 flex flex-col justify-between overflow-hidden animate-in slide-in-from-right duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* HEADER */}
-        <div className="p-4 sm:p-6 bg-[#35171B] text-[#F4EEE4] flex items-center justify-between border-b border-[#B89458]/30">
+        <div className="p-4 sm:p-6 bg-[#35171B] text-[#EAEBED] flex items-center justify-between border-b border-[#B89458]/30">
           <div className="flex items-center gap-2.5">
             <button
               onClick={onClose}
@@ -50,7 +50,7 @@ export function SavedItemsDrawer({
             </button>
             <Heart className="w-5 h-5 text-[#B89458] fill-current shrink-0 hidden xs:block" />
             <div>
-              <h3 className="font-serif text-lg sm:text-xl font-normal text-[#F4EEE4]">Saved Designs</h3>
+              <h3 className="font-serif text-lg sm:text-xl font-normal text-[#EAEBED]">Saved Designs</h3>
               <p className="text-[10px] sm:text-xs text-[#B89458] font-sans">{savedProducts.length} Items Selected</p>
             </div>
           </div>
@@ -123,7 +123,7 @@ export function SavedItemsDrawer({
 
         {/* FOOTER ACTION */}
         {savedProducts.length > 0 && (
-          <div className="p-4 sm:p-6 bg-[#EDE3D5] border-t border-[#35171B]/10 space-y-3">
+          <div className="p-4 sm:p-6 bg-[#DFE1E5] border-t border-[#35171B]/10 space-y-3">
             <a
               href={composeMultiItemWhatsApp()}
               target="_blank"

@@ -57,15 +57,17 @@ export function Navbar({
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 w-full overflow-x-hidden">
-      {/* REFINED TOP ANNOUNCEMENT BAR - ZERO ACCIDENTAL TRUNCATION */}
-      <div className="bg-[#24201E] text-[#F4EEE4] py-1.5 px-3 text-center text-[10px] sm:text-xs font-serif tracking-wider sm:tracking-[0.16em] uppercase flex items-center justify-between border-b border-[#B89458]/25 min-h-[30px]">
+      {/* REFINED TOP ANNOUNCEMENT BAR - TRANSPARENT OVER ARTISAN CANVAS */}
+      <div className={`text-[#F4EEE4] py-1.5 px-3 text-center text-[10px] sm:text-xs font-serif tracking-wider sm:tracking-[0.16em] uppercase flex items-center justify-between border-b border-white/15 min-h-[30px] transition-colors duration-300 ${
+        isScrolled ? 'bg-black/40 backdrop-blur-md' : 'bg-transparent'
+      }`}>
         <div className="hidden sm:flex items-center gap-1.5 text-[#B89458] shrink-0">
           <Sparkles className="w-3 h-3" />
           <span>Atelier Showroom</span>
         </div>
         
         {/* Concise, fully visible on 320px-414px mobile devices */}
-        <p className="mx-auto sm:mx-0 font-medium tracking-wide sm:tracking-widest text-center w-full sm:w-auto">
+        <p className="mx-auto sm:mx-0 font-medium tracking-wide sm:tracking-widest text-center w-full sm:w-auto drop-shadow-sm">
           HANDCRAFTED IN PAKISTAN • MADE TO YOUR DIMENSIONS
         </p>
 
@@ -74,7 +76,7 @@ export function Navbar({
             href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[#B89458] hover:text-white transition-colors text-xs font-sans tracking-wide"
+            className="flex items-center gap-1.5 text-[#B89458] hover:text-white transition-colors text-xs font-sans tracking-wide drop-shadow-sm"
           >
             <PhoneCall className="w-3.5 h-3.5" />
             <span>{COMPANY_INFO.phone}</span>
@@ -82,11 +84,11 @@ export function Navbar({
         </div>
       </div>
 
-      {/* MAIN NAVIGATION BAR */}
+      {/* MAIN NAVIGATION BAR - FULLY TRANSPARENT ON HERO */}
       <nav className={`transition-all duration-300 ${
         isScrolled 
-          ? 'bg-[#35171B]/95 backdrop-blur-md shadow-lg py-2 text-white border-b border-[#B89458]/25' 
-          : 'bg-[#35171B]/95 backdrop-blur-md py-3 text-white'
+          ? 'bg-[#1C0A0E]/80 backdrop-blur-md shadow-lg py-2 text-white border-b border-[#B89458]/25' 
+          : 'bg-transparent py-3 sm:py-4 text-white border-b border-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
           
@@ -117,7 +119,7 @@ export function Navbar({
           </button>
 
           {/* DESKTOP NAV LINKS */}
-          <div className="hidden md:flex items-center space-x-7 lg:space-x-8 text-xs font-serif tracking-[0.18em] uppercase font-medium">
+          <div className="hidden md:flex items-center space-x-7 lg:space-x-8 text-xs font-serif tracking-[0.18em] uppercase font-medium drop-shadow-sm">
             <button
               onClick={() => onNavigate('home')}
               className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'home' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
@@ -140,14 +142,14 @@ export function Navbar({
               </button>
 
               {sofasDropdownOpen && (
-                <div className="absolute top-full left-0 w-64 bg-[#F4EEE4] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
+                <div className="absolute top-full left-0 w-64 bg-[#EAEBED] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
                   <div className="px-4 py-2 border-b border-[#35171B]/10 flex items-center gap-2 text-[#6A353A]">
                     <Armchair className="w-4 h-4 text-[#B89458]" />
                     <span className="font-serif font-semibold text-xs tracking-wider uppercase">Sofa Collections</span>
                   </div>
                   <button
                     onClick={() => { onNavigate('sofas', 'All Sofas'); setSofasDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors font-semibold"
+                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors font-semibold"
                   >
                     View All Sofas
                   </button>
@@ -155,7 +157,7 @@ export function Navbar({
                     <button
                       key={sub}
                       onClick={() => { onNavigate('sofas', sub); setSofasDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors text-[#24201E]/85"
+                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors text-[#1C1D20]/85"
                     >
                       {sub}
                     </button>
@@ -179,14 +181,14 @@ export function Navbar({
               </button>
 
               {tablesDropdownOpen && (
-                <div className="absolute top-full left-0 w-64 bg-[#F4EEE4] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
+                <div className="absolute top-full left-0 w-64 bg-[#EAEBED] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
                   <div className="px-4 py-2 border-b border-[#35171B]/10 flex items-center gap-2 text-[#6A353A]">
                     <TableIcon className="w-4 h-4 text-[#B89458]" />
                     <span className="font-serif font-semibold text-xs tracking-wider uppercase">Table Collections</span>
                   </div>
                   <button
                     onClick={() => { onNavigate('tables', 'All Tables'); setTablesDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors font-semibold"
+                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors font-semibold"
                   >
                     View All Tables
                   </button>
@@ -194,7 +196,7 @@ export function Navbar({
                     <button
                       key={sub}
                       onClick={() => { onNavigate('tables', sub); setTablesDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#EDE3D5] hover:text-[#4A1F24] transition-colors text-[#24201E]/85"
+                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors text-[#1C1D20]/85"
                     >
                       {sub}
                     </button>
@@ -219,7 +221,7 @@ export function Navbar({
           </div>
 
           {/* RIGHT ACTION BUTTONS WITH MIN 44PX TOUCH TARGETS */}
-          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0 drop-shadow-sm">
             <button
               onClick={onOpenSearch}
               className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors cursor-pointer text-white"
@@ -271,7 +273,7 @@ export function Navbar({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="md:hidden bg-[#F4EEE4] text-[#35171B] px-5 pt-4 pb-8 border-b border-[#B89458]/30 space-y-4 max-h-[85vh] overflow-y-auto"
+              className="md:hidden bg-[#EAEBED] text-[#35171B] px-5 pt-4 pb-8 border-b border-[#B89458]/30 space-y-4 max-h-[85vh] overflow-y-auto"
             >
               <button
                 onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}

@@ -62,12 +62,12 @@ export function ProductCard({
     <motion.div 
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="group bg-[#FAF7F2] rounded-xl sm:rounded-2xl border border-[#35171B]/10 overflow-hidden shadow-xs hover:shadow-xl transition-shadow duration-300 flex flex-col h-full relative cursor-pointer hover:border-[#B89458]/50 min-w-0 w-full"
+      className="group bg-[#D2D5DB] rounded-xl sm:rounded-2xl border border-[#35171B]/15 overflow-hidden shadow-xs hover:shadow-xl transition-shadow duration-300 flex flex-col h-full relative cursor-pointer hover:border-[#B89458]/50 min-w-0 w-full"
       onClick={() => onSelectProduct(product)}
     >
       {/* IMAGE CONTAINER WITH DUAL IMAGE HOVER & SCROLL TOGGLE */}
       <div 
-        className="relative aspect-[4/3] overflow-hidden bg-[#EDE3D5] w-full select-none"
+        className="relative aspect-[4/3] overflow-hidden bg-[#B5B8BE] w-full select-none"
         onMouseEnter={() => {
           setIsHovered(true);
           if (hasMultipleImages) {

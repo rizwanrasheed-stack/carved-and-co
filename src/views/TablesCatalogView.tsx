@@ -69,7 +69,7 @@ export function TablesCatalogView({
   }, [tableProducts, selectedSubcategory, selectedWood]);
 
   return (
-    <div id="tables-catalog-page" className="pt-28 pb-24 bg-[#F4EEE4] min-h-screen text-[#24201E]">
+    <div id="tables-catalog-page" className="pt-28 pb-24 bg-[#EAEBED] min-h-screen text-[#1C1D20]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* BANNER HEADER */}
@@ -117,7 +117,7 @@ export function TablesCatalogView({
         </div>
 
         {/* CATEGORY & WOOD FILTER BAR */}
-        <div className="bg-[#EDE3D5] p-4 sm:p-6 rounded-xl border border-[#35171B]/10 mb-8 sm:mb-10 space-y-3 sm:space-y-4 shadow-xs">
+        <div className="bg-[#DFE1E5] p-4 sm:p-6 rounded-xl border border-[#35171B]/10 mb-8 sm:mb-10 space-y-3 sm:space-y-4 shadow-xs">
           
           <div className="flex items-center justify-between">
             <span className="text-xs font-serif uppercase tracking-widest text-[#35171B] font-semibold flex items-center gap-2">
@@ -148,7 +148,7 @@ export function TablesCatalogView({
                 className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-serif tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                   selectedSubcategory === cat
                     ? 'bg-[#35171B] text-[#F4EEE4] shadow-sm font-semibold'
-                    : 'bg-[#F4EEE4] text-[#24201E]/80 hover:bg-[#B89458]/20 border border-[#35171B]/10'
+                    : 'bg-[#EAEBED] text-[#1C1D20]/80 hover:bg-[#B89458]/20 border border-[#35171B]/10'
                 }`}
               >
                 {cat}
@@ -166,7 +166,7 @@ export function TablesCatalogView({
                 className={`px-3 py-1 rounded-full text-[11px] transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
                   selectedWood === w
                     ? 'bg-[#B89458] text-[#35171B] font-semibold'
-                    : 'bg-white/80 text-[#24201E]/70 hover:bg-white'
+                    : 'bg-white/80 text-[#1C1D20]/70 hover:bg-white'
                 }`}
               >
                 {w}
@@ -178,7 +178,7 @@ export function TablesCatalogView({
 
         {/* PRODUCTS GRID */}
         {filteredProducts.length === 0 ? (
-          <div className="py-20 text-center bg-[#EDE3D5]/60 rounded-xl border border-[#35171B]/10 space-y-4">
+          <div className="py-20 text-center bg-[#DFE1E5]/60 rounded-xl border border-[#35171B]/10 space-y-4">
             <p className="font-serif text-2xl text-[#35171B]">No Tables Found</p>
             <p className="text-xs text-[#24201E]/70 font-light max-w-sm mx-auto">
               Our master artisans build custom dining, coffee, and console tables to any floorplan dimension.

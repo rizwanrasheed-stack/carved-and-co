@@ -415,7 +415,7 @@ ${imagesSummary}
     >
       <div 
         id="bespoke-modal-container"
-        className="relative w-full min-h-screen sm:min-h-0 sm:max-w-3xl sm:max-h-[92vh] bg-[#F4EEE4] text-[#24201E] sm:rounded-2xl shadow-2xl border-0 sm:border border-[#35171B]/20 flex flex-col overflow-y-auto my-0 sm:my-4"
+        className="relative w-full min-h-screen sm:min-h-0 sm:max-w-3xl sm:max-h-[92vh] bg-[#EAEBED] text-[#1C1D20] sm:rounded-2xl shadow-2xl border-0 sm:border border-[#35171B]/20 flex flex-col overflow-y-auto my-0 sm:my-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* STICKY HEADER WITH TOP-LEFT BACK BUTTON */}
@@ -761,7 +761,7 @@ ${imagesSummary}
                           e.stopPropagation();
                           fileInputRef.current?.click();
                         }}
-                        className="pointer-events-auto mt-1 px-4 py-2 rounded-lg bg-[#35171B] text-[#F4EEE4] hover:bg-[#B89458] hover:text-[#35171B] text-[11px] font-serif font-semibold uppercase tracking-wider transition-colors min-h-[44px] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        className="pointer-events-auto mt-1 px-4 py-2 rounded-lg bg-[#35171B] text-[#EAEBED] hover:bg-[#B89458] hover:text-[#35171B] text-[11px] font-serif font-semibold uppercase tracking-wider transition-colors min-h-[44px] flex items-center gap-1.5 cursor-pointer shadow-xs"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Select Reference Photos</span>
@@ -918,7 +918,7 @@ ${imagesSummary}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#F4EEE4] hover:text-[#35171B] py-4 px-6 rounded-xl font-serif text-xs sm:text-sm uppercase tracking-widest transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 font-bold min-h-[48px]"
+                  className="w-full bg-[#35171B] hover:bg-[#B89458] text-[#EAEBED] hover:text-[#35171B] py-4 px-6 rounded-xl font-serif text-xs sm:text-sm uppercase tracking-widest transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 font-bold min-h-[48px]"
                 >
                   <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{isSubmitting ? 'Sending to carvedandco@carvedandco.net...' : 'Submit Bespoke Specs to Company Email'}</span>
@@ -929,7 +929,7 @@ ${imagesSummary}
 
                 <div className="relative flex items-center justify-center py-0.5">
                   <div className="border-t border-[#35171B]/15 w-full"></div>
-                  <span className="bg-[#F4EEE4] px-3 text-[10px] font-serif uppercase tracking-widest text-[#35171B]/60 font-semibold shrink-0">
+                  <span className="bg-[#EAEBED] px-3 text-[10px] font-serif uppercase tracking-widest text-[#35171B]/60 font-semibold shrink-0">
                     Or Inquire via WhatsApp
                   </span>
                   <div className="border-t border-[#35171B]/15 w-full"></div>

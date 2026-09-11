@@ -8,7 +8,7 @@ interface AboutSectionProps {
 
 export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
   return (
-    <section id="about-section" className="py-20 sm:py-28 bg-[#F4EEE4] text-[#24201E] relative overflow-hidden">
+    <section id="about-section" className="py-20 sm:py-28 bg-[#C5C8CE] text-[#151618] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* SECTION HEADER */}
@@ -33,7 +33,7 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
         {/* SPLIT LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           
-          {/* LEFT SIDE: WORKSHOP PHOTOGRAPHY COLLAGE */}
+          {/* LEFT SIDE: HERITAGE & CRAFTSMANSHIP FEATURE ARTWORK */}
           <motion.div 
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -41,50 +41,14 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
             transition={{ duration: 0.6 }}
             className="relative min-w-0"
           >
-            
-            {/* MAIN WORKSHOP PHOTO */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
+            {/* HERITAGE & CRAFTSMANSHIP IMAGE */}
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-[#B5B8BE] bg-[#35171B] group">
               <img
                 src={COMPANY_INFO.workshopImages.hero1}
-                alt="CARVED & CO. Master Artisans Crafting Fine Furniture"
-                referrerPolicy="no-referrer"
-                className="w-full h-[320px] xs:h-[380px] sm:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+                alt="CARVED & CO. - Rooted in Tradition. Built for Tomorrow. Pakistani craftsmanship meets contemporary design."
+                className="w-full h-auto aspect-square object-cover group-hover:scale-[1.02] transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#35171B]/80 via-transparent to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white">
-                <span className="text-[10px] sm:text-xs font-serif uppercase tracking-widest text-[#B89458] block mb-1 font-semibold">
-                  Artisan Workshop
-                </span>
-                <p className="text-xs sm:text-sm font-light text-[#F4EEE4]">
-                  Hand-refining bespoke furniture designs in our Mill District studio.
-                </p>
-              </div>
             </div>
-
-            {/* OVERLAY MINI PHOTO CARD */}
-            <div className="hidden sm:block absolute -bottom-8 -right-8 w-60 rounded-xl overflow-hidden shadow-2xl border-4 border-white bg-white">
-              <img
-                src={COMPANY_INFO.workshopImages.craftsmanSanding}
-                alt="Surface Polishing and Finishing"
-                referrerPolicy="no-referrer"
-                className="w-full h-36 object-cover"
-              />
-              <div className="p-3 text-center bg-[#35171B] text-[#F4EEE4]">
-                <p className="text-[11px] font-serif tracking-wider uppercase font-semibold">
-                  100% Hand-Finished Details
-                </p>
-              </div>
-            </div>
-
-            {/* FLOATING BADGE — RESPONSIVE SIZING FOR MOBILE */}
-            <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-[#35171B]/90 backdrop-blur-md text-[#F4EEE4] p-3 sm:p-4 rounded-xl border border-[#B89458]/40 shadow-lg flex items-center gap-2.5 sm:gap-3 max-w-[calc(100%-1.5rem)]">
-              <Hammer className="w-5 h-5 sm:w-6 sm:h-6 text-[#B89458] shrink-0" />
-              <div className="min-w-0">
-                <p className="font-serif text-base sm:text-lg leading-none font-bold truncate">50+ Years</p>
-                <p className="text-[9px] sm:text-[10px] uppercase text-[#B89458] tracking-wider font-medium truncate">Combined Design Heritage</p>
-              </div>
-            </div>
-
           </motion.div>
 
           {/* RIGHT SIDE: STORY CONTENT */}

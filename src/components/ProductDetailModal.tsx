@@ -58,17 +58,17 @@ export function ProductDetailModal({
     >
       <div 
         id="product-detail-modal"
-        className="relative w-full min-h-screen sm:min-h-0 sm:max-w-5xl sm:max-h-[92vh] bg-[#F4EEE4] text-[#24201E] sm:rounded-2xl shadow-2xl border-0 sm:border border-[#35171B]/20 flex flex-col overflow-y-auto sm:my-4"
+        className="relative w-full min-h-screen sm:min-h-0 sm:max-w-5xl sm:max-h-[92vh] bg-[#EAEBED] text-[#1C1D20] sm:rounded-2xl shadow-2xl border-0 sm:border border-[#35171B]/20 flex flex-col overflow-y-auto sm:my-4"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* STICKY TOP NAVIGATION BAR WITH TOP-LEFT BACK BUTTON (44px min touch target) */}
-        <div className="sticky top-0 z-30 bg-[#F4EEE4]/95 backdrop-blur-md px-4 py-3 sm:px-6 sm:py-4 border-b border-[#35171B]/10 flex items-center justify-between shadow-xs">
+        <div className="sticky top-0 z-30 bg-[#EAEBED]/95 backdrop-blur-md px-4 py-3 sm:px-6 sm:py-4 border-b border-[#35171B]/10 flex items-center justify-between shadow-xs">
           {/* TOP LEFT BACK BUTTON */}
           <button
             id="modal-mobile-back-btn"
             onClick={onClose}
-            className="flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2 rounded-full bg-[#35171B] text-[#F4EEE4] hover:bg-[#B89458] hover:text-[#35171B] text-xs font-serif font-semibold tracking-wider uppercase shadow-xs transition-colors cursor-pointer min-h-[44px]"
+            className="flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2 rounded-full bg-[#35171B] text-[#EAEBED] hover:bg-[#B89458] hover:text-[#35171B] text-xs font-serif font-semibold tracking-wider uppercase shadow-xs transition-colors cursor-pointer min-h-[44px]"
             aria-label="Back to Catalog"
           >
             <ArrowLeft className="w-4 h-4 text-[#B89458]" />
@@ -80,7 +80,7 @@ export function ProductDetailModal({
             <button
               id="modal-share-btn"
               onClick={handleShare}
-              className="p-2.5 rounded-full bg-white text-[#35171B] hover:bg-[#35171B] hover:text-[#F4EEE4] border border-[#35171B]/15 shadow-xs transition-colors cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-2.5 rounded-full bg-white text-[#35171B] hover:bg-[#35171B] hover:text-[#EAEBED] border border-[#35171B]/15 shadow-xs transition-colors cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="Copy Product Link"
               aria-label="Share Link"
             >
@@ -93,7 +93,7 @@ export function ProductDetailModal({
               className={`px-3 py-2 rounded-full border border-[#35171B]/15 shadow-xs transition-colors cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-serif ${
                 isSaved 
                   ? 'bg-[#B89458] text-[#35171B] font-semibold' 
-                  : 'bg-white text-[#35171B] hover:bg-[#35171B] hover:text-[#F4EEE4]'
+                  : 'bg-white text-[#35171B] hover:bg-[#35171B] hover:text-[#EAEBED]'
               }`}
               title={isSaved ? 'Remove from Saved' : 'Save Design'}
               aria-label={isSaved ? 'Saved in Collection' : 'Save to My Collection'}
@@ -105,7 +105,7 @@ export function ProductDetailModal({
             <button
               id="modal-close-btn"
               onClick={onClose}
-              className="p-2.5 rounded-full bg-[#35171B] text-[#F4EEE4] hover:bg-[#B89458] hover:text-[#35171B] shadow-xs transition-colors cursor-pointer hidden sm:flex min-w-[44px] min-h-[44px] items-center justify-center"
+              className="p-2.5 rounded-full bg-[#35171B] text-[#EAEBED] hover:bg-[#B89458] hover:text-[#35171B] shadow-xs transition-colors cursor-pointer hidden sm:flex min-w-[44px] min-h-[44px] items-center justify-center"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
@@ -116,7 +116,7 @@ export function ProductDetailModal({
         <div className="grid grid-cols-1 lg:grid-cols-2">
           
           {/* LEFT: IMAGE GALLERY & LIGHTBOX */}
-          <div className="bg-[#EDE3D5] p-4 sm:p-6 lg:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#35171B]/10">
+          <div className="bg-[#DFE1E5] p-4 sm:p-6 lg:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#35171B]/10">
             
             {/* MAIN PREVIEW IMAGE */}
             <div 
@@ -132,7 +132,7 @@ export function ProductDetailModal({
 
               {/* HOVER OVERLAY LIGHTBOX TRIGGER BUTTON */}
               <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="bg-[#F4EEE4]/95 text-[#35171B] px-4 py-2 rounded-full text-xs font-serif tracking-widest uppercase shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform font-semibold">
+                <span className="bg-[#EAEBED]/95 text-[#35171B] px-4 py-2 rounded-full text-xs font-serif tracking-widest uppercase shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform font-semibold">
                   <ZoomIn className="w-4 h-4 text-[#B89458]" />
                   <span>Inspect High Resolution</span>
                 </span>
@@ -145,7 +145,7 @@ export function ProductDetailModal({
                       e.stopPropagation();
                       setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
                     }}
-                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-[#35171B]/70 text-[#F4EEE4] hover:bg-[#35171B] transition-colors cursor-pointer z-10 shadow-md"
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-[#35171B]/70 text-[#EAEBED] hover:bg-[#35171B] transition-colors cursor-pointer z-10 shadow-md"
                     aria-label="Previous Image"
                   >
                     <ChevronLeft className="w-5 h-5 text-[#B89458]" />
@@ -155,7 +155,7 @@ export function ProductDetailModal({
                       e.stopPropagation();
                       setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
                     }}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-[#35171B]/70 text-[#F4EEE4] hover:bg-[#35171B] transition-colors cursor-pointer z-10 shadow-md"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-[#35171B]/70 text-[#EAEBED] hover:bg-[#35171B] transition-colors cursor-pointer z-10 shadow-md"
                     aria-label="Next Image"
                   >
                     <ChevronRight className="w-5 h-5 text-[#B89458]" />

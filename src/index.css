@@ -5,19 +5,19 @@
   --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
   
-  /* CARVED & CO. LUXURY BURGUNDY PALETTE */
+  /* CARVED & CO. LUXURY PALETTE (ARCHITECTURAL GREY BASE) */
   --color-burgundy: #4A1F24;
   --color-burgundy-deep: #35171B;
   --color-burgundy-light: #6A353A;
-  --color-ivory-warm: #F4EEE4;
-  --color-cream-soft: #EDE3D5;
+  --color-ivory-warm: #C5C8CE;
+  --color-cream-soft: #B5B8BE;
   --color-brass-muted: #B89458;
-  --color-charcoal: #24201E;
+  --color-charcoal: #151618;
 
   /* Backward compatible semantic aliases */
   --color-walnut: #35171B;
   --color-oak: #6A353A;
-  --color-ivory: #F4EEE4;
+  --color-ivory: #C5C8CE;
   --color-brass: #B89458;
 }
 
@@ -33,9 +33,9 @@
   body {
     font-family: var(--font-sans);
     color: var(--color-charcoal);
-    background-color: var(--color-ivory-warm);
-    /* Subtle organic warm grain texture */
-    background-image: radial-gradient(#4A1F24 0.35px, transparent 0.35px), radial-gradient(#B89458 0.35px, #F4EEE4 0.35px);
+    background-color: #C5C8CE;
+    /* Subtle organic mineral texture on architectural grey */
+    background-image: radial-gradient(#35171B 0.35px, transparent 0.35px), radial-gradient(#B89458 0.35px, #C5C8CE 0.35px);
     background-size: 28px 28px;
     background-position: 0 0, 14px 14px;
     background-blend-mode: overlay;
@@ -76,7 +76,7 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F4EEE4;
+  background: #C5C8CE;
 }
 ::-webkit-scrollbar-thumb {
   background: #B89458;

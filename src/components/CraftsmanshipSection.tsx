@@ -3,7 +3,7 @@ import { COMPANY_INFO } from '../data/company';
 
 export function CraftsmanshipSection() {
   return (
-    <section id="craftsmanship-section" className="py-20 sm:py-28 bg-[#F4EEE4] text-[#24201E] relative overflow-hidden">
+    <section id="craftsmanship-section" className="py-20 sm:py-28 bg-[#C5C8CE] text-[#151618] relative overflow-hidden">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
@@ -17,9 +17,8 @@ export function CraftsmanshipSection() {
         >
           <img
             src={COMPANY_INFO.workshopImages.hero1}
-            alt="Crafted by Skilled Hands"
-            referrerPolicy="no-referrer"
-            className="w-full h-[400px] xs:h-[460px] sm:h-[540px] object-cover group-hover:scale-105 transition-transform duration-1000"
+            alt="Crafted by Skilled Hands - Rooted in Tradition"
+            className="w-full h-[400px] xs:h-[460px] sm:h-[540px] object-cover object-right sm:object-center group-hover:scale-105 transition-transform duration-1000"
           />
           <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#35171B]/95 via-[#35171B]/75 sm:via-[#35171B]/65 to-transparent" />
           
@@ -53,13 +52,13 @@ export function CraftsmanshipSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ y: -6 }}
-            className="p-6 sm:p-8 rounded-2xl bg-[#EDE3D5]/60 border border-[#35171B]/10 space-y-3 sm:space-y-4 shadow-xs transition-shadow duration-300 hover:shadow-lg min-w-0"
+            className="p-6 sm:p-8 rounded-2xl bg-[#D2D5DB] border border-[#35171B]/15 space-y-3 sm:space-y-4 shadow-xs transition-shadow duration-300 hover:shadow-lg min-w-0"
           >
             <span className="font-serif text-3xl sm:text-4xl text-[#B89458] font-light">01</span>
             <h3 className="font-serif text-xl sm:text-2xl font-semibold text-[#35171B]">
               Hand-Selected Materials
             </h3>
-            <p className="text-xs sm:text-sm text-[#24201E]/80 font-light leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#151618]/80 font-light leading-relaxed">
               We hand-select premium textiles, full-grain leathers, and high-performance composites for structural density, rich tactile feel, and long-term stability across all environmental conditions.
             </p>
           </motion.div>
@@ -70,13 +69,13 @@ export function CraftsmanshipSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
             whileHover={{ y: -6 }}
-            className="p-6 sm:p-8 rounded-2xl bg-[#EDE3D5]/60 border border-[#35171B]/10 space-y-3 sm:space-y-4 shadow-xs transition-shadow duration-300 hover:shadow-lg min-w-0"
+            className="p-6 sm:p-8 rounded-2xl bg-[#D2D5DB] border border-[#35171B]/15 space-y-3 sm:space-y-4 shadow-xs transition-shadow duration-300 hover:shadow-lg min-w-0"
           >
             <span className="font-serif text-3xl sm:text-4xl text-[#B89458] font-light">02</span>
             <h3 className="font-serif text-xl sm:text-2xl font-semibold text-[#35171B]">
               Master Joinery & Assembly
             </h3>
-            <p className="text-xs sm:text-sm text-[#24201E]/80 font-light leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#151618]/80 font-light leading-relaxed">
               Our artisans rely on precision mortise-and-tenon and interlocking frame engineering. This ensures exceptional structural strength designed for generations of daily comfort.
             </p>
           </motion.div>
@@ -87,13 +86,13 @@ export function CraftsmanshipSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
             whileHover={{ y: -6 }}
-            className="p-6 sm:p-8 rounded-2xl bg-[#EDE3D5]/60 border border-[#35171B]/10 space-y-3 sm:space-y-4 shadow-xs transition-shadow duration-300 hover:shadow-lg min-w-0"
+            className="p-6 sm:p-8 rounded-2xl bg-[#D2D5DB] border border-[#35171B]/15 space-y-3 sm:space-y-4 shadow-xs transition-shadow duration-300 hover:shadow-lg min-w-0"
           >
             <span className="font-serif text-3xl sm:text-4xl text-[#B89458] font-light">03</span>
             <h3 className="font-serif text-xl sm:text-2xl font-semibold text-[#35171B]">
               Hand-Rubbed Custom Finishes
             </h3>
-            <p className="text-xs sm:text-sm text-[#24201E]/80 font-light leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#151618]/80 font-light leading-relaxed">
               We finish our surfaces with hand-applied organic oils, hardwaxes, and protective coats. Designed to preserve pristine aesthetics while resisting daily wear and tear effortlessly.
             </p>
           </motion.div>

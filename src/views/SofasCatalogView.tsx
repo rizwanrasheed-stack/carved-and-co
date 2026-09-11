@@ -67,7 +67,7 @@ export function SofasCatalogView({
   }, [sofaProducts, selectedSubcategory, selectedMaterial]);
 
   return (
-    <div className="min-h-screen bg-[#F4EEE4] text-[#24201E] pt-28 sm:pt-32 pb-24">
+    <div className="min-h-screen bg-[#EAEBED] text-[#1C1D20] pt-28 sm:pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* HEADER SECTION */}

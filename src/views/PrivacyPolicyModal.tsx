@@ -14,7 +14,7 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
       onClick={onClose}
     >
       <div 
-        className="bg-[#F8F6F2] text-[#242424] w-full max-w-2xl rounded-xl shadow-2xl border border-[#3A2A22]/20 overflow-hidden my-8"
+        className="bg-[#EAEBED] text-[#1C1D20] w-full max-w-2xl rounded-xl shadow-2xl border border-[#3A2A22]/20 overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-[#3A2A22] text-white p-4 sm:p-6 flex items-center justify-between">
@@ -36,7 +36,7 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
           </button>
         </div>
 
-        <div className="p-6 sm:p-8 space-y-4 max-h-[70vh] overflow-y-auto text-xs text-[#242424]/80 font-light leading-relaxed">
+        <div className="p-6 sm:p-8 space-y-4 max-h-[70vh] overflow-y-auto text-xs text-[#1C1D20]/80 font-light leading-relaxed">
           <p>
             At <strong>CARVED & CO.</strong>, we respect the privacy of our private homeowners, interior designers, and commercial partners.
           </p>
@@ -62,7 +62,7 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
           </p>
         </div>
 
-        <div className="p-4 bg-[#ECE8E1] text-right border-t border-[#3A2A22]/10">
+        <div className="p-4 bg-[#DFE1E5] text-right border-t border-[#3A2A22]/10">
           <button
             onClick={onClose}
             className="bg-[#3A2A22] text-white px-6 py-2 rounded text-xs font-serif uppercase tracking-wider hover:bg-[#C7A46A] hover:text-[#3A2A22] transition-colors cursor-pointer"

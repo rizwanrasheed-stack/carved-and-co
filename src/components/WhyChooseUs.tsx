@@ -49,7 +49,7 @@ const FEATURES = [
 
 export function WhyChooseUs() {
   return (
-    <section id="why-choose-us" className="py-20 sm:py-28 bg-[#35171B] text-[#F4EEE4] relative overflow-hidden">
+    <section id="why-choose-us" className="py-20 sm:py-28 bg-[#35171B] text-[#EAEBED] relative overflow-hidden">
       
       {/* BACKGROUND DECORATIVE PATTERN */}
       <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#B89458_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -67,7 +67,7 @@ export function WhyChooseUs() {
           <span className="text-[11px] sm:text-xs font-serif tracking-[0.25em] text-[#B89458] uppercase block mb-3 font-semibold">
             The CARVED & CO. Philosophy
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#F4EEE4] leading-tight">
+          <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#EAEBED] leading-tight">
             Why Discerning Clients Choose Our Atelier
           </h2>
           <svg className="w-20 h-2 text-[#B89458] mx-auto mt-5 sm:mt-6" viewBox="0 0 80 8" fill="none">

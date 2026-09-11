@@ -108,7 +108,7 @@ export default function App() {
   const featuredMasterpieces = PRODUCTS.filter((p) => p.isFeatured);
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#F8F6F2] text-[#242424] font-sans selection:bg-[#C7A46A] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#C5C8CE] text-[#151618] font-sans selection:bg-[#B89458] selection:text-white flex flex-col justify-between">
       
       {/* DYNAMIC SEO HEAD */}
       <SeoHead
@@ -170,12 +170,12 @@ export default function App() {
             />
 
             {/* FEATURED CHAIR & SOFA CATALOG SHOWCASE (MOVED UP) */}
-            <section className="py-20 bg-[#F8F6F2] text-[#242424] border-t border-[#3A2A22]/10 relative overflow-hidden">
+            <section className="py-20 bg-[#C5C8CE] text-[#151618] border-t border-[#35171B]/10 relative overflow-hidden">
               {/* Overlapping Color Gradients Background */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 -left-32 w-[600px] h-[500px] bg-gradient-to-r from-[#EAE0D0]/50 via-[#C7A46A]/20 to-transparent blur-[120px] rounded-full" />
-                <div className="absolute bottom-10 -right-20 w-[550px] h-[550px] bg-gradient-to-l from-[#C49570]/25 via-[#E2CBAA]/15 to-transparent blur-[110px] rounded-full" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,#F5EBE0_0%,transparent_60%)]" />
+                <div className="absolute top-1/4 -left-32 w-[600px] h-[500px] bg-gradient-to-r from-[#B5B8BE]/60 via-[#B89458]/15 to-transparent blur-[120px] rounded-full" />
+                <div className="absolute bottom-10 -right-20 w-[550px] h-[550px] bg-gradient-to-l from-[#35171B]/10 via-[#B5B8BE]/40 to-transparent blur-[110px] rounded-full" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,#B5B8BE_0%,transparent_60%)]" />
               </div>
 
               <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
