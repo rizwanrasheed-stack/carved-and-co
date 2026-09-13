@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, ArrowRight, Sparkles, Layers, Sliders, Check, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 import { BrandLogo } from './BrandLogo';
-import heroBgImage from '../assets/images/background.png';
+import heroBgImage from '../assets/images/BG.jpg';
 
 interface HeroProps {
   onBrowseCollection: () => void;
@@ -98,30 +98,30 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
   return (
     <section 
       id="hero-section" 
-      className="relative w-full min-h-[700px] lg:min-h-[88vh] bg-[#C5C8CE] text-[#151618] pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 overflow-hidden flex flex-col justify-center"
+      className="relative w-full min-h-[640px] lg:min-h-[88vh] bg-[#C5C8CE] text-[#151618] pt-20 xs:pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 overflow-hidden flex flex-col justify-center"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       
       {/* FULL-WIDTH ARTISANAL CANE & WALNUT BACKGROUND (BEHIND LOGO) WITH SEAMLESS BOTTOM FADE */}
       <div 
-        className="absolute top-0 left-0 right-0 w-full h-[580px] xs:h-[640px] sm:h-[720px] md:h-[780px] lg:h-[840px] pointer-events-none z-0 overflow-hidden"
+        className="absolute top-0 left-0 right-0 w-full h-[400px] xs:h-[460px] sm:h-[600px] md:h-[720px] lg:h-[840px] pointer-events-none z-0 overflow-hidden"
         style={{
-          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)'
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 68%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 68%, rgba(0,0,0,0) 100%)'
         }}
       >
         <img
           src={heroBgImage}
-          alt="CARVED & CO. Handcrafted Walnut & Cane Atelier"
-          className="w-full h-full object-cover object-[center_32%]"
+          alt="CARVED & CO. Handcrafted Living Atelier"
+          className="w-full h-full object-cover object-[center_30%] sm:object-[center_35%]"
         />
         {/* Subtle warm atmospheric overlay to ensure white logo & gold typography are razor-sharp while wood and cane weave stay luminous */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1C0A0E]/60 via-[#1C0A0E]/40 to-transparent" />
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1C0A0E]/70 via-[#1C0A0E]/35 to-transparent" />
+        <div className="absolute inset-0 bg-black/15" />
 
         {/* Smooth bottom fade into the website's #C5C8CE grey canvas */}
-        <div className="absolute inset-x-0 bottom-0 h-44 sm:h-64 bg-gradient-to-t from-[#C5C8CE] via-[#C5C8CE]/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-64 bg-gradient-to-t from-[#C5C8CE] via-[#C5C8CE]/75 to-transparent pointer-events-none" />
       </div>
 
       {/* RICH EDITORIAL BURGUNDY, WARM IVORY & BRASS BACKGROUND ACCENTS (LOWER HERO) */}
@@ -153,10 +153,10 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="flex flex-col items-center justify-center mb-8 sm:mb-12 w-full"
+          className="flex flex-col items-center justify-center mb-6 sm:mb-12 w-full"
         >
           <div 
-            className="relative group cursor-pointer w-full flex flex-col items-center justify-center py-4 xs:py-6 sm:py-8 px-4" 
+            className="relative group cursor-pointer w-full flex flex-col items-center justify-center py-2 xs:py-4 sm:py-8 px-2 sm:px-4" 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             {/* LOGO IN FOREGROUND */}
@@ -164,17 +164,17 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
               <BrandLogo variant="stacked" size="hero" isLightBg={false} />
 
               {/* CREDENTIALS PILLS — ELEGANT TRANSLUCENT FROSTED BADGES */}
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-5 sm:mt-7 text-[9px] xs:text-[10px] sm:text-xs font-serif uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#F4EEE4] max-w-full px-2">
-                <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 mt-3.5 sm:mt-7 text-[8.5px] xs:text-[10px] sm:text-xs font-serif uppercase tracking-[0.12em] sm:tracking-[0.18em] text-[#F4EEE4] max-w-full px-2">
+                <span className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
+                  <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89458] shrink-0" />
                   <span>Master Artisans in Pakistan</span>
                 </span>
-                <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
-                  <Sparkles className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                <span className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
+                  <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89458] shrink-0" />
                   <span>Made to Your Dimensions</span>
                 </span>
-                <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
-                  <Layers className="w-3.5 h-3.5 text-[#B89458] shrink-0" />
+                <span className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#1A0A0D]/75 backdrop-blur-md border border-[#B89458]/35 shrink-0 shadow-lg text-[#F4EEE4]">
+                  <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89458] shrink-0" />
                   <span>100% Bespoke Tailoring</span>
                 </span>
               </div>
