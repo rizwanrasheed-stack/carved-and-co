@@ -1,4 +1,4 @@
-import { useState, useRef, FormEvent, DragEvent, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent, DragEvent, ChangeEvent } from 'react';
 import { 
   X, 
   Sparkles, 
@@ -52,8 +52,6 @@ const MAX_TOTAL_SIZE_BYTES = 20 * 1024 * 1024; // 20MB total attachments
 const MAX_PHOTOS_COUNT = 6;
 
 export function BespokeStudioModal({ isOpen, onClose, initialProduct }: BespokeStudioModalProps) {
-  if (!isOpen) return null;
-
   const [furnitureType, setFurnitureType] = useState<string>(
     initialProduct ? initialProduct.subcategory : 'Custom Dining Table'
   );
@@ -406,6 +404,36 @@ ${imagesSummary}
     setZoomedImage(null);
     onClose();
   };
+
+  useEffect(() => {
+    if (initialProduct) {
+      setFurnitureType(initialProduct.subcategory);
+      const dims = typeof initialProduct.dimensions === 'string'
+        ? `${initialProduct.dimensions} (Customized)`
+        : initialProduct.dimensions?.width
+        ? `${initialProduct.dimensions.width} (Customized)`
+        : initialProduct.dimensionsDefault || 'Custom Dimensions';
+      setDimensions(dims);
+    }
+  }, [initialProduct]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !zoomedImage) {
+        handleResetAndClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, zoomedImage]);
+
+  if (!isOpen) return null;
 
   return (
     <div 

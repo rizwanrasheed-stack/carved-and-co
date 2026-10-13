@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Product } from './types';
 import { SeoHead } from './components/SeoHead';
 import { Navbar } from './components/Navbar';
@@ -18,14 +19,15 @@ import { Footer } from './components/Footer';
 import { PrivacyPolicyModal } from './views/PrivacyPolicyModal';
 import { SofasCatalogView } from './views/SofasCatalogView';
 import { TablesCatalogView } from './views/TablesCatalogView';
+import { ProductDetailStandaloneView } from './views/ProductDetailStandaloneView';
+import { ScrollToTop } from './components/ScrollToTop';
 import { PRODUCTS } from './data/products';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-export default function App() {
-  const [currentView, setCurrentView] = useState<string>('home');
-  const [initialSubcategory, setInitialSubcategory] = useState<string | undefined>(undefined);
-  
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+function AppContent() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [savedDrawerOpen, setSavedDrawerOpen] = useState<boolean>(false);
   const [bespokeStudioOpen, setBespokeStudioOpen] = useState<boolean>(false);
@@ -50,44 +52,25 @@ export default function App() {
     }
   }, [savedProducts]);
 
-  // HASH ROUTING SYNC
+  // Backward compatibility: handle legacy hashes if any user arrives with #sofas or #tables
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
       if (hash.startsWith('sofas')) {
         const parts = hash.split('/');
-        setCurrentView('sofas');
-        if (parts[1]) setInitialSubcategory(decodeURIComponent(parts[1]));
+        const sub = parts[1] ? `?subcategory=${encodeURIComponent(decodeURIComponent(parts[1]))}` : '';
+        navigate(`/sofas${sub}`, { replace: true });
       } else if (hash.startsWith('tables')) {
         const parts = hash.split('/');
-        setCurrentView('tables');
-        if (parts[1]) setInitialSubcategory(decodeURIComponent(parts[1]));
+        const sub = parts[1] ? `?subcategory=${encodeURIComponent(decodeURIComponent(parts[1]))}` : '';
+        navigate(`/tables${sub}`, { replace: true });
       } else if (hash === 'about') {
-        setCurrentView('about');
+        navigate('/about', { replace: true });
       } else if (hash === 'contact') {
-        setCurrentView('contact');
-      } else {
-        setCurrentView('home');
+        navigate('/contact', { replace: true });
       }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
-  const handleNavigate = (view: string, subcategory?: string) => {
-    setCurrentView(view);
-    setInitialSubcategory(subcategory);
-
-    let targetHash = `#${view}`;
-    if (subcategory) {
-      targetHash += `/${encodeURIComponent(subcategory)}`;
     }
-    window.location.hash = targetHash;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [navigate]);
 
   const handleToggleSave = (product: Product) => {
     setSavedProducts((prev) => {
@@ -105,32 +88,49 @@ export default function App() {
     setBespokeStudioOpen(true);
   };
 
+  const state = location.state as { backgroundLocation?: any } | undefined;
+  const backgroundLocation = state?.backgroundLocation;
+
+  const isProductRoute = location.pathname.startsWith('/products/');
+  const routeSlug = isProductRoute
+    ? location.pathname.replace(/^\/products\//, '').replace(/\/$/, '')
+    : null;
+  const routeProduct = routeSlug
+    ? PRODUCTS.find((p) => p.slug.toLowerCase() === routeSlug.toLowerCase()) || null
+    : null;
+
+  const activeModalProduct = (backgroundLocation && routeProduct) ? routeProduct : null;
+
+  const handleOpenProduct = (product: Product) => {
+    navigate(`/products/${product.slug}`, {
+      state: { backgroundLocation: location }
+    });
+  };
+
+  const handleCloseProductModal = () => {
+    if (backgroundLocation) {
+      navigate(-1);
+    } else if (isProductRoute) {
+      const fallback = routeProduct?.category === 'sofas' ? '/sofas' : '/tables';
+      navigate(fallback);
+    }
+  };
+
   const featuredMasterpieces = PRODUCTS.filter((p) => p.isFeatured);
+
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-[#C5C8CE] text-[#151618] font-sans selection:bg-[#B89458] selection:text-white flex flex-col justify-between">
-      
+      <ScrollToTop />
+
       {/* DYNAMIC SEO HEAD */}
       <SeoHead
-        title={
-          currentView === 'sofas' 
-            ? 'Handcrafted Sofas & Sectionals Catalog' 
-            : currentView === 'tables' 
-            ? 'Handcrafted Dining & Coffee Tables Catalog' 
-            : currentView === 'about'
-            ? 'About Our Artisan Studio'
-            : currentView === 'contact'
-            ? 'Contact Workshop & Request Custom Order'
-            : 'CARVED & CO. | Handcrafted Furniture & Timeless Living'
-        }
-        product={selectedProduct}
-        currentPath={currentView}
+        product={activeModalProduct}
+        currentPath={location.pathname}
       />
 
       {/* STICKY NAVBAR */}
       <Navbar
-        currentView={currentView}
-        onNavigate={handleNavigate}
         onOpenSearch={() => setSearchOpen(true)}
         onOpenSaved={() => setSavedDrawerOpen(true)}
         onOpenBespoke={() => {
@@ -142,153 +142,191 @@ export default function App() {
 
       {/* MAIN VIEW CONTENT */}
       <main className="flex-grow">
-        {currentView === 'home' && (
-          <>
-            {/* HERO SECTION */}
-            <Hero
-              onBrowseCollection={() => handleNavigate('sofas')}
-              onOpenBespoke={() => {
-                setBespokeBaseProduct(null);
-                setBespokeStudioOpen(true);
-              }}
-            />
+        <Routes location={backgroundLocation || location}>
+          {/* HOMEPAGE ROUTE */}
+          <Route
+            path="/"
+            element={
+              <>
+                {/* HERO SECTION */}
+                <Hero
+                  onBrowseCollection={() => navigate('/sofas')}
+                  onOpenBespoke={() => {
+                    setBespokeBaseProduct(null);
+                    setBespokeStudioOpen(true);
+                  }}
+                />
 
-            {/* FEATURED CATEGORIES DIRECTORY */}
-            <FeaturedCategories
-              onSelectCategory={(cat) => {
-                if (cat === 'custom') {
+                {/* FEATURED CATEGORIES DIRECTORY */}
+                <FeaturedCategories
+                  onOpenBespoke={() => {
+                    setBespokeBaseProduct(null);
+                    setBespokeStudioOpen(true);
+                  }}
+                />
+
+                {/* FEATURED MASTERPIECES COLLECTION PREVIEW */}
+                <section id="featured-masterpieces-section" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 sm:mb-12 border-b border-[#3A2A22]/10 pb-4">
+                    <div>
+                      <span className="text-xs font-serif uppercase tracking-[0.25em] text-[#6A353A] font-bold block mb-1">
+                        Curated Highlights
+                      </span>
+                      <h2 className="font-serif text-2xl sm:text-4xl text-[#3A2A22] font-normal">
+                        Featured Masterpieces
+                      </h2>
+                    </div>
+                    <Link
+                      to="/sofas"
+                      className="mt-4 sm:mt-0 text-xs font-serif uppercase tracking-widest text-[#B89458] hover:text-[#35171B] transition-colors flex items-center gap-2 cursor-pointer font-semibold"
+                    >
+                      <span>View Complete Showroom</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+                    {featuredMasterpieces.map((p) => (
+                      <ProductCard
+                        key={p.id}
+                        product={p}
+                        onOpenDetail={handleOpenProduct}
+                        onToggleSave={handleToggleSave}
+                        isSaved={savedProducts.some((sp) => sp.id === p.id)}
+                        onCustomize={() => handleOpenBespokeWithProduct(p)}
+                      />
+                    ))}
+                  </div>
+                </section>
+
+                {/* ABOUT OUR STORY & CRAFTSMANSHIP */}
+                <AboutSection
+                  onOpenBespoke={() => {
+                    setBespokeBaseProduct(null);
+                    setBespokeStudioOpen(true);
+                  }}
+                />
+
+                {/* WHY CHOOSE US PHILOSOPHY */}
+                <WhyChooseUs />
+
+                {/* EDITORIAL CRAFTSMANSHIP SECTION */}
+                <CraftsmanshipSection />
+
+                {/* CONTACT & WORKSHOP VISIT */}
+                <ContactSection
+                  onOpenBespoke={() => {
+                    setBespokeBaseProduct(null);
+                    setBespokeStudioOpen(true);
+                  }}
+                />
+              </>
+            }
+          />
+
+          {/* SOFAS CATALOG ROUTE */}
+          <Route
+            path="/sofas"
+            element={
+              <SofasCatalogView
+                onSelectProduct={handleOpenProduct}
+                onToggleSave={handleToggleSave}
+                savedIds={savedProducts.map((sp) => sp.id)}
+                onOpenBespoke={() => {
                   setBespokeBaseProduct(null);
                   setBespokeStudioOpen(true);
-                } else {
-                  handleNavigate(cat);
-                }
-              }}
-              onOpenBespoke={() => {
-                setBespokeBaseProduct(null);
-                setBespokeStudioOpen(true);
-              }}
-            />
-
-            {/* FEATURED CHAIR & SOFA CATALOG SHOWCASE (MOVED UP) */}
-            <section className="py-20 bg-[#C5C8CE] text-[#151618] border-t border-[#35171B]/10 relative overflow-hidden">
-              {/* Overlapping Color Gradients Background */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 -left-32 w-[600px] h-[500px] bg-gradient-to-r from-[#B5B8BE]/60 via-[#B89458]/15 to-transparent blur-[120px] rounded-full" />
-                <div className="absolute bottom-10 -right-20 w-[550px] h-[550px] bg-gradient-to-l from-[#35171B]/10 via-[#B5B8BE]/40 to-transparent blur-[110px] rounded-full" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,#B5B8BE_0%,transparent_60%)]" />
-              </div>
-
-              <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 border-b border-[#3A2A22]/10 pb-6">
-                  <div>
-                    <span className="text-xs font-serif tracking-[0.25em] text-[#8A6A4A] uppercase block mb-2 font-bold">
-                      Chair & Sofa Catalog Showcase
-                    </span>
-                    <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#3A2A22]">
-                      Featured Handcrafted Designs
-                    </h2>
-                  </div>
-                  <button
-                    onClick={() => handleNavigate('sofas')}
-                    className="mt-4 sm:mt-0 text-xs font-serif uppercase tracking-widest text-[#C7A46A] hover:text-[#3A2A22] transition-colors flex items-center gap-2 cursor-pointer font-semibold"
-                  >
-                    <span>View Complete Showroom</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-                  {featuredMasterpieces.map((p) => (
-                    <ProductCard
-                      key={p.id}
-                      product={p}
-                      onSelectProduct={(p) => setSelectedProduct(p)}
-                      onToggleSave={handleToggleSave}
-                      isSaved={savedProducts.some((sp) => sp.id === p.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* ABOUT OUR STORY & CRAFTSMANSHIP */}
-            <AboutSection
-              onOpenBespoke={() => {
-                setBespokeBaseProduct(null);
-                setBespokeStudioOpen(true);
-              }}
-            />
-
-            {/* WHY CHOOSE US PHILOSOPHY */}
-            <WhyChooseUs />
-
-            {/* EDITORIAL CRAFTSMANSHIP SECTION */}
-            <CraftsmanshipSection />
-
-            {/* CONTACT & WORKSHOP VISIT */}
-            <ContactSection
-              onOpenBespoke={() => {
-                setBespokeBaseProduct(null);
-                setBespokeStudioOpen(true);
-              }}
-            />
-          </>
-        )}
-
-        {currentView === 'about' && (
-          <div className="pt-24">
-            <AboutSection
-              onOpenBespoke={() => {
-                setBespokeBaseProduct(null);
-                setBespokeStudioOpen(true);
-              }}
-            />
-            <CraftsmanshipSection />
-            <WhyChooseUs />
-          </div>
-        )}
-
-        {currentView === 'sofas' && (
-          <SofasCatalogView
-            initialSubcategory={initialSubcategory}
-            onSelectProduct={(p) => setSelectedProduct(p)}
-            onToggleSave={handleToggleSave}
-            savedIds={savedProducts.map((sp) => sp.id)}
-            onOpenBespoke={() => {
-              setBespokeBaseProduct(null);
-              setBespokeStudioOpen(true);
-            }}
+                }}
+              />
+            }
           />
-        )}
 
-        {currentView === 'tables' && (
-          <TablesCatalogView
-            initialSubcategory={initialSubcategory}
-            onSelectProduct={(p) => setSelectedProduct(p)}
-            onToggleSave={handleToggleSave}
-            savedIds={savedProducts.map((sp) => sp.id)}
-            onOpenBespoke={() => {
-              setBespokeBaseProduct(null);
-              setBespokeStudioOpen(true);
-            }}
+          {/* TABLES CATALOG ROUTE */}
+          <Route
+            path="/tables"
+            element={
+              <TablesCatalogView
+                onSelectProduct={handleOpenProduct}
+                onToggleSave={handleToggleSave}
+                savedIds={savedProducts.map((sp) => sp.id)}
+                onOpenBespoke={() => {
+                  setBespokeBaseProduct(null);
+                  setBespokeStudioOpen(true);
+                }}
+              />
+            }
           />
-        )}
 
-        {currentView === 'contact' && (
-          <div className="pt-24">
-            <ContactSection
-              onOpenBespoke={() => {
-                setBespokeBaseProduct(null);
-                setBespokeStudioOpen(true);
-              }}
-            />
-          </div>
-        )}
+          {/* ABOUT PAGE ROUTE */}
+          <Route
+            path="/about"
+            element={
+              <div className="pt-24">
+                <AboutSection
+                  onOpenBespoke={() => {
+                    setBespokeBaseProduct(null);
+                    setBespokeStudioOpen(true);
+                  }}
+                />
+                <CraftsmanshipSection />
+                <WhyChooseUs />
+              </div>
+            }
+          />
+
+          {/* CONTACT PAGE ROUTE */}
+          <Route
+            path="/contact"
+            element={
+              <div className="pt-24">
+                <ContactSection
+                  onOpenBespoke={() => {
+                    setBespokeBaseProduct(null);
+                    setBespokeStudioOpen(true);
+                  }}
+                />
+              </div>
+            }
+          />
+
+          {/* INDIVIDUAL PRODUCT DEEP LINK ROUTE */}
+          <Route
+            path="/products/:slug"
+            element={
+              <div className="pt-24">
+                <ProductDetailStandaloneView
+                  onToggleSave={handleToggleSave}
+                  savedIds={savedProducts.map((sp) => sp.id)}
+                  onOpenBespokeWithProduct={handleOpenBespokeWithProduct}
+                />
+              </div>
+            }
+          />
+
+          {/* CATCH-ALL ROUTE (FALLBACK TO HOMEPAGE) */}
+          <Route
+            path="*"
+            element={
+              <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-28 text-center bg-[#C5C8CE]">
+                <h1 className="font-serif text-3xl sm:text-4xl text-[#35171B] mb-3">
+                  Page Not Found
+                </h1>
+                <p className="text-sm text-[#24201E]/80 mb-6 font-light">
+                  The page you are looking for does not exist or has moved.
+                </p>
+                <Link
+                  to="/"
+                  className="px-6 py-3 rounded-full bg-[#35171B] text-[#F4EEE4] hover:bg-[#B89458] hover:text-[#35171B] font-serif text-xs uppercase tracking-widest transition-colors font-semibold"
+                >
+                  Return to Showroom Home
+                </Link>
+              </div>
+            }
+          />
+        </Routes>
       </main>
 
       {/* FOOTER */}
       <Footer
-        onNavigate={handleNavigate}
         onOpenBespoke={() => {
           setBespokeBaseProduct(null);
           setBespokeStudioOpen(true);
@@ -301,10 +339,10 @@ export default function App() {
 
       {/* MODALS & DRAWERS */}
       <ProductDetailModal
-        product={selectedProduct}
-        onClose={() => setSelectedProduct(null)}
+        product={activeModalProduct}
+        onClose={handleCloseProductModal}
         onToggleSave={handleToggleSave}
-        isSaved={selectedProduct ? savedProducts.some((sp) => sp.id === selectedProduct.id) : false}
+        isSaved={activeModalProduct ? savedProducts.some((sp) => sp.id === activeModalProduct.id) : false}
         onOpenBespokeWithProduct={handleOpenBespokeWithProduct}
       />
 
@@ -320,7 +358,7 @@ export default function App() {
       <SearchModal
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
-        onSelectProduct={(p) => setSelectedProduct(p)}
+        onSelectProduct={handleOpenProduct}
       />
 
       <SavedItemsDrawer
@@ -328,14 +366,21 @@ export default function App() {
         onClose={() => setSavedDrawerOpen(false)}
         savedProducts={savedProducts}
         onRemoveSaved={handleToggleSave}
-        onSelectProduct={(p) => setSelectedProduct(p)}
+        onSelectProduct={handleOpenProduct}
       />
 
       <PrivacyPolicyModal
         isOpen={privacyModalOpen}
         onClose={() => setPrivacyModalOpen(false)}
       />
-
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 }

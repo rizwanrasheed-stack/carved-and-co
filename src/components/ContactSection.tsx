@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   MessageCircle, 
@@ -15,9 +15,10 @@ import { sendInquiryToCompanyEmail, generateMailtoUrl, TARGET_COMPANY_EMAIL } fr
 
 interface ContactSectionProps {
   onOpenBespoke?: () => void;
+  isStandalonePage?: boolean;
 }
 
-export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
+export function ContactSection({ onOpenBespoke, isStandalonePage = false }: ContactSectionProps) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -31,6 +32,13 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionMethod, setSubmissionMethod] = useState<'email' | 'whatsapp'>('email');
   const [referenceNumber, setReferenceNumber] = useState('');
+  const confirmationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (submitted && confirmationRef.current) {
+      confirmationRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [submitted]);
 
   const buildWhatsappMessage = (ref: string) => {
     return `Hello CARVED & CO., I would like to submit a furniture inquiry:
@@ -116,9 +124,15 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
           <span className="text-[11px] sm:text-xs font-serif tracking-[0.25em] text-[#6A353A] uppercase block mb-3 font-semibold">
             Private Concierge & Custom Orders
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#35171B] mb-4">
-            Connect With Our Master Artisans
-          </h2>
+          {isStandalonePage ? (
+            <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#35171B] mb-4">
+              Connect With Our Master Artisans
+            </h1>
+          ) : (
+            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#35171B] mb-4">
+              Connect With Our Master Artisans
+            </h2>
+          )}
           <p className="text-xs sm:text-sm lg:text-base text-[#24201E]/80 font-light leading-relaxed">
             Whether you need a single statement sofa, a custom 12-foot dining table, or full interior furniture specifications, our concierge team is ready to assist.
           </p>
@@ -218,7 +232,7 @@ export function ContactSection({ onOpenBespoke }: ContactSectionProps) {
             </div>
 
             {submitted ? (
-              <div className="text-center py-10 sm:py-12 space-y-4">
+              <div ref={confirmationRef} className="text-center py-10 sm:py-12 space-y-4">
                 <CheckCircle2 className="w-14 h-14 sm:w-16 sm:h-16 text-[#B89458] mx-auto" />
                 <h4 className="font-serif text-2xl font-semibold text-[#35171B]">
                   {submissionMethod === 'email' ? 'Inquiry Sent to Studio Email' : 'Inquiry Sent to WhatsApp'}

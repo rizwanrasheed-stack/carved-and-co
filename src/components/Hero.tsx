@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, ArrowRight, Sparkles, Layers, Sliders, Check, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
@@ -206,16 +207,14 @@ export function Hero({ onBrowseCollection, onOpenBespoke }: HeroProps) {
 
             {/* UNCLUTTERED CTA BUTTON GROUP — PRIMARY + SECONDARY + WHATSAPP */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full max-w-md mx-auto lg:mx-0">
-              <motion.button
-                whileHover={{ y: -2, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <Link
                 id="hero-browse-collection-btn"
-                onClick={onBrowseCollection}
+                to="/sofas"
                 className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#35171B] text-[#F4EEE4] text-xs uppercase tracking-[0.14em] sm:tracking-[0.18em] font-bold hover:bg-[#4A1F24] transition-all duration-300 shadow-xl hover:shadow-2xl cursor-pointer flex items-center justify-center gap-2.5 group rounded-xl min-h-[48px]"
               >
                 <span>Explore Collection</span>
                 <ArrowRight className="w-4 h-4 text-[#B89458] group-hover:translate-x-1.5 transition-transform duration-300 shrink-0" />
-              </motion.button>
+              </Link>
 
               <motion.button
                 whileHover={{ y: -2, scale: 1.02 }}

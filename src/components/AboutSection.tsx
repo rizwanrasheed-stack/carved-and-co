@@ -4,9 +4,10 @@ import { COMPANY_INFO } from '../data/company';
 
 interface AboutSectionProps {
   onOpenBespoke?: () => void;
+  isStandalonePage?: boolean;
 }
 
-export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
+export function AboutSection({ onOpenBespoke, isStandalonePage = false }: AboutSectionProps) {
   return (
     <section id="about-section" className="py-20 sm:py-28 bg-[#C5C8CE] text-[#151618] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,9 +23,15 @@ export function AboutSection({ onOpenBespoke }: AboutSectionProps) {
           <span className="text-[11px] sm:text-xs font-serif tracking-[0.25em] text-[#6A353A] uppercase block mb-3 font-semibold">
             Heritage & Craftsmanship
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#35171B] leading-tight mb-4 sm:mb-6">
-            Crafted by Skilled Hands. <br /> Designed for Homes.
-          </h2>
+          {isStandalonePage ? (
+            <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#35171B] leading-tight mb-4 sm:mb-6">
+              Crafted by Skilled Hands. <br /> Designed for Homes.
+            </h1>
+          ) : (
+            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#35171B] leading-tight mb-4 sm:mb-6">
+              Crafted by Skilled Hands. <br /> Designed for Homes.
+            </h2>
+          )}
           <p className="text-xs sm:text-sm lg:text-base text-[#24201E]/80 leading-relaxed font-light">
             CARVED & CO. was founded on a simple conviction: true luxury lies in authentic handcraftsmanship, premium tailored materials, and furniture built to survive generations of living.
           </p>

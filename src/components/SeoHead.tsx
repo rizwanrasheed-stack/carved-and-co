@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Product } from '../types';
-import { COMPANY_INFO } from '../data/company';
+import { getRouteMetadata } from '../services/seoConfig';
 
 interface SeoHeadProps {
   title?: string;
@@ -11,78 +11,60 @@ interface SeoHeadProps {
 
 export function SeoHead({ title, description, product, currentPath = '/' }: SeoHeadProps) {
   useEffect(() => {
-    const pageTitle = title 
-      ? `${title} | CARVED & CO.`
-      : product 
-      ? `${product.name} - Handcrafted Furniture | CARVED & CO.`
-      : 'CARVED & CO. | Handcrafted Furniture & Timeless Living';
+    // Generate unified metadata based on current route and product
+    const meta = getRouteMetadata(currentPath, product);
 
-    const pageDescription = description 
-      || product?.shortDescription 
-      || 'CARVED & CO. offers luxury handcrafted furniture, bespoke sofas, center tables, side tables, coffee tables, and custom interior design solutions.';
+    const activeTitle = title ? `${title} | CARVED & CO.` : meta.title;
+    const activeDescription = description || meta.description;
+    const activeCanonical = meta.canonicalUrl;
+    const activeOgType = meta.ogType;
+    const activeOgImage = meta.ogImage;
 
-    document.title = pageTitle;
+    // 1. Document Title
+    document.title = activeTitle;
 
-    // Update meta tags
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', pageDescription);
-    } else {
-      metaDesc = document.createElement('meta');
-      metaDesc.setAttribute('name', 'description');
-      metaDesc.setAttribute('content', pageDescription);
-      document.head.appendChild(metaDesc);
-    }
-
-    // JSON-LD Structured Data
-    const schemaData = product ? {
-      '@context': 'https://schema.org/',
-      '@type': 'Product',
-      'name': product.name,
-      'image': product.images,
-      'description': product.description,
-      'brand': {
-        '@type': 'Brand',
-        'name': 'CARVED & CO.'
-      },
-      'offers': {
-        '@type': 'AggregateOffer',
-        'priceCurrency': 'USD',
-        'priceValidation': 'Quote on Request',
-        'availability': 'https://schema.org/InStock'
+    // 2. Helper to set or create meta tags
+    const setMetaTag = (attrName: 'name' | 'property', attrVal: string, content: string) => {
+      let tag = document.querySelector(`meta[${attrName}="${attrVal}"]`);
+      if (tag) {
+        tag.setAttribute('content', content);
+      } else {
+        tag = document.createElement('meta');
+        tag.setAttribute(attrName, attrVal);
+        tag.setAttribute('content', content);
+        document.head.appendChild(tag);
       }
-    } : {
-      '@context': 'https://schema.org',
-      '@graph': [
-        {
-          '@type': 'Organization',
-          '@id': 'https://carvedandco.com/#organization',
-          'name': 'CARVED & CO.',
-          'url': 'https://carvedandco.com',
-          'logo': 'https://carvedandco.com/logo.png',
-          'contactPoint': {
-            '@type': 'ContactPoint',
-            'telephone': COMPANY_INFO.phone,
-            'contactType': 'customer service'
-          }
-        },
-        {
-          '@type': 'LocalBusiness',
-          '@id': 'https://carvedandco.com/#localbusiness',
-          'name': 'CARVED & CO. Artisan Workshop',
-          'image': 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc',
-          'telephone': COMPANY_INFO.phone,
-          'address': {
-            '@type': 'PostalAddress',
-            'streetAddress': '488 Artisans Way',
-            'addressLocality': 'Craftsville',
-            'addressCountry': 'US'
-          },
-          'priceRange': '$$$$'
-        }
-      ]
     };
 
+    // Standard description
+    setMetaTag('name', 'description', activeDescription);
+
+    // Open Graph
+    setMetaTag('property', 'og:title', activeTitle);
+    setMetaTag('property', 'og:description', activeDescription);
+    setMetaTag('property', 'og:url', activeCanonical);
+    setMetaTag('property', 'og:type', activeOgType);
+    setMetaTag('property', 'og:image', activeOgImage);
+    setMetaTag('property', 'og:site_name', 'CARVED & CO.');
+
+    // Twitter Cards
+    setMetaTag('name', 'twitter:card', 'summary_large_image');
+    setMetaTag('name', 'twitter:title', activeTitle);
+    setMetaTag('name', 'twitter:description', activeDescription);
+    setMetaTag('name', 'twitter:image', activeOgImage);
+
+    // 3. Canonical Link tag
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute('href', activeCanonical);
+    } else {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      canonicalLink.setAttribute('href', activeCanonical);
+      document.head.appendChild(canonicalLink);
+    }
+
+    // 4. JSON-LD Structured Data
     let scriptTag = document.getElementById('json-ld-schema');
     if (!scriptTag) {
       scriptTag = document.createElement('script');
@@ -90,7 +72,7 @@ export function SeoHead({ title, description, product, currentPath = '/' }: SeoH
       scriptTag.setAttribute('type', 'application/ld+json');
       document.head.appendChild(scriptTag);
     }
-    scriptTag.textContent = JSON.stringify(schemaData);
+    scriptTag.textContent = JSON.stringify(meta.jsonLd);
 
   }, [title, description, product, currentPath]);
 

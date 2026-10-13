@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Armchair, Sparkles, Filter, X, ArrowLeft } from 'lucide-react';
 import { Product, SofaCategory } from '../types';
 import { PRODUCTS } from '../data/products';
@@ -28,16 +29,31 @@ export function SofasCatalogView({
   savedIds,
   onOpenBespoke
 }: SofasCatalogViewProps) {
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(
-    initialSubcategory || 'All Sofas'
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const subcategoryParam = searchParams.get('subcategory') || initialSubcategory || 'All Sofas';
+
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(subcategoryParam);
   const [selectedMaterial, setSelectedMaterial] = useState<string>('All Materials');
 
   useEffect(() => {
-    if (initialSubcategory) {
-      setSelectedSubcategory(initialSubcategory);
+    const param = searchParams.get('subcategory') || initialSubcategory;
+    if (param) {
+      setSelectedSubcategory(param);
+    } else {
+      setSelectedSubcategory('All Sofas');
     }
-  }, [initialSubcategory]);
+  }, [searchParams, initialSubcategory]);
+
+  const handleSubcategoryChange = (cat: string) => {
+    setSelectedSubcategory(cat);
+    const nextParams = new URLSearchParams(searchParams);
+    if (cat === 'All Sofas') {
+      nextParams.delete('subcategory');
+    } else {
+      nextParams.set('subcategory', cat);
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const sofaProducts = useMemo(() => {
     return PRODUCTS.filter((p) => p.category === 'sofas');
@@ -88,7 +104,7 @@ export function SofasCatalogView({
           {ALL_SOFA_SUBCATEGORIES.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedSubcategory(cat)}
+              onClick={() => handleSubcategoryChange(cat)}
               className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-serif uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                 selectedSubcategory === cat
                   ? 'bg-[#35171B] text-[#F4EEE4] shadow-md scale-105 font-semibold'

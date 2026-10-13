@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Table as TableIcon, Sparkles, Filter, X, ArrowLeft } from 'lucide-react';
 import { Product, TableCategory } from '../types';
 import { PRODUCTS } from '../data/products';
@@ -29,14 +30,31 @@ export function TablesCatalogView({
   savedIds,
   onOpenBespoke
 }: TablesCatalogViewProps) {
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(
-    initialSubcategory || 'All Tables'
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const subcategoryParam = searchParams.get('subcategory') || initialSubcategory || 'All Tables';
+
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(subcategoryParam);
   const [selectedWood, setSelectedWood] = useState<string>('All Finishes');
 
   useEffect(() => {
-    setSelectedSubcategory(initialSubcategory || 'All Tables');
-  }, [initialSubcategory]);
+    const param = searchParams.get('subcategory') || initialSubcategory;
+    if (param) {
+      setSelectedSubcategory(param);
+    } else {
+      setSelectedSubcategory('All Tables');
+    }
+  }, [searchParams, initialSubcategory]);
+
+  const handleSubcategoryChange = (cat: string) => {
+    setSelectedSubcategory(cat);
+    const nextParams = new URLSearchParams(searchParams);
+    if (cat === 'All Tables') {
+      nextParams.delete('subcategory');
+    } else {
+      nextParams.set('subcategory', cat);
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const tableProducts = useMemo(() => {
     return PRODUCTS.filter((p) => p.category === 'tables');
@@ -130,6 +148,9 @@ export function TablesCatalogView({
                 onClick={() => {
                   setSelectedSubcategory('All Tables');
                   setSelectedWood('All Finishes');
+                  const nextParams = new URLSearchParams(searchParams);
+                  nextParams.delete('subcategory');
+                  setSearchParams(nextParams, { replace: true });
                 }}
                 className="text-xs text-[#6A353A] hover:underline flex items-center gap-1 cursor-pointer font-serif font-semibold"
               >
@@ -144,7 +165,7 @@ export function TablesCatalogView({
             {ALL_TABLE_SUBCATEGORIES.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedSubcategory(cat)}
+                onClick={() => handleSubcategoryChange(cat)}
                 className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-serif tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                   selectedSubcategory === cat
                     ? 'bg-[#35171B] text-[#F4EEE4] shadow-sm font-semibold'

@@ -319,7 +319,7 @@ export function ProductImageLightbox({
                   currentIndex === idx ? 'border-[#B89458] scale-110 shadow-lg' : 'border-white/20 opacity-50 hover:opacity-100'
                 }`}
               >
-                <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={img} alt={`${productName || 'Handcrafted design'} gallery thumbnail ${idx + 1}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </button>
             ))}
           </div>

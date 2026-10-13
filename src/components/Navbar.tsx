@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Heart, Sparkles, Menu, X, ChevronDown, Armchair, Table as TableIcon, PhoneCall } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 import logoNoText from '../assets/images/carved and co logo no text alpha.png';
 
 interface NavbarProps {
-  currentView: string;
-  onNavigate: (view: string, subcategory?: string) => void;
   onOpenSearch: () => void;
   onOpenSaved: () => void;
   onOpenBespoke: () => void;
@@ -15,29 +14,30 @@ interface NavbarProps {
 
 const SOFA_MENU_ITEMS = [
   'Single Seaters',
-  '2 Seaters',
-  '3 Seaters',
-  'L-Shaped',
-  'Sectionals',
-  'Leather'
+  '2 Seater Sofas',
+  '3 Seater Sofas',
+  'L-Shaped Sofas',
+  'Custom Sofas'
 ];
 
 const TABLE_MENU_ITEMS = [
   'Center Tables',
-  'Coffee Tables',
   'Side Tables',
+  'Coffee Tables',
   'Dining Tables',
-  'Dressing Tables'
+  'Console Tables',
+  'Custom Tables'
 ];
 
 export function Navbar({
-  currentView,
-  onNavigate,
   onOpenSearch,
   onOpenSaved,
   onOpenBespoke,
   savedCount
 }: NavbarProps) {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sofasDropdownOpen, setSofasDropdownOpen] = useState(false);
@@ -55,32 +55,40 @@ export function Navbar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile drawer when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setSofasDropdownOpen(false);
+    setTablesDropdownOpen(false);
+  }, [location.pathname, location.search]);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 w-full overflow-x-hidden">
       {/* REFINED TOP ANNOUNCEMENT BAR - TRANSPARENT OVER ARTISAN CANVAS */}
-      <div className={`text-[#F4EEE4] py-1.5 px-3 text-center text-[10px] sm:text-xs font-serif tracking-wider sm:tracking-[0.16em] uppercase flex items-center justify-between border-b border-white/15 min-h-[30px] transition-colors duration-300 ${
-        isScrolled ? 'bg-black/40 backdrop-blur-md' : 'bg-transparent'
+      <div className={`transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-[#1C0A0E]/90 text-white/90 border-b border-[#B89458]/20 py-1' 
+          : 'bg-black/35 backdrop-blur-[2px] text-white py-1.5 border-b border-white/10'
       }`}>
-        <div className="hidden sm:flex items-center gap-1.5 text-[#B89458] shrink-0">
-          <Sparkles className="w-3 h-3" />
-          <span>Atelier Showroom</span>
-        </div>
-        
-        {/* Concise, fully visible on 320px-414px mobile devices */}
-        <p className="mx-auto sm:mx-0 font-medium tracking-wide sm:tracking-widest text-center w-full sm:w-auto drop-shadow-sm">
-          HANDCRAFTED IN PAKISTAN • MADE TO YOUR DIMENSIONS
-        </p>
-
-        <div className="hidden sm:flex items-center gap-2 shrink-0">
-          <a
-            href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[#B89458] hover:text-white transition-colors text-xs font-sans tracking-wide drop-shadow-sm"
-          >
-            <PhoneCall className="w-3.5 h-3.5" />
-            <span>{COMPANY_INFO.phone}</span>
-          </a>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center text-[10px] sm:text-xs tracking-wider">
+          <div className="flex items-center space-x-2">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#B89458] animate-pulse"></span>
+            <span className="font-serif uppercase tracking-widest text-white/95">
+              Bespoke Artisan Atelier • Handcrafted to Order in Pakistan
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <a
+              href={`https://wa.me/${COMPANY_INFO.whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#B89458] transition-colors flex items-center gap-1 font-sans text-white/95"
+            >
+              <PhoneCall className="w-3 h-3 text-[#B89458]" />
+              <span className="hidden sm:inline">WhatsApp Concierge:</span>
+              <span className="font-mono text-[10px] sm:text-xs">{COMPANY_INFO.phone}</span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -93,8 +101,8 @@ export function Navbar({
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
           
           {/* BRAND LOGO HEADER - MIN 44PX TOUCH TARGET */}
-          <button
-            onClick={() => onNavigate('home')}
+          <Link
+            to="/"
             className="text-left group flex items-center cursor-pointer pr-1 sm:pr-4 shrink-0 min-w-0 min-h-[44px]"
             title="CARVED & CO. Home"
           >
@@ -116,16 +124,18 @@ export function Navbar({
                 </span>
               </div>
             </div>
-          </button>
+          </Link>
 
           {/* DESKTOP NAV LINKS */}
           <div className="hidden md:flex items-center space-x-7 lg:space-x-8 text-xs font-serif tracking-[0.18em] uppercase font-medium drop-shadow-sm">
-            <button
-              onClick={() => onNavigate('home')}
-              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'home' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
+            <Link
+              to="/"
+              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${
+                currentPath === '/' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'
+              }`}
             >
               Home
-            </button>
+            </Link>
 
             {/* SOFAS DROPDOWN */}
             <div 
@@ -133,13 +143,15 @@ export function Navbar({
               onMouseEnter={() => setSofasDropdownOpen(true)}
               onMouseLeave={() => setSofasDropdownOpen(false)}
             >
-              <button
-                onClick={() => onNavigate('sofas')}
-                className={`flex items-center gap-1 hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'sofas' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
+              <Link
+                to="/sofas"
+                className={`flex items-center gap-1 hover:text-[#B89458] transition-colors py-2 cursor-pointer ${
+                  currentPath.startsWith('/sofas') ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'
+                }`}
               >
                 <span>Sofas</span>
                 <ChevronDown className="w-3.5 h-3.5" />
-              </button>
+              </Link>
 
               {sofasDropdownOpen && (
                 <div className="absolute top-full left-0 w-64 bg-[#EAEBED] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
@@ -147,20 +159,22 @@ export function Navbar({
                     <Armchair className="w-4 h-4 text-[#B89458]" />
                     <span className="font-serif font-semibold text-xs tracking-wider uppercase">Sofa Collections</span>
                   </div>
-                  <button
-                    onClick={() => { onNavigate('sofas', 'All Sofas'); setSofasDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors font-semibold"
+                  <Link
+                    to="/sofas"
+                    onClick={() => setSofasDropdownOpen(false)}
+                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors font-semibold block"
                   >
                     View All Sofas
-                  </button>
+                  </Link>
                   {SOFA_MENU_ITEMS.map((sub) => (
-                    <button
+                    <Link
                       key={sub}
-                      onClick={() => { onNavigate('sofas', sub); setSofasDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors text-[#1C1D20]/85"
+                      to={`/sofas?subcategory=${encodeURIComponent(sub)}`}
+                      onClick={() => setSofasDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors text-[#1C1D20]/85 block"
                     >
                       {sub}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               )}
@@ -172,13 +186,15 @@ export function Navbar({
               onMouseEnter={() => setTablesDropdownOpen(true)}
               onMouseLeave={() => setTablesDropdownOpen(false)}
             >
-              <button
-                onClick={() => onNavigate('tables')}
-                className={`flex items-center gap-1 hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'tables' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
+              <Link
+                to="/tables"
+                className={`flex items-center gap-1 hover:text-[#B89458] transition-colors py-2 cursor-pointer ${
+                  currentPath.startsWith('/tables') ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'
+                }`}
               >
                 <span>Tables</span>
                 <ChevronDown className="w-3.5 h-3.5" />
-              </button>
+              </Link>
 
               {tablesDropdownOpen && (
                 <div className="absolute top-full left-0 w-64 bg-[#EAEBED] text-[#35171B] rounded-xl shadow-2xl py-3 border border-[#B89458]/30 z-50 animate-in fade-in duration-200">
@@ -186,38 +202,44 @@ export function Navbar({
                     <TableIcon className="w-4 h-4 text-[#B89458]" />
                     <span className="font-serif font-semibold text-xs tracking-wider uppercase">Table Collections</span>
                   </div>
-                  <button
-                    onClick={() => { onNavigate('tables', 'All Tables'); setTablesDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors font-semibold"
+                  <Link
+                    to="/tables"
+                    onClick={() => setTablesDropdownOpen(false)}
+                    className="w-full text-left px-4 py-2 text-xs font-serif uppercase tracking-wider hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors font-semibold block"
                   >
                     View All Tables
-                  </button>
+                  </Link>
                   {TABLE_MENU_ITEMS.map((sub) => (
-                    <button
+                    <Link
                       key={sub}
-                      onClick={() => { onNavigate('tables', sub); setTablesDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors text-[#1C1D20]/85"
+                      to={`/tables?subcategory=${encodeURIComponent(sub)}`}
+                      onClick={() => setTablesDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 text-xs font-sans hover:bg-[#DFE1E5] hover:text-[#4A1F24] transition-colors text-[#1C1D20]/85 block"
                     >
                       {sub}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               )}
             </div>
 
-            <button
-              onClick={() => onNavigate('about')}
-              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'about' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
+            <Link
+              to="/about"
+              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${
+                currentPath === '/about' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'
+              }`}
             >
               Craftsmanship
-            </button>
+            </Link>
 
-            <button
-              onClick={() => onNavigate('contact')}
-              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${currentView === 'contact' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'}`}
+            <Link
+              to="/contact"
+              className={`hover:text-[#B89458] transition-colors py-2 cursor-pointer ${
+                currentPath === '/contact' ? 'text-[#B89458] font-bold border-b border-[#B89458]' : 'text-white/90'
+              }`}
             >
               Contact
-            </button>
+            </Link>
           </div>
 
           {/* RIGHT ACTION BUTTONS WITH MIN 44PX TOUCH TARGETS */}
@@ -275,12 +297,13 @@ export function Navbar({
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="md:hidden bg-[#EAEBED] text-[#35171B] px-5 pt-4 pb-8 border-b border-[#B89458]/30 space-y-4 max-h-[85vh] overflow-y-auto"
             >
-              <button
-                onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
+              <Link
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
                 className="block w-full text-left font-serif text-base uppercase tracking-widest py-2.5 border-b border-[#35171B]/10 font-medium min-h-[44px] flex items-center"
               >
                 Home
-              </button>
+              </Link>
 
               {/* SOFAS SECTION */}
               <div className="space-y-1 pt-1">
@@ -290,21 +313,23 @@ export function Navbar({
                     <span>Sofas</span>
                   </span>
                 </div>
-                <button
-                  onClick={() => { onNavigate('sofas', 'All Sofas'); setMobileMenuOpen(false); }}
+                <Link
+                  to="/sofas"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
                 >
                   Explore All Sofas
-                </button>
+                </Link>
                 <div className="grid grid-cols-2 gap-1 pl-2">
                   {SOFA_MENU_ITEMS.map((sub) => (
-                    <button
+                    <Link
                       key={sub}
-                      onClick={() => { onNavigate('sofas', sub); setMobileMenuOpen(false); }}
+                      to={`/sofas?subcategory=${encodeURIComponent(sub)}`}
+                      onClick={() => setMobileMenuOpen(false)}
                       className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
                     >
                       • {sub}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -317,21 +342,23 @@ export function Navbar({
                     <span>Tables</span>
                   </span>
                 </div>
-                <button
-                  onClick={() => { onNavigate('tables', 'All Tables'); setMobileMenuOpen(false); }}
+                <Link
+                  to="/tables"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left font-sans text-xs py-2 text-[#35171B] font-semibold min-h-[44px] flex items-center"
                 >
                   Explore All Tables
-                </button>
+                </Link>
                 <div className="grid grid-cols-2 gap-1 pl-2">
                   {TABLE_MENU_ITEMS.map((sub) => (
-                    <button
+                    <Link
                       key={sub}
-                      onClick={() => { onNavigate('tables', sub); setMobileMenuOpen(false); }}
+                      to={`/tables?subcategory=${encodeURIComponent(sub)}`}
+                      onClick={() => setMobileMenuOpen(false)}
                       className="block w-full text-left font-sans text-xs py-2 text-[#24201E]/80 hover:text-[#4A1F24] min-h-[44px] flex items-center"
                     >
                       • {sub}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -348,19 +375,21 @@ export function Navbar({
 
               {/* ABOUT & CONTACT */}
               <div className="pt-2 border-t border-[#35171B]/10 space-y-1">
-                <button
-                  onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
                 >
                   About / Craftsmanship
-                </button>
+                </Link>
 
-                <button
-                  onClick={() => { onNavigate('contact'); setMobileMenuOpen(false); }}
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left font-serif text-sm uppercase tracking-widest py-2 text-[#35171B] min-h-[44px] flex items-center"
                 >
                   Contact
-                </button>
+                </Link>
               </div>
             </motion.div>
           )}

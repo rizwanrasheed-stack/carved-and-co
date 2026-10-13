@@ -3,20 +3,29 @@
 # Optimized for Vite React Single Page Application (SPA) & Static Hosting
 # ==============================================================================
 
+<IfModule mod_dir.c>
+  DirectoryIndex index.html
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Optional HTTPS redirect (uncomment if SSL is active on Hostinger)
-  # RewriteCond %{HTTPS} off
-  # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Enforce HTTPS Canonical Redirection on Hostinger
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://carvedandco.net/$1 [R=301,L]
 
-  # Pass existing files or directories directly
+  # Serve existing file or directory directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Redirect all other requests to index.html for client-side routing
+  # Check if a prerendered static index.html exists for the requested path
+  RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+  RewriteRule ^(.*)/?$ $1/index.html [L]
+
+  # Fallback for dynamic/client-side single-page routing
   RewriteRule ^ index.html [L]
 </IfModule>
 

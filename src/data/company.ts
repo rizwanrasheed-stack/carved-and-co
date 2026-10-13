@@ -11,9 +11,9 @@ export const COMPANY_INFO = {
   instagramHandle: '@carvedand.co',
   instagramUrl: 'https://www.instagram.com/carvedand.co/',
   email: 'carvedandco@carvedandco.net',
-  address: '488 Artisans Way, Mill District, Craftsville',
-  workingHours: 'Mon - Sat: 9:00 AM - 7:00 PM EST',
-  googleMapsUrl: 'https://maps.google.com/?q=488+Artisans+Way+Craftsville',
+  address: 'Atelier Workshop, Pakistan (Visits by Private Appointment)',
+  workingHours: 'Monday – Saturday: Atelier Concierge via WhatsApp & Email',
+  googleMapsUrl: '',
   aboutStory: `Founded on a reverence for artisan traditions and heirloom quality, CARVED & CO. is a family-owned design house and master workshop. Every sofa, dining table, and accent piece is brought to life by senior artisans who have honed their craft across generations. We eschew mass assembly in favor of hand-selected premium materials, precision structural joinery, tailored finishes, and Pakistani sourced materials, a proud Pakistani company.`,
   workshopImages: {
     hero1: heritageImg,

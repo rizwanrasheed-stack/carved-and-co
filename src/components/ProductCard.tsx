@@ -1,12 +1,14 @@
-import { useState, useRef, WheelEvent, TouchEvent } from 'react';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Heart, Sparkles, ArrowUpRight, ZoomIn } from 'lucide-react';
+import { Heart, Sparkles, ZoomIn, ArrowUpRight } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
-  key?: string | number;
+  key?: React.Key;
   product: Product;
-  onSelectProduct: (product: Product) => void;
+  onOpenDetail?: (product: Product) => void;
+  onSelectProduct?: (product: Product) => void;
   onToggleSave: (product: Product) => void;
   isSaved: boolean;
   onCustomize?: (product: Product) => void;
@@ -14,78 +16,47 @@ interface ProductCardProps {
 
 export function ProductCard({
   product,
+  onOpenDetail,
   onSelectProduct,
   onToggleSave,
   isSaved,
-  onCustomize
+  onCustomize,
 }: ProductCardProps) {
+  const location = useLocation();
+  const handleOpen = onOpenDetail || onSelectProduct || (() => {});
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const lastWheelTime = useRef(0);
-  const touchStartX = useRef<number | null>(null);
 
-  const images = product.images && product.images.length > 0 ? product.images : [
-    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800'
-  ];
-  const primaryImage = images[0];
-  const closeUpImage = images[1] || primaryImage;
-  const hasMultipleImages = images.length > 1;
-  const keyDetail = product.woodType || product.materials?.[0] || 'Artisan Joinery';
+  const mainImage = product.images[0] || '';
+  const closeUpImage = product.images[1] || product.images[0] || '';
+  const hasMultipleImages = product.images && product.images.length > 1;
 
-  // Handle scroll over image container to cycle between full picture and close-up
-  const handleWheel = (e: WheelEvent) => {
-    if (!hasMultipleImages) return;
-    // Don't hijack vertical page scrolling unless intentional movement over image
-    if (Math.abs(e.deltaY) > 6 || Math.abs(e.deltaX) > 6) {
-      const now = Date.now();
-      if (now - lastWheelTime.current > 180) {
-        lastWheelTime.current = now;
-        setActiveImageIndex((prev) => (prev === 0 ? 1 : 0));
-      }
-    }
-  };
+  const keyDetail = product.woodType 
+    ? `${product.woodType} Wood` 
+    : product.materials[0] 
+    ? product.materials[0] 
+    : 'Bespoke Craft';
 
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: TouchEvent) => {
-    if (touchStartX.current === null || !hasMultipleImages) return;
-    const diff = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(diff) > 30) {
-      setActiveImageIndex((prev) => (prev === 0 ? 1 : 0));
-    }
-    touchStartX.current = null;
-  };
+  const productUrl = `/products/${product.slug}`;
 
   return (
-    <motion.div 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5 }}
       whileHover={{ y: -4 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="group bg-[#D2D5DB] rounded-xl sm:rounded-2xl border border-[#35171B]/15 overflow-hidden shadow-xs hover:shadow-xl transition-shadow duration-300 flex flex-col h-full relative cursor-pointer hover:border-[#B89458]/50 min-w-0 w-full"
-      onClick={() => onSelectProduct(product)}
+      className="group relative bg-[#DFE1E5] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-[#35171B]/15 hover:border-[#B89458]/70 flex flex-col justify-between"
     >
-      {/* IMAGE CONTAINER WITH DUAL IMAGE HOVER & SCROLL TOGGLE */}
+      {/* IMAGE CONTAINER / HERO THUMBNAIL - CLIKCABLE TO MODAL / ROUTE */}
       <div 
-        className="relative aspect-[4/3] overflow-hidden bg-[#B5B8BE] w-full select-none"
-        onMouseEnter={() => {
-          setIsHovered(true);
-          if (hasMultipleImages) {
-            setActiveImageIndex(1);
-          }
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          setActiveImageIndex(0);
-        }}
-        onWheel={handleWheel}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        className="relative aspect-4/3 w-full overflow-hidden bg-black/5 cursor-pointer"
+        onClick={() => handleOpen(product)}
       >
-        {/* PRIMARY FULL VIEW IMAGE */}
+        {/* MAIN PRODUCT IMAGE */}
         <img
-          src={primaryImage}
+          src={mainImage}
           alt={product.name}
+          loading="lazy"
           referrerPolicy="no-referrer"
           className={`w-full h-full object-cover transition-all duration-600 ease-out group-hover:scale-105 ${
             activeImageIndex === 0 ? 'opacity-100' : 'opacity-0'
@@ -133,6 +104,7 @@ export function ProductCard({
 
         {/* SAVED WISHLIST HEART BUTTON (Interactive Spring Tap) */}
         <motion.button
+          type="button"
           whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.78 }}
           onClick={(e) => {
@@ -199,7 +171,7 @@ export function ProductCard({
         {!hasMultipleImages && (
           <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-[#35171B]/90 via-[#35171B]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between text-[#F4EEE4] text-xs font-serif pointer-events-none">
             <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] tracking-wider text-[#B89458]">
-              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-[#B89458]" />
               <span>Atelier View</span>
             </span>
             <ArrowUpRight className="w-3.5 h-3.5 text-[#B89458]" />
@@ -218,7 +190,17 @@ export function ProductCard({
           </div>
 
           <h3 className="font-serif text-xs xs:text-sm sm:text-base font-normal text-[#35171B] group-hover:text-[#6A353A] transition-colors line-clamp-1 leading-snug">
-            {product.name}
+            <Link
+              to={productUrl}
+              state={{ backgroundLocation: location }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpen(product);
+              }}
+              className="hover:underline focus:outline-none"
+            >
+              {product.name}
+            </Link>
           </h3>
 
           <p className="text-[10px] xs:text-[11px] sm:text-xs text-[#24201E]/75 font-light line-clamp-2 leading-relaxed mt-1 sm:mt-1.5">
@@ -263,9 +245,18 @@ export function ProductCard({
                 Customize
               </button>
             )}
-            <span className="font-serif text-[10px] xs:text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#B89458] group-hover:text-[#35171B] transition-colors shrink-0">
-              Details &rarr;
-            </span>
+            <Link
+              to={productUrl}
+              state={{ backgroundLocation: location }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpen(product);
+              }}
+              className="font-serif text-[10px] xs:text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#B89458] group-hover:text-[#35171B] transition-colors shrink-0 flex items-center gap-1"
+            >
+              <span>Details</span>
+              <span>&rarr;</span>
+            </Link>
           </div>
         </div>
       </div>

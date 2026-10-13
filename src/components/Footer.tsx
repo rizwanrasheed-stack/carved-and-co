@@ -1,15 +1,32 @@
-import { MessageCircle, Instagram, Mail, Phone, MapPin, ArrowUp, Hammer, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MessageCircle, Instagram, Mail, MapPin, ArrowUp, Sparkles } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 import { BrandLogo } from './BrandLogo';
 import instaLinkImg from '../assets/images/insta-link-image.png';
 
 interface FooterProps {
-  onNavigate: (view: string, subcategory?: string) => void;
   onOpenBespoke: () => void;
   onOpenPrivacy: () => void;
 }
 
-export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps) {
+const SOFA_SUBCATEGORIES = [
+  'Single Seaters',
+  '2 Seater Sofas',
+  '3 Seater Sofas',
+  'L-Shaped Sofas',
+  'Custom Sofas'
+];
+
+const TABLE_SUBCATEGORIES = [
+  'Center Tables',
+  'Side Tables',
+  'Coffee Tables',
+  'Dining Tables',
+  'Console Tables',
+  'Custom Tables'
+];
+
+export function Footer({ onOpenBespoke, onOpenPrivacy }: FooterProps) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -79,7 +96,7 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
 
           <div className="text-[11px] text-[#B89458]/90 font-serif flex items-center gap-2 pt-1">
             <MapPin className="w-3.5 h-3.5 shrink-0 text-[#B89458]" />
-            <span>Handcrafted with pride in our atelier workshop</span>
+            <span>Handcrafted with pride in our atelier workshop in Pakistan</span>
           </div>
 
           <div className="text-[11px] text-[#EAEBED]/85 font-mono flex items-center gap-2">
@@ -130,35 +147,39 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
           </h4>
           <ul className="space-y-1.5 text-xs text-[#EAEBED]/80 font-light">
             <li>
-              <button onClick={() => onNavigate('home')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
+              <Link to="/" className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Home Showroom
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => onNavigate('about')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
+              <Link to="/about" className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 About Our Workshop
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => onNavigate('sofas')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
+              <Link to="/sofas" className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Sofas & Sectionals Catalog
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => onNavigate('tables')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
+              <Link to="/tables" className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Tables & Consoles Catalog
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={onOpenBespoke} className="hover:text-[#B89458] transition-colors cursor-pointer flex items-center gap-1.5 text-[#B89458] py-1">
+              <button 
+                type="button"
+                onClick={onOpenBespoke} 
+                className="hover:text-[#B89458] transition-colors cursor-pointer flex items-center gap-1.5 text-[#B89458] py-1 text-left"
+              >
                 <Sparkles className="w-3 h-3" />
                 <span>Bespoke Custom Studio</span>
               </button>
             </li>
             <li>
-              <button onClick={() => onNavigate('contact')} className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
+              <Link to="/contact" className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block">
                 Contact & Concierge
-              </button>
+              </Link>
             </li>
           </ul>
         </div>
@@ -169,14 +190,14 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
             Sofa Collections
           </h4>
           <ul className="space-y-1 text-xs text-[#EAEBED]/70 font-light">
-            {['Single Seaters', '2 Seater Sofas', '3 Seater Sofas', 'L-Shaped Sofas', 'Custom Sofas'].map((sub) => (
+            {SOFA_SUBCATEGORIES.map((sub) => (
               <li key={sub}>
-                <button 
-                  onClick={() => onNavigate('sofas', sub)}
+                <Link 
+                  to={`/sofas?subcategory=${encodeURIComponent(sub)}`}
                   className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block text-left"
                 >
                   {sub}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -188,14 +209,14 @@ export function Footer({ onNavigate, onOpenBespoke, onOpenPrivacy }: FooterProps
             Table Collections
           </h4>
           <ul className="space-y-1 text-xs text-[#EAEBED]/70 font-light">
-            {['Center Tables', 'Side Tables', 'Coffee Tables', 'Dining Tables', 'Console Tables', 'Custom Tables'].map((sub) => (
+            {TABLE_SUBCATEGORIES.map((sub) => (
               <li key={sub}>
-                <button 
-                  onClick={() => onNavigate('tables', sub)}
+                <Link 
+                  to={`/tables?subcategory=${encodeURIComponent(sub)}`}
                   className="hover:text-[#B89458] transition-colors cursor-pointer py-1 block text-left"
                 >
                   {sub}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
