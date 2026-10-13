@@ -11,9 +11,9 @@
   RewriteEngine On
   RewriteBase /
 
-  # Enforce HTTPS Canonical Redirection on Hostinger
+  # Force HTTPS and redirect www to the preferred non-www domain
+  RewriteCond %{HTTP_HOST} ^www\.carvedandco\.net$ [NC,OR]
   RewriteCond %{HTTPS} off
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^(.*)$ https://carvedandco.net/$1 [R=301,L]
 
   # Serve existing file or directory directly
