@@ -125,7 +125,7 @@ function AppContent() {
 
       {/* DYNAMIC SEO HEAD */}
       <SeoHead
-        product={activeModalProduct}
+        product={activeModalProduct || routeProduct}
         currentPath={location.pathname}
       />
 

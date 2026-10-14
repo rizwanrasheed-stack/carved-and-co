@@ -41,7 +41,12 @@ export function getRouteMetadata(pathname: string, product?: Product | null): Pa
     if (product && product.images && product.images.length > 0) {
       productImage = product.images[0].startsWith('http')
         ? product.images[0]
-        : `${PRODUCTION_DOMAIN}${product.images[0]}`;
+        : `${PRODUCTION_DOMAIN}${product.images[0].startsWith('/') ? '' : '/'}${product.images[0]}`;
+    } else if (indexed && (indexed as any).image) {
+      const indexedImg = (indexed as any).image as string;
+      if (indexedImg.startsWith('http://') || indexedImg.startsWith('https://')) {
+        productImage = indexedImg;
+      }
     }
 
     const title = `${name} | ${subcategory} | CARVED & CO.`;

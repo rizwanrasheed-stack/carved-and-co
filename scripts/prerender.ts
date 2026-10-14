@@ -20,6 +20,40 @@ const baseHtml = fs.readFileSync(indexHtmlPath, 'utf8');
 const productDataPath = path.resolve(__dirname, '../src/data/productSeoData.json');
 const products = JSON.parse(fs.readFileSync(productDataPath, 'utf8'));
 
+const distAssetsDir = path.join(distDir, 'assets');
+const distAssets = fs.existsSync(distAssetsDir) ? fs.readdirSync(distAssetsDir) : [];
+
+function resolveProductImageUrl(p: { slug: string; name: string; image?: string }): string {
+  const rawImage = p.image;
+  if (!rawImage) {
+    throw new Error(`[Prerender] Error: Product "${p.slug}" (${p.name}) is missing an image specification.`);
+  }
+
+  // Handle remote image URLs (e.g. Unsplash)
+  if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
+    return rawImage;
+  }
+
+  // Handle local compiled assets in dist/assets
+  const ext = path.extname(rawImage);
+  const base = path.basename(rawImage, ext);
+  const matched = distAssets.filter(f => f.startsWith(base + '-') && f.endsWith(ext));
+
+  if (matched.length === 1) {
+    return `${PRODUCTION_DOMAIN}/assets/${encodeURI(matched[0])}`;
+  }
+
+  if (matched.length > 1) {
+    throw new Error(
+      `[Prerender] Error: Multiple built asset matches found for product "${p.slug}" (${rawImage}): [${matched.join(', ')}] in dist/assets`
+    );
+  }
+
+  throw new Error(
+    `[Prerender] Error: Could not resolve built image asset for product "${p.slug}" (${rawImage}) in dist/assets. Build must compile asset first.`
+  );
+}
+
 interface RoutePrerenderConfig {
   path: string;
   title: string;
@@ -194,13 +228,14 @@ for (const p of products) {
     ? `${p.name} by CARVED & CO. — ${p.shortDescription} Handcrafted to order in Pakistan with ${p.materials || 'solid timber'}. Lead time: ${p.leadTime || '4 to 5 Weeks'}.`
     : `${p.name} — custom handcrafted ${p.subcategory} by CARVED & CO. Atelier. Master joinery, made in Pakistan. Quotation on request.`;
   const canonicalUrl = `${PRODUCTION_DOMAIN}/products/${p.slug}`;
+  const productImageUrl = resolveProductImageUrl(p);
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: p.name,
     description,
-    image: `${PRODUCTION_DOMAIN}/favicon.png`,
+    image: productImageUrl,
     category: p.subcategory,
     brand: {
       '@type': 'Brand',
@@ -223,6 +258,9 @@ for (const p of products) {
       </nav>
       <h1>${p.name}</h1>
       <p><strong>Category:</strong> ${p.subcategory}</p>
+      <div style="margin: 1.5rem 0;">
+        <img src="${productImageUrl}" alt="${escapeHtml(p.name)}" style="max-width: 100%; height: auto; border-radius: 4px;" />
+      </div>
       <p><strong>Tagline:</strong> ${p.tagline || ''}</p>
       <p>${p.description || p.shortDescription}</p>
       <section>
@@ -244,7 +282,7 @@ for (const p of products) {
     description,
     canonicalUrl,
     ogType: 'product',
-    ogImage: `${PRODUCTION_DOMAIN}/favicon.png`,
+    ogImage: productImageUrl,
     jsonLd,
     crawlerBodyContent
   });
@@ -269,15 +307,17 @@ function buildHtmlForRoute(config: RoutePrerenderConfig): string {
   // Replace meta description
   html = html.replace(/<meta name="description"[^>]*>/i, `<meta name="description" content="${escapeAttribute(config.description)}" />`);
 
-  // Replace og:title & og:description & og:url & og:type
+  // Replace og:title & og:description & og:url & og:type & og:image
   html = html.replace(/<meta property="og:title"[^>]*>/i, `<meta property="og:title" content="${escapeAttribute(config.title)}" />`);
   html = html.replace(/<meta property="og:description"[^>]*>/i, `<meta property="og:description" content="${escapeAttribute(config.description)}" />`);
   html = html.replace(/<meta property="og:url"[^>]*>/i, `<meta property="og:url" content="${config.canonicalUrl}" />`);
   html = html.replace(/<meta property="og:type"[^>]*>/i, `<meta property="og:type" content="${config.ogType}" />`);
+  html = html.replace(/<meta property="og:image"[^>]*>/i, `<meta property="og:image" content="${config.ogImage}" />`);
 
-  // Replace twitter:title & twitter:description
+  // Replace twitter:title & twitter:description & twitter:image
   html = html.replace(/<meta name="twitter:title"[^>]*>/i, `<meta name="twitter:title" content="${escapeAttribute(config.title)}" />`);
   html = html.replace(/<meta name="twitter:description"[^>]*>/i, `<meta name="twitter:description" content="${escapeAttribute(config.description)}" />`);
+  html = html.replace(/<meta name="twitter:image"[^>]*>/i, `<meta name="twitter:image" content="${config.ogImage}" />`);
 
   // Replace JSON-LD schema
   const jsonLdString = JSON.stringify(config.jsonLd, null, 2);
